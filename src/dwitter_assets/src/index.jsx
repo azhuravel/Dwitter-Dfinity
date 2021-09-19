@@ -1,23 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { render } from "react-dom";
-import { canisterId, createActor } from "../../declarations/dwitter";
 import { AuthClient } from "@dfinity/auth-client";
-
 import Button from 'react-bootstrap/Button';
-import Alert from 'react-bootstrap/Alert';
-import FormControl from 'react-bootstrap/FormControl'
 import Row from 'react-bootstrap/Row'
 import Container from 'react-bootstrap/Container'
-
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link
-} from "react-router-dom";
-
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useEffect } from 'react';
 import PostForm from './postForm.jsx';
 
 const Home = () => {
