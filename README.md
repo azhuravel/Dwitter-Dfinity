@@ -13,3 +13,6 @@ dfx start --background
 # Deploys your canisters to the replica and generates your candid interface
 dfx deploy
 ```
+
+## Contacts
+Feel free to contact me by email zhuravel.msk@gmail.com or Telegram https://t.me/aszhuravel
