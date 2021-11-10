@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { canisterId, createActor } from "../../declarations/dwitter";
 import { AuthClient } from "@dfinity/auth-client";
-import Button from 'react-bootstrap/Button';
-import Alert from 'react-bootstrap/Alert';
-import FormControl from 'react-bootstrap/FormControl'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import Container from 'react-bootstrap/Container'
+import Box from '@mui/material/Box';
 import { useEffect } from 'react';
+
+import { Avatar, Button, TextField, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 export const PostForm = (props) => {
     const [charRemains, setCharRemains] = useState(140);
@@ -65,39 +63,35 @@ export const PostForm = (props) => {
     }
   
     return (
-      <Container style={props.style}>
-          <Row>
-            <Col>
-                <FormControl as="textarea" aria-label="Text" value={text} onChange={e => handleTextChange(e)} maxLength="140"/>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-                <p>Characters remains: {charRemains}</p>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-                <Button variant="primary" onClick={post} disabled={posting}>Publish</Button>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-                {loading ? "Loading..." : ""}
-            </Col>
-          </Row>
-          {
-            posts.map((item, idx) => 
-                <Row key={idx}>
-                  <Col>
-                    <Alert variant="secondary">
-                        {item.text}
-                    </Alert>
-                  </Col>
-                </Row>
-            )
-          }
-        </Container>
+      <div style={{ width: '100%' }}>
+        <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 3, mb: 1 }}>
+          <AccountCircleIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
+          <TextField id="text" label="What's happening?" variant="standard" value={text} onChange={e => handleTextChange(e)} maxLength="140" fullWidth />
+        </Box>
+
+        <Box sx={{ display: 'flex', flexDirection: 'row-reverse' }}>
+          <Button variant="contained" onClick={post} disabled={posting}>Publish</Button>
+        </Box>
+
+        <Box sx={{ display: 'flex' }}>
+          <List>
+            {
+              posts.map((item, idx) => 
+                <ListItem key={idx}>
+                  <ListItemAvatar>
+                    <Avatar>
+                      <AccountCircleIcon />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={item.text}
+                  />
+                </ListItem>
+              )
+            }
+          </List>
+        </Box>
+      </div>
     );
 }
 
