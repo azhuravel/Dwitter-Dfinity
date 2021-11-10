@@ -1,7 +1,7 @@
 # Twitter on the Internet Computer
 Users creates its own feed consisting of short message (no more than 140 symbols).
 
-https://user-images.githubusercontent.com/6630280/133945333-bf53ebc9-b2c2-4515-8da6-d2f2a2ba472f.mov
+https://user-images.githubusercontent.com/6630280/141121915-6382da6d-3706-4284-8522-c529b21534c9.mov
 
 ## Running the project locally
 If you want to test your project locally, you can use the following commands:
