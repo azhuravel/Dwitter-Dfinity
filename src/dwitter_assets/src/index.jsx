@@ -1,69 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { render } from "react-dom";
-import { AuthClient } from "@dfinity/auth-client";
-import Button from 'react-bootstrap/Button';
-import Row from 'react-bootstrap/Row'
 import 'bootstrap/dist/css/bootstrap.min.css';
-import PostForm from './postForm.jsx';
-import { StyledEngineProvider } from '@mui/material/styles';
-import { Container } from '@mui/material';
+import RequireAuth from './RequireAuth.jsx';
+import UserPage from './UserPage.jsx';
+import Login from './Login.jsx';
+import { HashRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { AuthProvider } from "./AuthProvider.jsx"
 
-const Home = () => {
+const App = () => {
   return (
-    <StyledEngineProvider injectFirst>
-      <Container maxWidth="md">
-        <Head/>
-        <PostForm/>
-      </Container>
-    </StyledEngineProvider>
+    <HashRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<Login />}/>
+          <Route path="/user/:userId" element={
+            <RequireAuth>
+              <UserPage />
+            </RequireAuth>
+          }/>
+        </Routes>
+      </AuthProvider>
+    </HashRouter>
   )
 }
 
-const Auth = () => {
-  const [loggedIn, setLoggedIn] = useState(false);
-
-  useEffect(() => {
-    AuthClient.create().then(authClient => {
-      if (authClient.isAuthenticated()) {
-        setLoggedIn(true);
-      }
-    });
-  }, []) 
-
-  async function auth() {
-    const authClient = await AuthClient.create();
-    if (authClient.isAuthenticated()) {
-      setLoggedIn(true);
-    } else {
-      await authClient.login({
-        onSuccess: async () => {
-          setLoggedIn(true)
-        },
-          identityProvider: process.env.LOCAL_II_CANISTER,
-        });
-    }
-  }
-
-  return (loggedIn ? <Home/> :
-    <Container maxWidth="sm">
-      <Head/>
-      <Row style={{display: loggedIn ? 'none' : 'block' }}>
-        <div className="col text-center"> 
-          <Button variant="primary" onClick={auth}>Sign in with Internet Identity</Button>
-        </div>
-      </Row>
-    </Container>
-  );
-};
-
-const Head = () => {
-  return (
-      <Row>
-        {/* <div className="col text-center">
-          <h1>Dwitter - Twitter on the Internet Computer!</h1>
-        </div> */}
-      </Row>
-  )
-}
-
-render(<Auth />, document.getElementById("app"));
+render(<App />, document.getElementById("app"));

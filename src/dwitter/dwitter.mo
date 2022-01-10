@@ -1,5 +1,6 @@
 import Types "./types";
 import Storage "./storage";
+import Principal "mo:base/Principal";
 
 actor {
     var postsStorage: Storage.Posts = Storage.Posts();
@@ -13,6 +14,11 @@ actor {
 
     public shared(msg) func getPosts(): async ?[Post] {
         postsStorage.getPosts(msg.caller)
+    };
+
+    public shared(msg) func getUserPosts(principalText : Text): async ?[Post] {
+        let principal = Principal.fromText(principalText);
+        postsStorage.getPosts(principal)
     };
 
     public func getUsers(): async [UserId] {

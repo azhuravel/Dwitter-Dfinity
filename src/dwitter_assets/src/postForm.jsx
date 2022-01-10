@@ -1,37 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { canisterId, createActor } from "../../declarations/dwitter";
 import { AuthClient } from "@dfinity/auth-client";
 import Box from '@mui/material/Box';
-import { useEffect } from 'react';
+import { AuthContext } from './AuthContext.jsx';
+import Feed from './Feed.jsx';
 
 import { Avatar, Button, TextField, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 export const PostForm = (props) => {
+    const {authCtx, setAuthCtx} = useContext(AuthContext); 
     const [charRemains, setCharRemains] = useState(140);
     const [posting, setPosting] = useState(false);
     const [loading, setLoading] = useState(false); 
     const [posts, setPosts] = useState([]);
     const [text, setText] = useState("");
-    const [actor, setActor] = useState(null);
-  
-    useEffect(() => {
-        async function fetchActor() {
-            const authClient = await AuthClient.create();
-            const identity = await authClient.getIdentity();
-            const dwitterActor = createActor(canisterId, {
-                agentOptions: {
-                    identity,
-                },
-            });
-            setActor(dwitterActor);
-        }
-        fetchActor();
-    }, []);
 
     useEffect(() => {
         fetchData();
-    }, [actor]);
+    }, []);
   
     async function post() {
       setPosting(true);
@@ -39,15 +26,14 @@ export const PostForm = (props) => {
         text : text
       }
       setPostText("");
-      const response = await actor.savePost(post);
-      console.log(response);
+      const response = await authCtx.dwitterActor.savePost(post);
       fetchData();
       setPosting(false);
     }
   
     async function fetchData() {
       setLoading(true);
-      const response = await actor?.getPosts();
+      const response = await authCtx.dwitterActor?.getPosts();
       setPosts(response ? (response[0] || []) : []);
       setLoading(false);
     }
@@ -74,22 +60,7 @@ export const PostForm = (props) => {
         </Box>
 
         <Box sx={{ display: 'flex' }}>
-          <List>
-            {
-              posts.map((item, idx) => 
-                <ListItem key={idx}>
-                  <ListItemAvatar>
-                    <Avatar>
-                      <AccountCircleIcon />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={item.text}
-                  />
-                </ListItem>
-              )
-            }
-          </List>
+          <Feed posts={posts}/>
         </Box>
       </div>
     );
