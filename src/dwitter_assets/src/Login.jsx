@@ -9,8 +9,8 @@ import { Container } from '@mui/material';
 const Login = () => {
     return (
       <StyledEngineProvider injectFirst>
+        <Head/>
         <Container maxWidth="md">
-          <Head/>
           <InternetIdentityAuth/>
         </Container>
       </StyledEngineProvider>

@@ -66,7 +66,6 @@ export const InternetIdentityAuth = () => {
   
     return (
       <Container maxWidth="sm">
-        <Head/>
         <Row style={{display: loggedIn ? 'none' : 'block' }}>
           <div className="col text-center"> 
             <Button variant="primary" onClick={auth}>Sign in with Internet Identity</Button>
