@@ -40,15 +40,6 @@ export const PostForm = (props) => {
       setPosts(response ? (response[0] || []) : []);
       setLoading(false);
     }
-
-    async function logOut() {
-      AuthClient.create().then(authClient => {
-        authClient.logout();
-        setLoggedIn(false);
-        navigate('/');
-      });
-      console.log('-----');
-    }
   
     function handleTextChange(e) {
       let val = e.target.value;
@@ -73,10 +64,6 @@ export const PostForm = (props) => {
 
         <Box sx={{ display: 'flex' }}>
           <Feed posts={posts}/>
-        </Box>
-
-        <Box sx={{ display: 'flex' }}>
-          <Button variant="contained" onClick={logOut}>Log out</Button>
         </Box>
       </div>
     );

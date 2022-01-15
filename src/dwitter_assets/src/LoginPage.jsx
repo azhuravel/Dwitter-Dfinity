@@ -6,7 +6,7 @@ import Head from './Head.jsx';
 import { StyledEngineProvider } from '@mui/material/styles';
 import { Container } from '@mui/material';
 
-const Login = () => {
+const LoginPage = () => {
     return (
       <StyledEngineProvider injectFirst>
         <Head/>
@@ -17,4 +17,4 @@ const Login = () => {
     )
   }
 
-  export default Login;
+  export default LoginPage;

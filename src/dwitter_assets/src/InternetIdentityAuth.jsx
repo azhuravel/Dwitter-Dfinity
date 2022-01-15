@@ -9,15 +9,15 @@ import Button from '@mui/material/Button';
 
 import { canisterId, createActor } from "../../declarations/dwitter";
 import { AuthContext } from './AuthContext.jsx';
-import  Head  from './Head.jsx';
+
 
 export const InternetIdentityAuth = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [loggedIn, setLoggedIn] = useState(false);
-    const {authCtx, setAuthCtx} = useContext(AuthContext); 
+    const { authCtx, setAuthCtx } = useContext(AuthContext); 
 
-    const from = location.state?.from?.pathname || "/";
+    const from = location.state?.from?.pathname || '/';
   
     useEffect(() => {
       AuthClient.create().then(authClient => {
@@ -57,7 +57,6 @@ export const InternetIdentityAuth = () => {
       });
 
       const principalId = await window.ic.plug.agent.getPrincipal();
-      console.log("principalId ==>", principalId);
       const userId = principalId.toText();
 
       await window.ic.plug.agent.fetchRootKey()
@@ -72,10 +71,8 @@ export const InternetIdentityAuth = () => {
           userId : userId
       });
 
-      console.log("====>", userId);
-
       setLoggedIn(true);
-      navigate(from === "/" ? "/user/" + userId : from, { replace: true });
+      navigate(from === '/' ? `/user/${userId}` : from, { replace: true });
     }
 
     async function doLogin(authClient) {
@@ -94,7 +91,7 @@ export const InternetIdentityAuth = () => {
         });
 
         setLoggedIn(true);
-        navigate(from === "/" ? "/user/" + userId : from, { replace: true });
+        navigate(from === '/' ? `/user/${userId}` : from, { replace: true });
     }
 
     function isAnonymous(authClient) {

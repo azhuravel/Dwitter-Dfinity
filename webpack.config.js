@@ -4,7 +4,11 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 
-const LOCAL_II_CANISTER = "http://rkp4c-7iaaa-aaaaa-aaaca-cai.localhost:8000/#authorize";
+let internetIdentityCanisterId = 'rkp4c-7iaaa-aaaaa-aaaca-cai';
+if (process.env.INTERNET_IDENTITY_CANISTER_ID) {
+  internetIdentityCanisterId = process.env.INTERNET_IDENTITY_CANISTER_ID;
+}
+const LOCAL_II_CANISTER = `http://${internetIdentityCanisterId}.localhost:8000/#authorize`;
 
 let localCanisters, prodCanisters, canisters;
 
