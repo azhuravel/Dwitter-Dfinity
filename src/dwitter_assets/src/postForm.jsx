@@ -4,6 +4,7 @@ import { AuthClient } from "@dfinity/auth-client";
 import Box from '@mui/material/Box';
 import { AuthContext } from './AuthContext.jsx';
 import Feed from './Feed.jsx';
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { Avatar, Button, TextField, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -15,6 +16,8 @@ export const PostForm = (props) => {
     const [loading, setLoading] = useState(false); 
     const [posts, setPosts] = useState([]);
     const [text, setText] = useState("");
+    const [loggedIn, setLoggedIn] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchData();
@@ -36,6 +39,15 @@ export const PostForm = (props) => {
       const response = await authCtx.dwitterActor?.getPosts();
       setPosts(response ? (response[0] || []) : []);
       setLoading(false);
+    }
+
+    async function logOut() {
+      AuthClient.create().then(authClient => {
+        authClient.logout();
+        setLoggedIn(false);
+        navigate('/');
+      });
+      console.log('-----');
     }
   
     function handleTextChange(e) {
@@ -61,6 +73,10 @@ export const PostForm = (props) => {
 
         <Box sx={{ display: 'flex' }}>
           <Feed posts={posts}/>
+        </Box>
+
+        <Box sx={{ display: 'flex' }}>
+          <Button variant="contained" onClick={logOut}>Log out</Button>
         </Box>
       </div>
     );

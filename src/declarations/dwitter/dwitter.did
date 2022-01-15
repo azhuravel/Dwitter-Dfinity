@@ -1,0 +1,8 @@
+type UserId = principal;
+type Post = record {"text": text;};
+service : {
+  getPosts: () -> (opt vec Post);
+  getUserPosts: (text) -> (opt vec Post);
+  getUsers: () -> (vec UserId);
+  savePost: (Post) -> ();
+}
