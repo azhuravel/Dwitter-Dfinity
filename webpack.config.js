@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 
-let internetIdentityCanisterId = 'rkp4c-7iaaa-aaaaa-aaaca-cai';
+let internetIdentityCanisterId = 'rno2w-sqaaa-aaaaa-aaacq-cai';
 if (process.env.INTERNET_IDENTITY_CANISTER_ID) {
   internetIdentityCanisterId = process.env.INTERNET_IDENTITY_CANISTER_ID;
 }
