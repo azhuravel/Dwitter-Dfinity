@@ -142,6 +142,10 @@ export const InternetIdentityAuth = () => {
       }
       return '';
     }
+
+    function getPlugWhitelist() {
+      return [process.env.DWITTER_CANISTER_ID, process.env.DWITTER_ASSETS_CANISTER_ID];
+    }
   
     return (
       <Container maxWidth="sm">
@@ -152,7 +156,7 @@ export const InternetIdentityAuth = () => {
             {!plugIsAvailable() &&
               <p>Plug is not available. <a href="https://plugwallet.ooo/" target="_blank">Install Plug</a> or make it available.</p>
             }
-            <PlugConnect host={getPlugHost()} whitelist={[process.env.DWITTER_CANISTER_ID, process.env.DWITTER_ASSETS_CANISTER_ID]} onConnectCallback={plugBtnCallback} />
+            <PlugConnect host={getPlugHost()} whitelist={getPlugWhitelist()} onConnectCallback={plugBtnCallback} />
           </div>
         </Row>
       </Container>
