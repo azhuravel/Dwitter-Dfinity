@@ -7,6 +7,7 @@ import Row from 'react-bootstrap/Row'
 import Button from '@mui/material/Button';
 import { canisterId, createActor } from "../../declarations/dwitter";
 import { AuthContext } from './AuthContext.jsx';
+import PlugConnect from '@psychedelic/plug-connect';
 
 
 export const InternetIdentityAuth = () => {
@@ -72,8 +73,8 @@ export const InternetIdentityAuth = () => {
       });
 
       setAuthCtx({
-        dwitterActor : dwitterActor,
-        userId : userId
+        dwitterActor: dwitterActor,
+        userId: userId
       });
 
       navigate(`/user/${userId}`);
@@ -88,10 +89,32 @@ export const InternetIdentityAuth = () => {
       });
       const userId = identity.getPrincipal().toText();
       setAuthCtx({
-        authClient : authClient,
-        dwitterActor : dwitterActor,
-        identity : identity,
-        userId : userId
+        authClient: authClient,
+        dwitterActor: dwitterActor,
+        identity: identity,
+        userId: userId
+      });
+
+      navigate(`/user/${userId}`);
+    }
+
+    async function plugBtnCallback() {
+      const dwitterCanisterId = process.env.DWITTER_CANISTER_ID;
+      const principalId = await window.ic.plug.agent.getPrincipal();
+      const userId = principalId.toText();
+
+      // Ошибка "Fail to verify certificate" решается запросом rootKey().
+      // Подробней: https://forum.dfinity.org/t/fail-to-verify-certificate-in-development-update-calls/4078
+      await window.ic.plug.agent.fetchRootKey();
+
+      const dwitterActor = await window.ic.plug.createActor({
+        canisterId: dwitterCanisterId,
+        interfaceFactory: idlFactory,
+      });
+      
+      setAuthCtx({
+        dwitterActor: dwitterActor,
+        userId: userId,
       });
 
       navigate(`/user/${userId}`);
@@ -109,6 +132,16 @@ export const InternetIdentityAuth = () => {
     function userIsLoggedIn() {
       return !!authCtx;
     }
+
+    function getPlugHost() {
+      // Если приложение запущено локально, то необходимо сообщить Plug, куда переадресовывать 
+      // пользователя после аутентификации.
+      // По умолчанию plug указывает на production окружение в интернете.
+      if (process.env.NODE_ENV === 'development') {
+        return `http://${process.env.DWITTER_ASSETS_CANISTER_ID}.localhost:8000`
+      }
+      return '';
+    }
   
     return (
       <Container maxWidth="sm">
@@ -119,6 +152,7 @@ export const InternetIdentityAuth = () => {
             {!plugIsAvailable() &&
               <p>Plug is not available. <a href="https://plugwallet.ooo/" target="_blank">Install Plug</a> or make it available.</p>
             }
+            <PlugConnect host={getPlugHost()} whitelist={[process.env.DWITTER_CANISTER_ID, process.env.DWITTER_ASSETS_CANISTER_ID]} onConnectCallback={plugBtnCallback} />
           </div>
         </Row>
       </Container>
