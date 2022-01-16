@@ -13,6 +13,7 @@ import PlugConnect from '@psychedelic/plug-connect';
 export const InternetIdentityAuth = () => {
     const navigate = useNavigate();
     const { authCtx, setAuthCtx } = useContext(AuthContext); 
+    const plugWhitelist = [process.env.DWITTER_CANISTER_ID, process.env.DWITTER_ASSETS_CANISTER_ID];
   
     useEffect(() => {
       AuthClient.create().then(authClient => {
@@ -41,11 +42,8 @@ export const InternetIdentityAuth = () => {
         return;
       }
 
-      const dwitterAssetsCanisterId = process.env.DWITTER_ASSETS_CANISTER_ID
-      const dwitterCanisterId = process.env.DWITTER_CANISTER_ID;
-
       const requestConnectParams = {
-        whitelist: [dwitterCanisterId, dwitterAssetsCanisterId],
+        whitelist: plugWhitelist,
       };
       
       // Если приложение запущено локально, то необходимо сообщить Plug, куда переадресовывать 
@@ -142,10 +140,6 @@ export const InternetIdentityAuth = () => {
       }
       return '';
     }
-
-    function getPlugWhitelist() {
-      return [process.env.DWITTER_CANISTER_ID, process.env.DWITTER_ASSETS_CANISTER_ID];
-    }
   
     return (
       <Container maxWidth="sm">
@@ -156,7 +150,7 @@ export const InternetIdentityAuth = () => {
             {!plugIsAvailable() &&
               <p>Plug is not available. <a href="https://plugwallet.ooo/" target="_blank">Install Plug</a> or make it available.</p>
             }
-            <PlugConnect host={getPlugHost()} whitelist={getPlugWhitelist()} onConnectCallback={plugBtnCallback} />
+            <PlugConnect host={getPlugHost()} whitelist={plugWhitelist} onConnectCallback={plugBtnCallback} />
           </div>
         </Row>
       </Container>
