@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useEffect, useContext } from 'react';
+import { useNavigate } from "react-router-dom";
 import { idlFactory } from '../../declarations/dwitter/dwitter.did.js';
 import { AuthClient } from "@dfinity/auth-client";
 import { Container } from '@mui/material';
@@ -11,10 +11,7 @@ import { AuthContext } from './AuthContext.jsx';
 
 export const InternetIdentityAuth = () => {
     const navigate = useNavigate();
-    const location = useLocation();
     const { authCtx, setAuthCtx } = useContext(AuthContext); 
-
-    const from = location.state?.from?.pathname || '/';
   
     useEffect(() => {
       AuthClient.create().then(authClient => {
@@ -22,7 +19,7 @@ export const InternetIdentityAuth = () => {
           doLogin(authClient);
         }
       });
-    }, []) 
+    }, [])
   
     async function auth() {
       const authClient = await AuthClient.create();
@@ -33,8 +30,8 @@ export const InternetIdentityAuth = () => {
           onSuccess: async () => {
             doLogin(authClient);
           },
-            identityProvider: process.env.LOCAL_II_CANISTER,
-          });
+          identityProvider: process.env.LOCAL_II_CANISTER,
+        });
       }
     }
 
@@ -79,7 +76,7 @@ export const InternetIdentityAuth = () => {
         userId : userId
       });
 
-      navigate(from === '/' ? `/user/${userId}` : from, { replace: true });
+      navigate(`/user/${userId}`);
     }
 
     async function doLogin(authClient) {
@@ -97,7 +94,7 @@ export const InternetIdentityAuth = () => {
         userId : userId
       });
 
-      navigate(from === '/' ? `/user/${userId}` : from, { replace: true });
+      navigate(`/user/${userId}`);
     }
 
     function isAnonymous(authClient) {
