@@ -100,6 +100,7 @@ module.exports = {
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'development',
       DWITTER_CANISTER_ID: canisters["dwitter"],
+      DWITTER_ASSETS_CANISTER_ID: canisters["dwitter_assets"],
       LOCAL_II_CANISTER
     }),
     new webpack.ProvidePlugin({

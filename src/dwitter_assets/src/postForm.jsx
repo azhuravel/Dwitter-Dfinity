@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { canisterId, createActor } from "../../declarations/dwitter";
-import { AuthClient } from "@dfinity/auth-client";
 import Box from '@mui/material/Box';
 import { AuthContext } from './AuthContext.jsx';
 import Feed from './Feed.jsx';
-import { useNavigate, useLocation } from "react-router-dom";
 
 import { Avatar, Button, TextField, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -16,8 +13,6 @@ export const PostForm = (props) => {
     const [loading, setLoading] = useState(false); 
     const [posts, setPosts] = useState([]);
     const [text, setText] = useState("");
-    const [loggedIn, setLoggedIn] = useState(false);
-    const navigate = useNavigate();
 
     useEffect(() => {
         fetchData();

@@ -8,16 +8,17 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { AuthClient } from "@dfinity/auth-client";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from './AuthContext.jsx';
 
 
 const Head = () => {
   const navigate = useNavigate();
-  const [_, setLoggedIn] = useState(false);
+  const { authCtx, setAuthCtx } = useContext(AuthContext); 
 
   async function logOut() {
     AuthClient.create().then(authClient => {
       authClient.logout();
-      setLoggedIn(false);
+      setAuthCtx(null);
       navigate('/');
     });
   }
@@ -28,7 +29,7 @@ const Head = () => {
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Dwitter
         </Typography>
-        <Button color="inherit" onClick={logOut}>Logout</Button>
+        {!!authCtx && <Button color="inherit" onClick={logOut}>Logout</Button>}
       </Toolbar>
     </AppBar>
   )

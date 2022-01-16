@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 import { idlFactory } from '../../declarations/dwitter/dwitter.did.js';
-
 import { AuthClient } from "@dfinity/auth-client";
 import { Container } from '@mui/material';
 import Row from 'react-bootstrap/Row'
 import Button from '@mui/material/Button';
-
 import { canisterId, createActor } from "../../declarations/dwitter";
 import { AuthContext } from './AuthContext.jsx';
 
@@ -14,7 +12,6 @@ import { AuthContext } from './AuthContext.jsx';
 export const InternetIdentityAuth = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const [loggedIn, setLoggedIn] = useState(false);
     const { authCtx, setAuthCtx } = useContext(AuthContext); 
 
     const from = location.state?.from?.pathname || '/';
@@ -42,69 +39,89 @@ export const InternetIdentityAuth = () => {
     }
 
     async function authViaPlug() {
-      // const nnsCanisterId = 'ryjl3-tyaaa-aaaaa-aaaba-cai' // assets
-      const nnsCanisterId = 'rrkah-fqaaa-aaaaa-aaaaq-cai';
-          
-      const whitelist = [
-        nnsCanisterId,
-        'ryjl3-tyaaa-aaaaa-aaaba-cai',
-      ];
+      if (!plugIsAvailable()) {
+        return;
+      }
 
-      const host = "http://ryjl3-tyaaa-aaaaa-aaaba-cai.localhost:8000";
-      await window.ic.plug.requestConnect({
-        whitelist,
-        host,
-      });
+      const dwitterAssetsCanisterId = process.env.DWITTER_ASSETS_CANISTER_ID
+      const dwitterCanisterId = process.env.DWITTER_CANISTER_ID;
+
+      const requestConnectParams = {
+        whitelist: [dwitterCanisterId, dwitterAssetsCanisterId],
+      };
+      
+      // Если приложение запущено локально, то необходимо сообщить Plug, куда переадресовывать 
+      // пользователя после аутентификации.
+      // По умолчанию plug указывает на production окружение в интернете.
+      if (process.env.NODE_ENV === 'development') {
+        requestConnectParams['host'] = `http://${dwitterAssetsCanisterId}.localhost:8000`;
+      }
+
+      const connected = await window.ic.plug.requestConnect(requestConnectParams);
+      if (!connected) {
+        return;
+      }
 
       const principalId = await window.ic.plug.agent.getPrincipal();
       const userId = principalId.toText();
-
-      await window.ic.plug.agent.fetchRootKey()
+      
+      // Ошибка "Fail to verify certificate" решается запросом rootKey().
+      // Подробней: https://forum.dfinity.org/t/fail-to-verify-certificate-in-development-update-calls/4078
+      await window.ic.plug.agent.fetchRootKey();
 
       const dwitterActor = await window.ic.plug.createActor({
-        canisterId: nnsCanisterId,
+        canisterId: dwitterCanisterId,
         interfaceFactory: idlFactory,
       });
 
       setAuthCtx({
-          dwitterActor : dwitterActor,
-          userId : userId
+        dwitterActor : dwitterActor,
+        userId : userId
       });
 
-      setLoggedIn(true);
       navigate(from === '/' ? `/user/${userId}` : from, { replace: true });
     }
 
     async function doLogin(authClient) {
-        const identity = await authClient.getIdentity();
-        const dwitterActor = createActor(canisterId, {
-            agentOptions: {
-                identity,
-            },
-        });
-        const userId = identity.getPrincipal().toText();
-        setAuthCtx({
-            authClient : authClient,
-            dwitterActor : dwitterActor,
-            identity : identity,
-            userId : userId
-        });
+      const identity = await authClient.getIdentity();
+      const dwitterActor = createActor(canisterId, {
+        agentOptions: {
+          identity,
+        },
+      });
+      const userId = identity.getPrincipal().toText();
+      setAuthCtx({
+        authClient : authClient,
+        dwitterActor : dwitterActor,
+        identity : identity,
+        userId : userId
+      });
 
-        setLoggedIn(true);
-        navigate(from === '/' ? `/user/${userId}` : from, { replace: true });
+      navigate(from === '/' ? `/user/${userId}` : from, { replace: true });
     }
 
     function isAnonymous(authClient) {
-        const identity = authClient.getIdentity();
-        return identity.getPrincipal().toText() === "2vxsx-fae";
+      const identity = authClient.getIdentity();
+      return identity.getPrincipal().toText() === "2vxsx-fae";
+    }
+
+    function plugIsAvailable() {
+      return !!window.ic;
+    }
+
+    function userIsLoggedIn() {
+      return !!authCtx;
     }
   
     return (
       <Container maxWidth="sm">
-        <Row style={{display: loggedIn ? 'none' : 'block' }}>
+        <Row style={{display: userIsLoggedIn() ? 'none' : 'block' }}>
           <div className="col text-center"> 
             <Button variant="primary" onClick={auth}>Sign in with Internet Identity</Button>
-            <Button variant="primary" onClick={authViaPlug}>Sign in plug</Button>
+            <Button variant="primary" onClick={authViaPlug} disabled={!plugIsAvailable()}>Sign in via Plug</Button>
+            {!plugIsAvailable() &&
+              <p>Plug is not available. <a href="https://plugwallet.ooo/" target="_blank">Install Plug</a> or make it available.</p>
+            }
           </div>
         </Row>
       </Container>
