@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-//import { canisterId, createActor } from "../../declarations/dwitter";
-//import { AuthClient } from "@dfinity/auth-client";
 import Box from '@mui/material/Box';
 import { useEffect, useContext } from 'react';
 import { useParams } from "react-router-dom";
@@ -8,7 +6,7 @@ import { AuthContext } from './AuthContext';
 import Feed from './Feed.jsx';
 
 export const UserFeed = () => {
-    const [loading, setLoading] = useState(false); 
+    const [loading, setLoading] = useState(true); 
     const [posts, setPosts] = useState([]);
     const params = useParams();
     const {authCtx, setAuthCtx} = useContext(AuthContext);
@@ -18,8 +16,7 @@ export const UserFeed = () => {
     }, []);
 
     async function fetchData() {
-        setLoading(true);
-        const response = await authCtx.dwitterActor.getUserPosts(params.userId);
+        const response = await authCtx.dwitterActor.getUserPosts(params.dwitterId);
         setPosts(response ? (response[0] || []) : []);
         setLoading(false);
     }

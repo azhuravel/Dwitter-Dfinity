@@ -9,7 +9,7 @@ import { Avatar, Button, TextField, List, ListItem, ListItemAvatar, ListItemText
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 export const PostForm = (props) => {
-    const {authCtx, setAuthCtx} = useContext(AuthContext); 
+    const {authCtx} = useContext(AuthContext); 
     const [charRemains, setCharRemains] = useState(140);
     const [posting, setPosting] = useState(false);
     const [loading, setLoading] = useState(false); 

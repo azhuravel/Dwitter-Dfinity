@@ -8,12 +8,10 @@ import Button from '@mui/material/Button';
 
 import { canisterId, createActor } from "../../declarations/dwitter";
 import { AuthContext } from './AuthContext.jsx';
-import  Head  from './Head.jsx';
 
 export const InternetIdentityAuth = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const [loggedIn, setLoggedIn] = useState(false);
     const {authCtx, setAuthCtx} = useContext(AuthContext); 
 
     const from = location.state?.from?.pathname || "/";
@@ -41,22 +39,30 @@ export const InternetIdentityAuth = () => {
     }
 
     async function doLogin(authClient) {
-        const identity = await authClient.getIdentity();
+        const identity = authClient.getIdentity();
         const dwitterActor = createActor(canisterId, {
             agentOptions: {
                 identity,
             },
         });
-        const userId = identity.getPrincipal().toText();
-        setAuthCtx({
+        const userResponse = await dwitterActor.getCurrentUser();
+        const user = userResponse[0];
+        if (!user) {
+          setAuthCtx({
             authClient : authClient,
             dwitterActor : dwitterActor,
-            identity : identity,
-            userId : userId
-        });
-
-        setLoggedIn(true);
-        navigate(from === "/" ? "/user/" + userId : from, { replace: true });
+            identity : identity
+          });
+          navigate("/register", { replace: true });
+        } else {
+          setAuthCtx({
+              authClient : authClient,
+              dwitterActor : dwitterActor,
+              identity : identity,
+              username : user.username
+          });
+          navigate(from === "/" ? "/user/" + user.username : from, { replace: true });
+        }
     }
 
     function isAnonymous(authClient) {
@@ -66,7 +72,7 @@ export const InternetIdentityAuth = () => {
   
     return (
       <Container maxWidth="sm">
-        <Row style={{display: loggedIn ? 'none' : 'block' }}>
+        <Row>
           <div className="col text-center"> 
             <Button variant="primary" onClick={auth}>Sign in with Internet Identity</Button>
           </div>

@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 
-const LOCAL_II_CANISTER = "http://rno2w-sqaaa-aaaaa-aaacq-cai.localhost:8000/#authorize";
+const LOCAL_II_CANISTER = "http://rwlgt-iiaaa-aaaaa-aaaaa-cai.localhost:8000/#authorize";
 
 let localCanisters, prodCanisters, canisters;
 
