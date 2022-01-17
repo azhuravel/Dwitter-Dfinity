@@ -50,7 +50,7 @@ export const InternetIdentityAuth = () => {
       // пользователя после аутентификации.
       // По умолчанию plug указывает на production окружение в интернете.
       if (process.env.NODE_ENV === 'development') {
-        requestConnectParams['host'] = `http://${dwitterAssetsCanisterId}.localhost:8000`;
+        requestConnectParams['host'] = `http://${process.env.DWITTER_ASSETS_CANISTER_ID}.localhost:8000`;
       }
 
       const connected = await window.ic.plug.requestConnect(requestConnectParams);
