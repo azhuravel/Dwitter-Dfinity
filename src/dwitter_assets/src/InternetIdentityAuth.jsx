@@ -66,7 +66,7 @@ export const InternetIdentityAuth = () => {
       await window.ic.plug.agent.fetchRootKey();
 
       const dwitterActor = await window.ic.plug.createActor({
-        canisterId: dwitterCanisterId,
+        canisterId: process.env.DWITTER_CANISTER_ID,
         interfaceFactory: idlFactory,
       });
 
