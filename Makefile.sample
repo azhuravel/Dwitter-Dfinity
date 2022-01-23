@@ -1,0 +1,15 @@
+dfx-start:
+	dfx start
+
+dfx-start-clean:
+	dfx start --clean
+
+start:
+	INTERNET_IDENTITY_CANISTER_ID=rkp4c-7iaaa-aaaaa-aaaca-cai npm start
+
+deploy:
+	INTERNET_IDENTITY_CANISTER_ID=rkp4c-7iaaa-aaaaa-aaaca-cai dfx deploy
+
+internet_identity_deploy:
+	# https://github.com/dfinity/internet-identity
+	II_ENV=development dfx deploy --no-wallet --argument '(null)'

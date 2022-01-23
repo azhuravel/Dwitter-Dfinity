@@ -4,7 +4,11 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 
-const LOCAL_II_CANISTER = "http://rwlgt-iiaaa-aaaaa-aaaaa-cai.localhost:8000/#authorize";
+let internetIdentityCanisterId = 'rwlgt-iiaaa-aaaaa-aaaaa-cai';
+if (process.env.INTERNET_IDENTITY_CANISTER_ID) {
+  internetIdentityCanisterId = process.env.INTERNET_IDENTITY_CANISTER_ID;
+}
+const LOCAL_II_CANISTER = `http://${internetIdentityCanisterId}.localhost:8000/#authorize`;
 
 let localCanisters, prodCanisters, canisters;
 
@@ -96,6 +100,7 @@ module.exports = {
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'development',
       DWITTER_CANISTER_ID: canisters["dwitter"],
+      DWITTER_ASSETS_CANISTER_ID: canisters["dwitter_assets"],
       LOCAL_II_CANISTER
     }),
     new webpack.ProvidePlugin({
@@ -115,7 +120,6 @@ module.exports = {
       },
     },
     hot: true,
-    contentBase: path.resolve(__dirname, "./src/dwitter_assets"),
-    watchContentBase: true
+    static: path.resolve(__dirname, "./src/dwitter_assets")
   },
 };

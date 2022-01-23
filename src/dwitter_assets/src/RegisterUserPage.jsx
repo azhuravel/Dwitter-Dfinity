@@ -61,7 +61,7 @@ const RegisterUserPage = () => {
                 } else {
                     setDisplaynameError(displaynameError);
                     setUsernameError(usernameError);
-                    setSaveDisabled(displaynameError || usernameError);
+                    setSaveDisabled(!!displaynameError || !!usernameError);
                 }
             }
         };
@@ -88,8 +88,15 @@ const RegisterUserPage = () => {
         setSaveDisabled(true);
         let _save = async () => {
             await authCtx.dwitterActor.saveUser({username, displayname});
-            //setAuthCtx({ ...authCtx, username});
-            navigate("/", { replace: true }); 
+
+            // TODO: or redirect to LoginPage or optimized (saveUser can return User object)
+            const userResponse = await authCtx.dwitterActor.getCurrentUser();
+            const user = userResponse[0];
+            setAuthCtx({
+                dwitterActor : authCtx.dwitterActor,
+                user : user
+            });
+            navigate("/user/" + user.username, { replace: true }); 
         }
         _save();
     }
