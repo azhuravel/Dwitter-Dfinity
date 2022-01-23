@@ -25,7 +25,7 @@ const RegisterUserPage = () => {
         if (!username) {
             error = "Required";
         } else if (username.length < 4 || username.length > 15) {
-            error = "Length shouled be between 4 and 15 symbols";
+            error = "Length should be between 4 and 15 symbols";
         } else {
             const usernameResponse = await authCtx.dwitterActor.getByUsername(username);
             const available = !(usernameResponse[0]);
@@ -42,7 +42,7 @@ const RegisterUserPage = () => {
         if (!displayname) {
             error = "Required";
         } else if (displayname.length < 4 || displayname.length > 15) {
-            error = "Length shouled be between 4 and 15 symbols";
+            error = "Length should be between 4 and 15 symbols";
         }
         return error;
     }
@@ -105,7 +105,7 @@ const RegisterUserPage = () => {
         <StyledEngineProvider injectFirst>
             <Head/>
             <Grid container justifyContent="center">
-                <Grid container xs={4} justifyContent="center" direction="column">
+                <Grid container justifyContent="center" direction="column">
                     <TextField id="standard-basic" 
                         label="Username" 
                         variant="standard" 
