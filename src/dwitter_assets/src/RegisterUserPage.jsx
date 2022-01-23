@@ -90,7 +90,7 @@ const RegisterUserPage = () => {
             await authCtx.dwitterActor.saveUser({username, displayname});
 
             // TODO: or redirect to LoginPage or optimized (saveUser can return User object)
-            const userResponse = await dwitterActor.getCurrentUser();
+            const userResponse = await authCtx.dwitterActor.getCurrentUser();
             const user = userResponse[0];
             setAuthCtx({
                 dwitterActor : authCtx.dwitterActor,
