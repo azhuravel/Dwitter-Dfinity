@@ -20,3 +20,5 @@ src/declarations/
 # npm
 .npmrc
 node_modules/
+
+Makefile
