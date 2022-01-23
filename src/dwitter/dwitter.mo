@@ -1,35 +1,33 @@
 import Types "./types";
 import Storage "./storage";
+import PostService "./postService";
 import Principal "mo:base/Principal";
 
 actor {
     var postsStorage: Storage.Posts = Storage.Posts();
     var usersStorage: Storage.Users = Storage.Users();
+    var postService: PostService.PostService = PostService.PostService(postsStorage, usersStorage);
+    // TODO: impl UserService and UserInfo entity
+    //var userService: UserService = UserService(postsStorage, usersStorage);
 
-    type Post = Types.Post;
     type UserId = Types.UserId;
     type User = Types.User;
     type ApiUser = Types.ApiUser;
 
-    public shared(msg) func savePost(post : Post): async() {
-        postsStorage.savePost(msg.caller, post)
+    type Post = Types.Post;
+    type PostInfo = Types.PostInfo;
+    type CreatePostRequest = Types.CreatePostRequest;
+
+    public shared(msg) func savePost(request : CreatePostRequest): async() {
+        postService.savePost(msg.caller, request)
     };
 
-    public shared(msg) func getPosts(): async ?[Post] {
-        postsStorage.getPosts(msg.caller)
+    public shared(msg) func getMyPosts(): async ?[PostInfo] {
+        postService.getByUserId(msg.caller);
     };
 
-    public shared(msg) func getUserPosts(username : Text): async ?[Post] {
-        let user = usersStorage.getByUsername(username);
-        // TODO: (minor) move ugly switch to storage level somehow..
-        switch(user) {
-            case (null) {
-                return null;
-            };
-            case (?user) {
-                return postsStorage.getPosts(user.id);
-            }
-        }
+    public func getUserPosts(username : Text): async ?[PostInfo] {
+        postService.getByUsername(username);
     };
 
     public func getUsers(): async [UserId] {

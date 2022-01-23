@@ -10,7 +10,7 @@ import UserFeed from './userFeed.jsx';
 const UserPage = () => {
   const {authCtx, setAuthCtx} = useContext(AuthContext); 
   const params = useParams();
-  const isHome = params.username === authCtx.username;
+  const isHome = params.username === authCtx.user.username;
 
   return (
     <StyledEngineProvider injectFirst>

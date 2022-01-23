@@ -20,7 +20,9 @@ const App = () => {
             </RequireAuth>
           }/>
           <Route path="/register" element={
-            <RegisterUserPage />
+            <RequireAuth>
+              <RegisterUserPage />
+            </RequireAuth>
           }/>
         </Routes>
       </AuthProvider>

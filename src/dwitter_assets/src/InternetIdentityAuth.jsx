@@ -49,17 +49,13 @@ export const InternetIdentityAuth = () => {
         const user = userResponse[0];
         if (!user) {
           setAuthCtx({
-            authClient : authClient,
             dwitterActor : dwitterActor,
-            identity : identity
           });
           navigate("/register", { replace: true });
         } else {
           setAuthCtx({
-              authClient : authClient,
               dwitterActor : dwitterActor,
-              identity : identity,
-              username : user.username
+              user : user
           });
           navigate(from === "/" ? "/user/" + user.username : from, { replace: true });
         }

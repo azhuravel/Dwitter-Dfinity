@@ -16,7 +16,7 @@ export const UserFeed = () => {
     }, []);
 
     async function fetchData() {
-        const response = await authCtx.dwitterActor.getUserPosts(params.dwitterId);
+        const response = await authCtx.dwitterActor.getUserPosts(params.username);
         setPosts(response ? (response[0] || []) : []);
         setLoading(false);
     }

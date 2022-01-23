@@ -15,4 +15,8 @@ node_modules/
 dist/
 
 # dfx generated
-declarations/
+src/declarations/
+
+# npm
+.npmrc
+node_modules/

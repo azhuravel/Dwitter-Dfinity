@@ -4,18 +4,33 @@ import Iter "mo:base/Iter";
 import Option "mo:base/Option";
 import Principal "mo:base/Principal";
 import Text "mo:base/Text";
+import Time "mo:base/Time";
 import Types "./types";
 
 module { 
     type Post = Types.Post;
     type UserId = Types.UserId;
     type User = Types.User;
+    type CreatePostRequest = Types.CreatePostRequest;
 
     public class Posts() {
         let map = Map.HashMap<UserId, [Post]>(1, isEq, Principal.hash);
+        var idGenerator : Int64 = 1; // maybe too much for current arcitechture
 
-        public func savePost(uid : UserId, post : Post) {
+        public func savePost(uid : UserId, request : CreatePostRequest) {
+            idGenerator += 1;
+            let now = Time.now();
+
+            let post : Post = {
+                id = idGenerator;
+                createdTime = now;
+                userId = uid;
+                text = request.text;
+            };
+
             let posts = map.get(uid);
+
+            // TODO: think about dynamic array
             var updatedPosts : [Post] = [post];
             switch (posts) {
                 case (null) {

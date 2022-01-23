@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { canisterId, createActor } from "../../declarations/dwitter";
-import { AuthClient } from "@dfinity/auth-client";
 import Box from '@mui/material/Box';
 import { AuthContext } from './AuthContext.jsx';
 import Feed from './Feed.jsx';
+import { Typography } from '@mui/material';
 
-import { Avatar, Button, TextField, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
+import { Button, TextField } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 export const PostForm = (props) => {
@@ -33,7 +32,7 @@ export const PostForm = (props) => {
   
     async function fetchData() {
       setLoading(true);
-      const response = await authCtx.dwitterActor?.getPosts();
+      const response = await authCtx.dwitterActor?.getMyPosts();
       setPosts(response ? (response[0] || []) : []);
       setLoading(false);
     }
@@ -50,6 +49,10 @@ export const PostForm = (props) => {
   
     return (
       <div style={{ width: '100%' }}>
+        <Typography variant="h5">
+          Hi, {authCtx.user.displayname} !
+        </Typography>
+
         <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 3, mb: 1 }}>
           <AccountCircleIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
           <TextField id="text" label="What's happening?" variant="standard" value={text} onChange={e => handleTextChange(e)} maxLength="140" fullWidth />

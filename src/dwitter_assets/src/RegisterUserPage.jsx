@@ -1,7 +1,7 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useCallback, useEffect, useMemo } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import { StyledEngineProvider } from '@mui/material/styles';
 import Head from './Head.jsx';
 import { AuthContext } from './AuthContext.jsx';
@@ -23,7 +23,7 @@ const RegisterUserPage = () => {
     async function validateUsername() {
         let error = "";
         if (!username) {
-            error = "Should be filled";
+            error = "Required";
         } else if (username.length < 4 || username.length > 15) {
             error = "Length shouled be between 4 and 15 symbols";
         } else {
@@ -34,70 +34,90 @@ const RegisterUserPage = () => {
             }
         }
         // add alphanumeric check
-        setUsernameError(error);
+        return error;
     }
 
-    function validateDisplayname() {
+    const validateDisplayname = () => {
         let error = "";
         if (!displayname) {
-            error = "Should be filled";
+            error = "Required";
         } else if (displayname.length < 4 || displayname.length > 15) {
             error = "Length shouled be between 4 and 15 symbols";
         }
-        setDisplaynameError(error);
+        return error;
     }
 
-    async function validate() {
-        validateUsername();
-        validateDisplayname();
-    }
+    useEffect(() => {
+        let active = true;
 
-    async function handleUsernameChange(e) {
+        const validateAvailable = async () => {
+            let displaynameError = validateDisplayname();
+            let usernameError = await validateUsername();
+            if (active) {
+                if (!username && !displayname) { // TODO fix the quick hack for empty form
+                    setDisplaynameError("");
+                    setUsernameError("");
+                    setSaveDisabled(true);
+                } else {
+                    setDisplaynameError(displaynameError);
+                    setUsernameError(usernameError);
+                    setSaveDisabled(displaynameError || usernameError);
+                }
+            }
+        };
+
+        validateAvailable();
+        
+        return () => {
+            active = false;
+        };
+    }, [username, displayname]
+)
+
+    const handleUsernameChange = (e) => {
         setSaveDisabled(true);
-        let val = e.target.value;
-        setUsername(val);
-        validate();
-        if (!displaynameError && !usernameError) {
-            setSaveDisabled(false);
-        }
+        setUsername(e.target.value);
     }
 
-    async function handleDisplaynameChange(e) {
+    const handleDisplaynameChange = (e) => {
         setSaveDisabled(true);
-        let val = e.target.value;
-        setDisplayname(val);
-        validate();
-        if (!displaynameError && !usernameError) {
-            setSaveDisabled(false);
-        }
+        setDisplayname(e.target.value);
     }
 
-    async function saveUser() {
-        await authCtx.dwitterActor.saveUser({username, displayname});
-        setAuthCtx({ ...authCtx, username});
-        navigate("/user/" + username, { replace: true }); 
+    const saveUser = () => {
+        setSaveDisabled(true);
+        let _save = async () => {
+            await authCtx.dwitterActor.saveUser({username, displayname});
+            //setAuthCtx({ ...authCtx, username});
+            navigate("/", { replace: true }); 
+        }
+        _save();
     }
 
     return (
         <StyledEngineProvider injectFirst>
             <Head/>
-            <Box sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', width: '200px', alignItems: 'center' }}>
-                <TextField id="standard-basic" 
-                    label="Username" 
-                    variant="standard" 
-                    helperText={usernameError}  
-                    value={username}
-                    onChange={e => handleUsernameChange(e)}
-                />
-                <TextField id="standard-basic" 
-                    label="Display name" 
-                    variant="standard"
-                    helperText={displaynameError} 
-                    value={displayname}
-                    onChange={e => handleDisplaynameChange(e)}
-                />
-                <Button variant="contained" disabled={saveDisabled} onClick={saveUser}>Save</Button>
-            </Box>
+            <Grid container justifyContent="center">
+                <Grid container xs={4} justifyContent="center" direction="column">
+                    <TextField id="standard-basic" 
+                        label="Username" 
+                        variant="standard" 
+                        helperText={usernameError}  
+                        value={username}
+                        onChange={handleUsernameChange}
+                        error={!!usernameError}
+                    />
+                    <TextField id="standard-basic" 
+                        label="Display name" 
+                        variant="standard"
+                        helperText={displaynameError} 
+                        value={displayname}
+                        onChange={handleDisplaynameChange}
+                        error={!!displaynameError}
+                    />
+                    <Button variant="contained" disabled={saveDisabled} onClick={saveUser}>Save</Button>
+                </Grid>
+            </Grid>
         </StyledEngineProvider>
     )
 }
