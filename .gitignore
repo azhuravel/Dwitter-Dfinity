@@ -1,22 +1,6 @@
-# Various IDEs and Editors
-.vscode/
-.idea/
-**/*~
-
-# Mac OSX temporary files
-.DS_Store
-**/.DS_Store
-
-# dfx temporary files
-.dfx/
-
-# frontend code
-node_modules/
-dist/
-
-# dfx generated
-src/declarations/
-
-# npm
+.dfx
 .npmrc
 node_modules/
+dist/
+Makefile
+src/declarations/

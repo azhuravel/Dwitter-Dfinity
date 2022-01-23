@@ -3,7 +3,7 @@ import { render } from "react-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import RequireAuth from './RequireAuth.jsx';
 import UserPage from './UserPage.jsx';
-import Login from './Login.jsx';
+import LoginPage from './LoginPage.jsx';
 import RegisterUserPage from './RegisterUserPage.jsx';
 import { HashRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { AuthProvider } from "./AuthProvider.jsx"
@@ -13,7 +13,7 @@ const App = () => {
     <HashRouter>
       <AuthProvider>
         <Routes>
-          <Route path="/" element={<Login />}/>
+          <Route path="/" element={<LoginPage />}/>
           <Route path="/user/:username" element={
             <RequireAuth>
               <UserPage />
