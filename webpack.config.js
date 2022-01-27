@@ -120,6 +120,7 @@ module.exports = {
       },
     },
     hot: true,
-    static: path.resolve(__dirname, "./src/dwitter_assets")
+    static: path.resolve(__dirname, "./src/dwitter_assets"),
+    historyApiFallback: true,
   },
 };

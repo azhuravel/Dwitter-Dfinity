@@ -18,14 +18,34 @@ export const InternetIdentityAuth = () => {
     const from = location.state?.from?.pathname || '/';
   
     useEffect(async () => {
-      // const connected = await window.ic.plug.isConnected();
-      // if (!connected) await window.ic.plug.requestConnect({ whitelist, host });
-
-      AuthClient.create().then(authClient => {
-        if (authClient.isAuthenticated() && !isAnonymous(authClient)) {
-          doLoginWithAuthClient(authClient);
-        }
-      });
+      const plugHost = getPlugHost();
+      console.log('plugHost =', plugHost);
+      
+      const authedBy = localStorage.getItem('authed');
+      switch (authedBy) {
+        case 'authclient':
+          AuthClient.create().then(authClient => {
+            if (authClient.isAuthenticated() && !isAnonymous(authClient)) {
+              doLoginWithAuthClient(authClient);
+            }
+          });
+          
+        case 'plug':
+          const connected = await window.ic.plug.isConnected();
+          if (!connected) {
+            window.ic.plug.requestConnect({ 
+              whitelist: plugWhitelist, 
+              host: plugHost,
+            });
+          }
+          if (connected && !window.ic.plug.agent) {
+            await window.ic.plug.createAgent({ 
+              whitelist: plugWhitelist, 
+              host: plugHost,
+            });
+            plugBtnCallback();
+          }
+      }
     }, [])
   
     async function auth() {
@@ -59,13 +79,13 @@ export const InternetIdentityAuth = () => {
         setAuthCtx({
           dwitterActor : dwitterActor,
         });
-        navigate("/register", { replace: true });
+        navigate('/register', { replace: true });
       } else {
         setAuthCtx({
             dwitterActor : dwitterActor,
             user : user
         });
-        navigate(from === "/" ? `/user/${user.username}` : from, { replace: true });
+        navigate(from === '/' ? `/user/${user.username}` : from, { replace: true });
       }
     }
     
