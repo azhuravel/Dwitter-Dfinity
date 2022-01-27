@@ -2,6 +2,10 @@ import {idlFactory} from '../../../declarations/dwitter/dwitter.did.js';
 import {AuthClient} from "@dfinity/auth-client";
 import {canisterId, createActor} from '../../../declarations/dwitter';
 
+const keyLocalStorageAuth = 'authed';
+const keyLocalStorageAuth_ii = 'ii';
+const keyLocalStorageAuth_plug = 'plug';
+
 const plugWhitelist = [process.env.DWITTER_CANISTER_ID, process.env.DWITTER_ASSETS_CANISTER_ID];
 
 const isAnonymous = (identity) => {
@@ -68,8 +72,7 @@ export default class AuthService {
     }
 
     static async getDwitterActor() {
-        const authedBy = localStorage.getItem('authed');
-        console.log('authedBy = ', authedBy);
+        const authedBy = localStorage.getItem(keyLocalStorageAuth);
         let dwitterActor = null;
         switch (authedBy) {
             case 'ii':
@@ -92,12 +95,24 @@ export default class AuthService {
         return '';
     }
 
+    static async loginByPlug() {
+        const dwitterActor = await AuthService.getDwitterActorByPlug();
+        const currentUser = await AuthService.getCurrentUser(dwitterActor);
+        localStorage.setItem(keyLocalStorageAuth, keyLocalStorageAuth_plug);
+        return {dwitterActor, currentUser};
+    }
+
     static async loginByII() {
         const authClient = await AuthClient.create();
         await authClient.login({ identityProvider: process.env.LOCAL_II_CANISTER });
         const identity = await authClient.getIdentity();
         const dwitterActor = await createActor(canisterId, { agentOptions: { identity }});
         const currentUser = await AuthService.getCurrentUser(dwitterActor);
+        localStorage.setItem(keyLocalStorageAuth, keyLocalStorageAuth_ii);
         return {dwitterActor, currentUser};
+    }
+
+    static logout() {
+        localStorage.removeItem(keyLocalStorageAuth);
     }
 }

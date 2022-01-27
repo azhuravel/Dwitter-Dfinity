@@ -4,14 +4,15 @@ import Button from '@mui/material/Button';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import AuthService from "../../../services/authService.js";
 
 
 const Navbar = () => {
     const {setCtx} = useContext(AuthContext);
 
     const logout = () => {
+        AuthService.logout();
         setCtx({});
-        localStorage.removeItem('authed');
     }
 
     return (
