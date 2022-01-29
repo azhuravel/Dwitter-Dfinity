@@ -1,18 +1,20 @@
 import Types "./types";
 import Storage "./storage";
-import PostService "./postService";
+import PostModule "./postService";
+import UserModule "./userService";
 import Principal "mo:base/Principal";
 
 actor {
-    var postsStorage: Storage.Posts = Storage.Posts();
-    var usersStorage: Storage.Users = Storage.Users();
-    var postService: PostService.PostService = PostService.PostService(postsStorage, usersStorage);
-    // TODO: impl UserService and UserInfo entity
-    //var userService: UserService = UserService(postsStorage, usersStorage);
+    let postsStorage: Storage.Posts = Storage.Posts();
+    let usersStorage: Storage.Users = Storage.Users();
+
+    let postService: PostModule.PostService = PostModule.PostService(postsStorage, usersStorage);
+    let userService: UserModule.UserService = UserModule.UserService(usersStorage);
 
     type UserId = Types.UserId;
     type User = Types.User;
-    type ApiUser = Types.ApiUser;
+    type CreateUserRequest = Types.CreateUserRequest;
+    type UpdateUserRequest = Types.UpdateUserRequest;
 
     type Post = Types.Post;
     type PostInfo = Types.PostInfo;
@@ -23,32 +25,26 @@ actor {
     };
 
     public shared(msg) func getMyPosts(): async ?[PostInfo] {
-        postService.getByUserId(msg.caller);
+        postService.getByUserId(msg.caller)
     };
 
     public func getUserPosts(username : Text): async ?[PostInfo] {
-        postService.getByUsername(username);
-    };
-
-    public func getUsers(): async [UserId] {
-        postsStorage.getUsers()
+        postService.getByUsername(username)
     };
 
     public shared(msg) func getCurrentUser(): async ?User {
-        usersStorage.get(msg.caller)
-    };
-
-    public shared(msg) func saveUser(apiUser : ApiUser): async() {
-        // TODO: add validation
-        let user : User = object {
-            public let id = msg.caller; 
-            public let username = apiUser.username;
-            public let displayname = apiUser.displayname;
-        };
-        usersStorage.saveUser(msg.caller, user)
+        userService.get(msg.caller)
     };
 
     public shared(msg) func getByUsername(username : Text): async ?User  {
-        usersStorage.getByUsername(username);
+        usersStorage.getByUsername(username)
+    };
+
+    public shared(msg) func createUser(request : CreateUserRequest): async ?User {
+        ?userService.save(msg.caller, request)
+    };
+
+    public shared(msg) func updateUser(request : UpdateUserRequest): async ?User {
+        userService.update(msg.caller, request)
     };
 };

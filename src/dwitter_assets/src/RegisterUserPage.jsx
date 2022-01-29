@@ -87,10 +87,7 @@ const RegisterUserPage = () => {
     const saveUser = () => {
         setSaveDisabled(true);
         let _save = async () => {
-            await authCtx.dwitterActor.saveUser({username, displayname});
-
-            // TODO: or redirect to LoginPage or optimized (saveUser can return User object)
-            const userResponse = await authCtx.dwitterActor.getCurrentUser();
+            const userResponse = await authCtx.dwitterActor.createUser({username, displayname});
             const user = userResponse[0];
             setAuthCtx({
                 dwitterActor : authCtx.dwitterActor,

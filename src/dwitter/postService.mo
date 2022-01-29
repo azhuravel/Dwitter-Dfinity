@@ -6,7 +6,6 @@ module {
     type Post = Types.Post;
     type UserId = Types.UserId;
     type User = Types.User;
-    type ApiUser = Types.ApiUser;
     type PostInfo = Types.PostInfo;
     type CreatePostRequest = Types.CreatePostRequest;
 

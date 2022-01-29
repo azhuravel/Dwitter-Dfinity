@@ -5,7 +5,8 @@ import RequireAuth from './RequireAuth.jsx';
 import UserPage from './UserPage.jsx';
 import LoginPage from './LoginPage.jsx';
 import RegisterUserPage from './RegisterUserPage.jsx';
-import { HashRouter, Routes, Route, useNavigate } from "react-router-dom";
+import SettingsPage from './SettingsPage.jsx';
+import { HashRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./AuthProvider.jsx"
 
 const App = () => {
@@ -22,6 +23,11 @@ const App = () => {
           <Route path="/register" element={
             <RequireAuth>
               <RegisterUserPage />
+            </RequireAuth>
+          }/>
+          <Route path="/settings" element={
+            <RequireAuth>
+              <SettingsPage />
             </RequireAuth>
           }/>
         </Routes>

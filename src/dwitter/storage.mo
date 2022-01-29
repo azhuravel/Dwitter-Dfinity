@@ -67,18 +67,15 @@ module {
         public func getByUsername(username : Text) : ?User {
             let id = byUsername.get(username);
             switch (id) {
-                case (null) {
-                    return null;
-                };
-                case (?id) {
-                    return get(id);
-                }
+                case (null) { null };
+                case (?id) { get(id) };
             }
         };
 
-        public func saveUser(uid : UserId, user : User) {
+        public func save(uid : UserId, user : User) : User {
             users.put(uid, user);
             byUsername.put(user.username, uid);
+            user
         };
     };
 

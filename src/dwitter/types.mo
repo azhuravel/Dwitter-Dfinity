@@ -28,8 +28,12 @@ module {
     displayname : Text;
   };
 
-  public type ApiUser = {
+  public type CreateUserRequest = {
     username : Text;
+    displayname : Text;
+  };
+
+  public type UpdateUserRequest = {
     displayname : Text;
   };
 };
