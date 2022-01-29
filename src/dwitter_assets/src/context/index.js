@@ -1,4 +1,7 @@
 import {createContext} from 'react'
 
 
-export const AuthContext = createContext(null);
+// Fields:
+// - currentUser
+// - dwitterActor
+export const AuthContext = createContext({});

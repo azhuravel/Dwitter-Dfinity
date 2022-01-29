@@ -75,10 +75,10 @@ export default class AuthService {
         const authedBy = localStorage.getItem(keyLocalStorageAuth);
         let dwitterActor = null;
         switch (authedBy) {
-            case 'ii':
+            case keyLocalStorageAuth_ii:
                 dwitterActor = await AuthService.getDwitterActorByII();
                 break;
-            case 'plug':
+            case keyLocalStorageAuth_plug:
                 dwitterActor = await AuthService.getDwitterActorByPlug();
                 break;
         }
@@ -112,7 +112,14 @@ export default class AuthService {
         return {dwitterActor, currentUser};
     }
 
-    static logout() {
+    static async logout() {
+        const authedBy = localStorage.getItem(keyLocalStorageAuth);
+        switch (authedBy) {
+            case keyLocalStorageAuth_ii:
+                const authClient = await AuthClient.create();
+                authClient.logout();
+                break;
+        }
         localStorage.removeItem(keyLocalStorageAuth);
     }
 }

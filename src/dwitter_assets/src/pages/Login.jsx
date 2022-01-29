@@ -8,16 +8,20 @@ import AuthService from "../services/authService.js";
 
 
 const Login = () => {
-    const {setCtx} = useContext(AuthContext);
+    const {setCtx,setLoading} = useContext(AuthContext);
     const plugWhitelist = [process.env.DWITTER_CANISTER_ID, process.env.DWITTER_ASSETS_CANISTER_ID];
 
     const auth = async () => {
+        setLoading(true);
         const {dwitterActor, currentUser} = await AuthService.loginByII();
+        setLoading(false);
         setCtx({ dwitterActor, currentUser });
     }
     
     const plugBtnCallback = async () => {
+        setLoading(true);
         const {dwitterActor, currentUser} = await AuthService.loginByPlug();
+        setLoading(false);
         setCtx({dwitterActor, currentUser});
     }
 

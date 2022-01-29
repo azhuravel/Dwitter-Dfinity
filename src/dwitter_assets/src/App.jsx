@@ -24,7 +24,8 @@ const App = () => {
         <AuthContext.Provider value={{
             ctx, 
             setCtx,
-            isLoading
+            isLoading,
+            setLoading
         }}>
             <BrowserRouter>
                 {ctx.dwitterActor && <Navbar/>}

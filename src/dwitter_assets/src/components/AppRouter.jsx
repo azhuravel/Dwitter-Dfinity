@@ -32,10 +32,11 @@ const AppRouter = () => {
         );
     }
 
+    const currentUserProfilePath = `/user/${ctx.currentUser.username}`;
     return (
         <Routes>
-            <Route path="/user/:name" element={<User />} />
-            <Route path="*" element={<Navigate to ="/user/me" />}/>
+            <Route path="/user/:username" element={<User />} />
+            <Route path="*" element={<Navigate to={currentUserProfilePath} />}/>
         </Routes>
     );
 };
