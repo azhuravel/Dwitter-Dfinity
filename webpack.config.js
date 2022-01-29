@@ -9,6 +9,7 @@ if (process.env.INTERNET_IDENTITY_CANISTER_ID) {
   internetIdentityCanisterId = process.env.INTERNET_IDENTITY_CANISTER_ID;
 }
 const LOCAL_II_CANISTER = `http://${internetIdentityCanisterId}.localhost:8000/#authorize`;
+const PROD_II_CANISTER = "https://identity.ic0.app/#authorize";
 
 let localCanisters, prodCanisters, canisters;
 
@@ -101,7 +102,7 @@ module.exports = {
       NODE_ENV: 'development',
       DWITTER_CANISTER_ID: canisters["dwitter"],
       DWITTER_ASSETS_CANISTER_ID: canisters["dwitter_assets"],
-      LOCAL_II_CANISTER
+      II_CANISTER_ID: isDevelopment ? LOCAL_II_CANISTER : PROD_II_CANISTER
     }),
     new webpack.ProvidePlugin({
       Buffer: [require.resolve("buffer/"), "Buffer"],
