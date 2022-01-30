@@ -13,7 +13,7 @@ const isAnonymous = (identity) => {
     // https://forum.dfinity.org/t/checking-if-principal-is-anonymous-in-motoko/9672
     const principal = identity.getPrincipal();
     const principalText = principal.toText();
-    return principalText === "2vxsx-fae";
+    return principalText === '2vxsx-fae';
 }
 
 export default class AuthService {
@@ -92,7 +92,7 @@ export default class AuthService {
         if (process.env.NODE_ENV === 'development') {
             return `http://${process.env.DWITTER_ASSETS_CANISTER_ID}.localhost:8000`
         }
-        return '';
+        return 'https://mainnet.dfinity.network';
     }
 
     static async loginByPlug() {

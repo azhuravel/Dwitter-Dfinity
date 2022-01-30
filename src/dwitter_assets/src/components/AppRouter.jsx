@@ -5,6 +5,7 @@ import Loader from './UI/Loader/Loader.jsx';
 import Login from '../pages/Login.jsx';
 import User from '../pages/User.jsx';
 import Registration from '../pages/Registration.jsx';
+import Settings from '../pages/Settings.jsx';
 
 
 const AppRouter = () => {
@@ -36,6 +37,7 @@ const AppRouter = () => {
     return (
         <Routes>
             <Route path="/user/:username" element={<User />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<Navigate to={currentUserProfilePath} />}/>
         </Routes>
     );
