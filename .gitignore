@@ -13,3 +13,4 @@ node_modules/
 Makefile
 src/declarations/
 
+.DS_Store
