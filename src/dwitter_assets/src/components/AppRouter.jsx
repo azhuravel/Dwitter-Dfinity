@@ -6,6 +6,7 @@ import Login from '../pages/Login.jsx';
 import User from '../pages/User.jsx';
 import Registration from '../pages/Registration.jsx';
 import Settings from '../pages/Settings.jsx';
+import WipPage from '../pages/WipPage.jsx';
 
 
 const AppRouter = () => {
@@ -19,6 +20,7 @@ const AppRouter = () => {
         return (
             <Routes>
                 <Route path="/login" element={<Login />} />
+                <Route path="/wippage" element={<WipPage />} />
                 <Route path="*" element={<Navigate to ="/login" />}/>
             </Routes>
         );

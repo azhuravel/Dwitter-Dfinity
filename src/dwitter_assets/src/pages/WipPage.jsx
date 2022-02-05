@@ -1,14 +1,17 @@
 import React, { useState, useContext } from 'react';
 import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 import LoadingButton from '@mui/lab/LoadingButton';
-import Stack from '@mui/material/Stack';
+import Grid from '@mui/material/Grid';
 import { useForm, Controller } from 'react-hook-form';
-import { AuthContext } from '../context/index.js';
 
 
-const Settings = () => {
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+
+const WipPage = () => {
     const {handleSubmit, setError, control} = useForm();
-    const {ctx, setCtx} = useContext(AuthContext);
+    // const {ctx, setCtx} = useContext(AuthContext);
     const [submitting, setSubmitting] = useState(false);
     
     const onSubmit = async (data) => {
@@ -17,31 +20,18 @@ const Settings = () => {
         const username = data.username;
         const displayname = data.displayname;
 
-        if (username !== ctx.currentUser.username) {
-            const usernameResponse = await ctx.dwitterActor.getByUsername(username);
-            const usernameAvailable = !(usernameResponse[0]);
-            if (!usernameAvailable) {
-                setError('username', {type: 'server', message: 'Already in use'});
-                setSubmitting(false);
-                return;
-            }
-        }
-
-        await ctx.dwitterActor.saveUser({username, displayname});
-        const userResponse = await ctx.dwitterActor.getCurrentUser();
-        const user = userResponse[0];
-        setCtx({...ctx, currentUser: user});
+        sleep(500);
 
         setSubmitting(false);
     }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
-            <Stack spacing={2}>
+        <Grid container justifyContent="center" direction="column">
+            <form onSubmit={handleSubmit(onSubmit)}>
                 <Controller
                     name="username"
                     control={control}
-                    defaultValue={ctx.currentUser.username} 
+                    defaultValue='qweqwe' 
                     render={({field: {onChange, value}, fieldState: {error}}) => (
                     <TextField
                         label="Username"
@@ -60,10 +50,12 @@ const Settings = () => {
                     }}
                 />
 
+                <br/>
+
                 <Controller
                     name="displayname"
                     control={control}
-                    defaultValue={ctx.currentUser.displayname} 
+                    defaultValue='zxczxc'
                     render={({field: {onChange, value}, fieldState: {error}}) => (
                     <TextField
                         label="Display name"
@@ -81,11 +73,14 @@ const Settings = () => {
                         maxLength: {value: 15, message: 'Max length is 15'},
                     }}
                 />
+
+                <br/>
                 
-                <LoadingButton type="submit" variant="outlined" loading={submitting}>Save</LoadingButton>
-            </Stack>
-        </form>
+                {/* <Button type="submit" variant="contained" loading={submitting}>Save</Button> */}
+                <LoadingButton type="submit" variant="contained" loading={submitting} loadingIndicator="Loading...">Save</LoadingButton>
+            </form>
+        </Grid>
     );
 };
 
-export default Settings;
+export default WipPage;
