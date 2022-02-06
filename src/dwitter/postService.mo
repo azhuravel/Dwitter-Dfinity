@@ -10,7 +10,7 @@ module {
     type CreatePostRequest = Types.CreatePostRequest;
 
     public class PostService(postsStorage: Storage.Posts, usersStorage: Storage.Users) {
-        public func savePost(userId : UserId, request : CreatePostRequest): () {
+        public func createPost(userId : UserId, request : CreatePostRequest): () {
             postsStorage.savePost(userId, request);
         };
 
@@ -67,6 +67,14 @@ module {
                     };
                 })
             }
+        };
+
+        public func toArray() : [Post] {
+            postsStorage.toArray()
+        };
+
+        public func fromArray(array : [Post]) {
+            postsStorage.fromArray(array)
         };
     }
 }

@@ -27,7 +27,7 @@ const RegisterUserPage = () => {
         } else if (username.length < 4 || username.length > 15) {
             error = "Length shouled be between 4 and 15 symbols";
         } else {
-            const usernameResponse = await authCtx.dwitterActor.getByUsername(username);
+            const usernameResponse = await authCtx.dwitterActor.getUserByUsername(username);
             const available = !(usernameResponse[0]);
             if (!available) {
                 error = "Already existing";

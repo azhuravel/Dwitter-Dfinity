@@ -13,11 +13,11 @@ module {
             usersStorage.get(userId)
         };
 
-        public func getByUsername(userId : UserId) : ?User {
-            usersStorage.get(userId)
+        public func getByUsername(username : Text) : ?User {
+            usersStorage.getByUsername(username)
         };
 
-        public func save(userId : UserId, request : CreateUserRequest) : User {
+        public func create(userId : UserId, request : CreateUserRequest) : User {
             assert get(userId) == null;
 
             // TODO: add validation of request fields
@@ -34,16 +34,24 @@ module {
         public func update(userId : UserId, request : UpdateUserRequest) : ?User {
             let user = usersStorage.get(userId);
             switch(user) {
-                case(null) { null };
+                case(null) { null }; // TODO: it should throw an exception
                 case(?user) { 
                     let updatedUser : User = {
                         id = user.id;
                         username = user.username;
                         displayname = request.displayname;
                     };
-                    ?usersStorage.save(user.id, updatedUser); // TODO: optimize
+                    ?usersStorage.save(user.id, updatedUser);
                 };
             }
+        };
+
+        public func toArray() : [User] {
+            usersStorage.toArray()
+        };
+
+        public func fromArray(array : [User]) {
+            usersStorage.fromArray(array)
         };
     }
 }

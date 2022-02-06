@@ -4,12 +4,23 @@ import PostModule "./postService";
 import UserModule "./userService";
 import Principal "mo:base/Principal";
 
+/*
+ * The Dwitter actor serves as the only API for frontend
+ */
 actor {
+    /*
+     * Storages and services
+     */
+
     let postsStorage: Storage.Posts = Storage.Posts();
     let usersStorage: Storage.Users = Storage.Users();
 
     let postService: PostModule.PostService = PostModule.PostService(postsStorage, usersStorage);
     let userService: UserModule.UserService = UserModule.UserService(usersStorage);
+
+    /*
+     * Data types
+     */
 
     type UserId = Types.UserId;
     type User = Types.User;
@@ -20,8 +31,32 @@ actor {
     type PostInfo = Types.PostInfo;
     type CreatePostRequest = Types.CreatePostRequest;
 
-    public shared(msg) func savePost(request : CreatePostRequest): async() {
-        postService.savePost(msg.caller, request)
+    /*
+     * User methods
+     */
+
+    public shared(msg) func getCurrentUser(): async ?User {
+        userService.get(msg.caller)
+    };
+
+    public shared(msg) func getUserByUsername(username : Text): async ?User  {
+        usersStorage.getByUsername(username)
+    };
+
+    public shared(msg) func createUser(request : CreateUserRequest): async ?User {
+        ?userService.create(msg.caller, request)
+    };
+
+    public shared(msg) func updateUser(request : UpdateUserRequest): async ?User {
+        userService.update(msg.caller, request)
+    };
+
+    /*
+     * Posts methods
+     */
+
+    public shared(msg) func createPost(request : CreatePostRequest): async() {
+        postService.createPost(msg.caller, request)
     };
 
     public shared(msg) func getMyPosts(): async ?[PostInfo] {
@@ -32,19 +67,20 @@ actor {
         postService.getByUsername(username)
     };
 
-    public shared(msg) func getCurrentUser(): async ?User {
-        userService.get(msg.caller)
+    /*
+     * Canister upgrade logic
+     */
+
+    stable var posts : [Post] = [];
+    stable var users : [User] = []; 
+
+    system func preupgrade() {
+        posts := postService.toArray();
+        users := userService.toArray();
     };
 
-    public shared(msg) func getByUsername(username : Text): async ?User  {
-        usersStorage.getByUsername(username)
-    };
-
-    public shared(msg) func createUser(request : CreateUserRequest): async ?User {
-        ?userService.save(msg.caller, request)
-    };
-
-    public shared(msg) func updateUser(request : UpdateUserRequest): async ?User {
-        userService.update(msg.caller, request)
+    system func postupgrade() {
+        postService.fromArray(posts);
+        userService.fromArray(users);
     };
 };
