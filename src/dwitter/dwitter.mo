@@ -82,5 +82,8 @@ actor {
     system func postupgrade() {
         postService.fromArray(posts);
         userService.fromArray(users);
+
+        posts := [];
+        users := [];
     };
 };
