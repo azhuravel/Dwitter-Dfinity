@@ -4,6 +4,8 @@ import AppRouter from "./components/AppRouter";
 import Navbar from "./components/UI/Navbar/Navbar.jsx";
 import {AuthContext} from "./context";
 import AuthService from "./services/authService.js";
+import Container from '@mui/material/Container';
+import CssBaseline from '@mui/material/CssBaseline';
 
 
 const App = () => {
@@ -29,7 +31,11 @@ const App = () => {
         }}>
             <BrowserRouter>
                 {ctx.dwitterActor && <Navbar/>}
-                <AppRouter/>
+                {/* <Navbar/> */}
+                <Container maxWidth="md">
+                    <CssBaseline />
+                    <AppRouter/>
+                </Container>
             </BrowserRouter>
         </AuthContext.Provider>
     )

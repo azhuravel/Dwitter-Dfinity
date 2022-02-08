@@ -1,85 +1,105 @@
 import React, { useState, useContext } from 'react';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
+import Avatar from '@mui/material/Avatar';
 import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import LoadingButton from '@mui/lab/LoadingButton';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
+import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
-import { useForm, Controller } from 'react-hook-form';
+import Button from '@mui/material/Button';
 
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+// const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 
 const WipPage = () => {
-    const {handleSubmit, setError, control} = useForm();
-    // const {ctx, setCtx} = useContext(AuthContext);
-    const [submitting, setSubmitting] = useState(false);
-    
-    const onSubmit = async (data) => {
-        setSubmitting(true);
-
-        const username = data.username;
-        const displayname = data.displayname;
-
-        sleep(500);
-
-        setSubmitting(false);
-    }
-
     return (
-        <Grid container justifyContent="center" direction="column">
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <Controller
-                    name="username"
-                    control={control}
-                    defaultValue='qweqwe' 
-                    render={({field: {onChange, value}, fieldState: {error}}) => (
-                    <TextField
-                        label="Username"
-                        variant="standard"
-                        value={value}
-                        onChange={onChange}
-                        error={!!error}
-                        helperText={error ? error.message : null}
-                        disabled={submitting}
-                    />
-                    )}
-                    rules={{
-                        required: 'this is a required',
-                        minLength: {value: 4, message: 'Min length is 4'},
-                        maxLength: {value: 15, message: 'Max length is 15'},
-                    }}
+        <Container maxWidth="xs">
+        <Box
+          sx={{
+            marginTop: 8,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}></Avatar>
+          <Typography component="h1" variant="h5">
+            Sign up
+          </Typography>
+          <Box component="form" noValidate sx={{ mt: 3 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  autoComplete="given-name"
+                  name="firstName"
+                  required
+                  fullWidth
+                  id="firstName"
+                  label="First Name"
+                  autoFocus
                 />
-
-                <br/>
-
-                <Controller
-                    name="displayname"
-                    control={control}
-                    defaultValue='zxczxc'
-                    render={({field: {onChange, value}, fieldState: {error}}) => (
-                    <TextField
-                        label="Display name"
-                        variant="standard"
-                        value={value}
-                        onChange={onChange}
-                        error={!!error}
-                        helperText={error ? error.message : null}
-                        disabled={submitting}
-                    />
-                    )}
-                    rules={{
-                        required: 'this is a required',
-                        minLength: {value: 4, message: 'Min length is 4'},
-                        maxLength: {value: 15, message: 'Max length is 15'},
-                    }}
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  id="lastName"
+                  label="Last Name"
+                  name="lastName"
+                  autoComplete="family-name"
                 />
-
-                <br/>
-                
-                {/* <Button type="submit" variant="contained" loading={submitting}>Save</Button> */}
-                <LoadingButton type="submit" variant="contained" loading={submitting} loadingIndicator="Loading...">Save</LoadingButton>
-            </form>
-        </Grid>
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email Address"
+                  name="email"
+                  autoComplete="email"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  autoComplete="new-password"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <FormControlLabel
+                  control={<Checkbox value="allowExtraEmails" color="primary" />}
+                  label="I want to receive inspiration, marketing promotions and updates via email."
+                />
+              </Grid>
+            </Grid>
+            
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Sign Up
+            </Button>
+            <Grid container justifyContent="flex-end">
+              <Grid item>
+                <Link href="#" variant="body2">
+                  Already have an account? Sign in
+                </Link>
+              </Grid>
+            </Grid>
+          </Box>
+        </Box>
+        </Container>
     );
 };
 
