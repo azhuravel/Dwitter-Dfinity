@@ -26,6 +26,7 @@ const Navbar = () => {
         setCtx({});
     }
 
+    const currentUserIsSignedUp = !!ctx.currentUser;
     const username = ctx?.currentUser?.username || 'me';
     const displayname = ctx?.currentUser?.displayname || 'Menu';
 
@@ -56,8 +57,8 @@ const Navbar = () => {
                             transformOrigin={{horizontal: 'right', vertical: 'top'}}
                             anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
                         >
-                            <MenuItem component={Link} to={`/user/${username}`} onClick={handleClose}>Profile</MenuItem>
-                            <MenuItem component={Link} to='/settings' onClick={handleClose}>Settings</MenuItem>
+                            {currentUserIsSignedUp && <MenuItem component={Link} to={`/user/${username}`} onClick={handleClose}>Profile</MenuItem>}
+                            {currentUserIsSignedUp && <MenuItem component={Link} to='/settings' onClick={handleClose}>Settings</MenuItem>}
                             <MenuItem onClick={logout}>Logout</MenuItem>
                         </Menu>
                     </Toolbar>

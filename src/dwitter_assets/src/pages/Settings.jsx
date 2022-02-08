@@ -4,6 +4,17 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import Stack from '@mui/material/Stack';
 import { useForm, Controller } from 'react-hook-form';
 import { AuthContext } from '../context/index.js';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
+import Avatar from '@mui/material/Avatar';
+import TextField from '@mui/material/TextField';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
+import Link from '@mui/material/Link';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
 
 
 const Settings = () => {
@@ -14,19 +25,8 @@ const Settings = () => {
     const onSubmit = async (data) => {
         setSubmitting(true);
 
-        const username = data.username;
+        const username = ctx.currentUser.username;
         const displayname = data.displayname;
-
-        if (username !== ctx.currentUser.username) {
-            const usernameResponse = await ctx.dwitterActor.getByUsername(username);
-            const usernameAvailable = !(usernameResponse[0]);
-            if (!usernameAvailable) {
-                setError('username', {type: 'server', message: 'Already in use'});
-                setSubmitting(false);
-                return;
-            }
-        }
-
         await ctx.dwitterActor.saveUser({username, displayname});
         const userResponse = await ctx.dwitterActor.getCurrentUser();
         const user = userResponse[0];
@@ -36,55 +36,36 @@ const Settings = () => {
     }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
-            <Stack spacing={2}>
-                <Controller
-                    name="username"
-                    control={control}
-                    defaultValue={ctx.currentUser.username} 
-                    render={({field: {onChange, value}, fieldState: {error}}) => (
-                    <TextField
-                        label="Username"
-                        variant="standard"
-                        value={value}
-                        onChange={onChange}
-                        error={!!error}
-                        helperText={error ? error.message : null}
-                        disabled={submitting}
+        <Box sx={{marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+            <Grid container component="form" spacing={2} onSubmit={handleSubmit(onSubmit)}>
+                <Grid item xs={12}>
+                    <Controller
+                        name="displayname"
+                        control={control}
+                        defaultValue={ctx.currentUser.displayname} 
+                        render={({field: {onChange, value}, fieldState: {error}}) => (
+                        <TextField
+                            label="Display name"
+                            value={value}
+                            onChange={onChange}
+                            error={!!error}
+                            helperText={error ? error.message : null}
+                            disabled={submitting}
+                        />
+                        )}
+                        rules={{
+                            required: 'this is a required',
+                            minLength: {value: 4, message: 'Min length is 4'},
+                            maxLength: {value: 15, message: 'Max length is 15'},
+                        }}
                     />
-                    )}
-                    rules={{
-                        required: 'this is a required',
-                        minLength: {value: 4, message: 'Min length is 4'},
-                        maxLength: {value: 15, message: 'Max length is 15'},
-                    }}
-                />
-
-                <Controller
-                    name="displayname"
-                    control={control}
-                    defaultValue={ctx.currentUser.displayname} 
-                    render={({field: {onChange, value}, fieldState: {error}}) => (
-                    <TextField
-                        label="Display name"
-                        variant="standard"
-                        value={value}
-                        onChange={onChange}
-                        error={!!error}
-                        helperText={error ? error.message : null}
-                        disabled={submitting}
-                    />
-                    )}
-                    rules={{
-                        required: 'this is a required',
-                        minLength: {value: 4, message: 'Min length is 4'},
-                        maxLength: {value: 15, message: 'Max length is 15'},
-                    }}
-                />
-                
-                <LoadingButton type="submit" variant="outlined" loading={submitting}>Save</LoadingButton>
-            </Stack>
-        </form>
+                </Grid>
+                    
+                <Grid item xs={12}>
+                    <LoadingButton type="submit" variant="contained" loading={submitting}>Save</LoadingButton>
+                </Grid>
+            </Grid>
+        </Box>
     );
 };
 

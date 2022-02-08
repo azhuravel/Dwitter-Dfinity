@@ -16,7 +16,7 @@ const AppRouter = () => {
         return <Loader/>
     }
 
-    if (!ctx || !ctx.dwitterActor) {
+    if (!ctx?.dwitterActor) {
         return (
             <Routes>
                 <Route path="/login" element={<Login />} />
