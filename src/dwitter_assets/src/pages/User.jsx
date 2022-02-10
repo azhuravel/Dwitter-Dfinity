@@ -30,7 +30,6 @@ const User = () => {
             {isCurrentUserProfile 
                 && 
                 <React.Fragment>
-
                     <Grid item lg={3} md={3} sm={0}/>
                     <Grid item lg={6} md={6} sm={12}>
                         <PostForm postCreatedCallback={fetchData} />

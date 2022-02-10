@@ -11,38 +11,24 @@ import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
+import PostsList from '../components/UI/PostsList/PostsList.jsx';
 
 
 // const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 
 const WipPage = () => {
+    const posts = [
+        {
+            id: 1,
+            displayname: 'displayname',
+            username: 'username',
+            createdTime: 1644523724745n,
+            text: 'text text @fefew роиуц text hewjfk rwhgtext text @fefew роиуц text hewjfk rwhgtext text @fefew роиуц text hewjfk rwhgtext text @fefew роиуц text hewjfk rwhgtext text @fefew роиуц text hewjfk rwhgtext text @fefew роиуц text hewjfk rwhgtext text @fefew роиуц text hewjfk rwhg',
+        }
+    ];
     return (
-        <Grid container spacing={2}>
-            <Grid item md={3}></Grid>
-            <Grid item md={6}>
-                <p>xs123123 3fwefw=8</p>
-            </Grid>
-            <Grid item md={3}></Grid>
-
-            <Grid item md={3}></Grid>
-            <Grid item md={6}>
-                <p>xs=4</p>
-            </Grid>
-            <Grid item md={3}></Grid>
-            
-            <Grid item md={3}></Grid>
-            <Grid item md={6}>
-                <p>xs=4</p>
-            </Grid>
-            <Grid item md={3}></Grid>
-
-            <Grid item md={3}></Grid>
-            <Grid item md={6}>
-                <p>xs=8</p>
-            </Grid>
-            <Grid item md={3}></Grid>
-        </Grid>
+        <PostsList posts={posts}/>
     );
 };
 

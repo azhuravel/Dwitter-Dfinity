@@ -14,8 +14,13 @@ const PostForm = (props) => {
     const [text, setText] = useState('');
   
     const createPost = async () => {
+        const preparedText = text.trim();
+        if (!preparedText) {
+            return;
+        }
+        
         setPublishingInProgress(true);
-        const post = {text};
+        const post = {text: preparedText};
         setPostText('');
         
         // TODO начать возвращать созданный пост из savePost().
@@ -50,7 +55,7 @@ const PostForm = (props) => {
             </Box>
 
             <Box sx={{ display: 'flex', flexDirection: 'row-reverse' }}>
-                <Button variant="contained" onClick={createPost} disabled={publishingInProgress || !text}>Publish</Button>
+                <Button variant="contained" onClick={createPost} disabled={publishingInProgress}>Publish</Button>
             </Box>
         </React.Fragment>
     );
