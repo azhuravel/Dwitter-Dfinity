@@ -15,6 +15,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 
 
 const Registration = () => {
@@ -47,60 +48,60 @@ const Registration = () => {
     }
 
     return (
-        <Box sx={{marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-            <Grid container component="form" spacing={2} onSubmit={handleSubmit(onSubmit)}>
-                <Grid item xs={12}>
-                    <Controller
-                        name="username"
-                        control={control}
-                        defaultValue={ctx.currentUser.username} 
-                        render={({field: {onChange, value}, fieldState: {error}}) => (
-                        <TextField
-                            label="Username"
-                            value={value}
-                            onChange={onChange}
-                            error={!!error}
-                            helperText={error ? error.message : null}
-                            disabled={submitting}
-                            autoFocus
-                        />
-                        )}
-                        rules={{
-                            required: 'this is a required',
-                            minLength: {value: 4, message: 'Min length is 4'},
-                            maxLength: {value: 15, message: 'Max length is 15'},
-                        }}
-                    />
-                </Grid>
-
-                <Grid item xs={12}>
-                    <Controller
-                        name="displayname"
-                        control={control}
-                        defaultValue={ctx.currentUser.displayname} 
-                        render={({field: {onChange, value}, fieldState: {error}}) => (
-                        <TextField
-                            label="Display name"
-                            value={value}
-                            onChange={onChange}
-                            error={!!error}
-                            helperText={error ? error.message : null}
-                            disabled={submitting}
-                        />
-                        )}
-                        rules={{
-                            required: 'this is a required',
-                            minLength: {value: 4, message: 'Min length is 4'},
-                            maxLength: {value: 15, message: 'Max length is 15'},
-                        }}
-                    />
-                </Grid>
-                    
-                <Grid item xs={12}>
-                    <LoadingButton type="submit" variant="contained" loading={submitting}>Save</LoadingButton>
-                </Grid>
+        <Grid container component="form" spacing={2} onSubmit={handleSubmit(onSubmit)} direction="column" justifyContent="center" alignItems="center" mt={10}>
+            <Grid item>
+                <Typography variant="h5" component="h5">Sign up</Typography>
             </Grid>
-        </Box>
+            
+            <Grid item>
+                <Controller
+                    name="username"
+                    control={control}
+                    render={({field: {onChange, value}, fieldState: {error}}) => (
+                    <TextField
+                        label="Username"
+                        value={value}
+                        onChange={onChange}
+                        error={!!error}
+                        helperText={error ? error.message : null}
+                        disabled={submitting}
+                        autoFocus
+                    />
+                    )}
+                    rules={{
+                        required: 'this is a required',
+                        minLength: {value: 4, message: 'Min length is 4'},
+                        maxLength: {value: 15, message: 'Max length is 15'},
+                    }}
+                />
+            </Grid>
+
+            <Grid item>
+                <Controller
+                    name="displayname"
+                    control={control}
+                    render={({field: {onChange, value}, fieldState: {error}}) => (
+                    <TextField
+                        label="Display name"
+                        value={value}
+                        onChange={onChange}
+                        error={!!error}
+                        helperText={error ? error.message : null}
+                        disabled={submitting}
+                    />
+                    )}
+                    rules={{
+                        required: 'this is a required',
+                        minLength: {value: 4, message: 'Min length is 4'},
+                        maxLength: {value: 15, message: 'Max length is 15'},
+                    }}
+                />
+            </Grid>
+                
+            <Grid item>
+                <LoadingButton type="submit" variant="contained" loading={submitting}>Save</LoadingButton>
+            </Grid>
+        </Grid>
     );
 };
 
