@@ -22,9 +22,7 @@ const PostsList = (props) => {
                 props.posts.map((item, idx) => 
                     <ListItem key={item.id}>
                         <ListItemAvatar>
-                            <Avatar>
-                                <AccountCircleIcon />
-                            </Avatar>
+                            <Avatar><AccountCircleIcon /></Avatar>
                         </ListItemAvatar>
                         <ListItemText
                             primary={`${item.displayname} @${item.username} - ${moment.unix(Number(item.createdTime / 1000000000n)).fromNow()}`}

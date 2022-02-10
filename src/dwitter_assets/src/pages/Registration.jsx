@@ -28,7 +28,7 @@ const Registration = () => {
         const username = data.username;
         const displayname = data.displayname;
 
-        if (username !== ctx.currentUser.username) {
+        if (username !== ctx?.currentUser?.username) {
             const usernameResponse = await ctx.dwitterActor.getByUsername(username);
             const usernameAvailable = !(usernameResponse[0]);
             if (!usernameAvailable) {

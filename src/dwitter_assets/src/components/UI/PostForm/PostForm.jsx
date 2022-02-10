@@ -2,7 +2,7 @@ import React, {useState, useContext} from 'react';
 import Box from '@mui/material/Box';
 import { AuthContext } from '../../../context/index.js';
 import { Button, TextField } from '@mui/material';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import Avatar from '@mui/material/Avatar';
 
 
 const POST_MAX_LENGTH = 140;
@@ -43,16 +43,16 @@ const PostForm = (props) => {
     }
   
     return (
-        <div style={{ width: '100%' }}>
+        <React.Fragment>
             <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 3, mb: 1 }}>
-                <AccountCircleIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
+                <Avatar sx={{mr: 1}}></Avatar>
                 <TextField id="text" label="What's happening?" variant="standard" value={text} onChange={e => handleTextChange(e)} maxLength={POST_MAX_LENGTH} fullWidth />
             </Box>
 
             <Box sx={{ display: 'flex', flexDirection: 'row-reverse' }}>
                 <Button variant="contained" onClick={createPost} disabled={publishingInProgress || !text}>Publish</Button>
             </Box>
-        </div>
+        </React.Fragment>
     );
 }
 

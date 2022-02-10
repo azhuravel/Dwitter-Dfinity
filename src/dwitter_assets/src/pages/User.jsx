@@ -26,25 +26,28 @@ const User = () => {
     }
   
     return (
-        <Box sx={{ flexGrow: 1 }} >
-            <Grid container spacing={2} justifyContent="space-between">
-                {isCurrentUserProfile 
-                    && 
-                    <Grid item flexGrow={1}>
+        <Grid container spacing={2}>
+            {isCurrentUserProfile 
+                && 
+                <React.Fragment>
+
+                    <Grid item lg={3} md={3} sm={0}/>
+                    <Grid item lg={6} md={6} sm={12}>
                         <PostForm postCreatedCallback={fetchData} />
                     </Grid>
-                }
-                <Grid item flexGrow={1}>
-                    <div style={{ width: '100%' }}>
-                        <Box sx={{ display: 'flex' }}>
-                            {!loading && <PostsList posts={posts}/>}
-                            {loading && <p>Loading...</p>}
-                        </Box>
-                    </div>
-                </Grid>
-                <Grid item flexGrow={1}></Grid>
+                    <Grid item lg={3} md={3} sm={0}/>
+                </React.Fragment>
+            }
+
+            <Grid item lg={3} md={3} sm={0}/>
+            <Grid item lg={6} md={6} sm={12}>
+                <Box sx={{ display: 'flex' }}>
+                    {!loading && <PostsList posts={posts}/>}
+                    {loading && <p>Loading...</p>}
+                </Box>
             </Grid>
-        </Box>
+            <Grid item lg={3} md={3} sm={0}/>
+        </Grid>
     )
 };
 
