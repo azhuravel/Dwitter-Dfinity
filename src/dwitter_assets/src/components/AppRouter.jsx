@@ -22,7 +22,6 @@ const AppRouter = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/wippage" element={<WipPage />} />
                 <Route path="*" element={<Navigate to ="/login" />}/>
-                <Route path="/registration" element={<Registration />} />
             </Routes>
         );
     }
