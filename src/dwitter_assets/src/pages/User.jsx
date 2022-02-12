@@ -4,35 +4,99 @@ import PostsList from '../components/UI/PostsList/PostsList.jsx';
 import PostForm from '../components/UI/PostForm/PostForm.jsx';
 import { useParams } from "react-router-dom";
 import { Box, Grid } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
 
 
 const User = () => {
     const {ctx} = useContext(AuthContext); 
-    const [loading, setLoading] = useState(false); 
+    const [postsLoading, setPostsLoading] = useState(false); 
+    const [userLoading, setUserLoading] = useState(false); 
+    const [userNotFound, setUserNotFound] = useState(false); 
     const [posts, setPosts] = useState([]);
+    const [user, setUser] = useState(null);
     const params = useParams();
     const username = params.username;
     const isCurrentUserProfile = (username === ctx.currentUser.username);
 
     useEffect(() => {
-        fetchData();
-    }, []);
+        fetchPosts();
+        fetchUser();
+    }, [username]);
 
-    const fetchData = async () => {
-        setLoading(true);
-        const response = await ctx.dwitterActor.getUserPosts(username);
-        setPosts(response ? (response[0] || []) : []);
-        setLoading(false);
+    const fetchPosts = async () => {
+        setPostsLoading(true);
+        const getUserPostsResp = await ctx.dwitterActor.getUserPosts(username);
+        if (getUserPostsResp) {
+            setPosts(getUserPostsResp[0] || []);
+        }
+        setPostsLoading(false);
+    }
+
+    const fetchUser = async () => {
+        setUserLoading(true);
+        if (isCurrentUserProfile) {
+            setUser(ctx.currentUser);
+        } else {
+            const getByUsernameResp = await ctx.dwitterActor.getByUsername(username);
+            if (getByUsernameResp && getByUsernameResp[0]) {
+                console.log(getByUsernameResp);
+                setUser(getByUsernameResp[0]);
+            } else {
+                setUserNotFound(true);
+            }
+        }
+        setUserLoading(false);
+    }
+
+    if (userNotFound) {
+        return (
+            <Grid container spacing={2}>
+                <Grid item lg={3} md={3} sm={0}/>
+                <Grid item lg={6} md={6} sm={12}>
+                    <Box sx={{ display: 'flex' }}>
+                        <p>User not found</p>
+                    </Box>
+                </Grid>
+                <Grid item lg={3} md={3} sm={0}/>
+            </Grid>
+        )
     }
   
     return (
         <Grid container spacing={2}>
+            <Grid item lg={3} md={3} sm={0}/>
+            <Grid item lg={6} md={6} sm={12}>
+                {(userLoading)
+                    && 
+                    <Card elevation={0}>
+                        <CardHeader
+                            avatar={<Avatar></Avatar>}
+                            title="Loading..."
+                            subheader={`@${username}`}
+                        />
+                    </Card>
+                }
+                {(!userLoading && !!user)
+                    && 
+                    <Card elevation={0}>
+                        <CardHeader
+                            avatar={<Avatar></Avatar>}
+                            title={user.displayname}
+                            subheader={`@${user.username}`}
+                        />
+                    </Card>
+                }
+            </Grid>
+            <Grid item lg={3} md={3} sm={0}/>
+
             {isCurrentUserProfile 
                 && 
                 <React.Fragment>
                     <Grid item lg={3} md={3} sm={0}/>
                     <Grid item lg={6} md={6} sm={12}>
-                        <PostForm postCreatedCallback={fetchData} />
+                        <PostForm postCreatedCallback={fetchPosts} />
                     </Grid>
                     <Grid item lg={3} md={3} sm={0}/>
                 </React.Fragment>
@@ -41,8 +105,8 @@ const User = () => {
             <Grid item lg={3} md={3} sm={0}/>
             <Grid item lg={6} md={6} sm={12}>
                 <Box sx={{ display: 'flex' }}>
-                    {!loading && <PostsList posts={posts}/>}
-                    {loading && <p>Loading...</p>}
+                    {!postsLoading && <PostsList posts={posts}/>}
+                    {postsLoading && <p>Loading...</p>}
                 </Box>
             </Grid>
             <Grid item lg={3} md={3} sm={0}/>

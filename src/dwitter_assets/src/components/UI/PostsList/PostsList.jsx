@@ -23,7 +23,7 @@ const PostsList = (props) => {
                 props.posts.map(item => 
                     <ListItem key={item.id} alignItems="flex-start">
                         <ListItemAvatar>
-                            <Avatar><AccountCircleIcon /></Avatar>
+                            <Avatar></Avatar>
                         </ListItemAvatar>
                         <ListItemText
                             primary={
