@@ -49,13 +49,23 @@ const PostForm = (props) => {
   
     return (
         <React.Fragment>
-            <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 3, mb: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'flex-start', mt: 3, mb: 1 }}>
                 <Avatar sx={{mr: 1}}></Avatar>
-                <TextField id="text" label="What's happening?" variant="standard" value={text} onChange={e => handleTextChange(e)} maxLength={POST_MAX_LENGTH} fullWidth />
+                <TextField 
+                    id="text" 
+                    size="small"
+                    label="What's happening?" 
+                    multiline
+                    value={text} 
+                    onChange={e => handleTextChange(e)} 
+                    maxLength={POST_MAX_LENGTH} 
+                    disabled={publishingInProgress}
+                    fullWidth />
             </Box>
 
             <Box sx={{ display: 'flex', flexDirection: 'row-reverse' }}>
                 <Button variant="contained" onClick={createPost} disabled={publishingInProgress}>Publish</Button>
+                {/* <LoadingButton type="submit" variant="contained" loading={submitting}>Save</LoadingButton> */}
             </Box>
         </React.Fragment>
     );

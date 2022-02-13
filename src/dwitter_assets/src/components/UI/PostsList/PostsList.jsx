@@ -21,7 +21,7 @@ const PostsList = (props) => {
         <List>
             {
                 props.posts.map(item => 
-                    <ListItem key={item.id} alignItems="flex-start">
+                    <ListItem disableGutters key={item.id} alignItems="flex-start">
                         <ListItemAvatar>
                             <Avatar></Avatar>
                         </ListItemAvatar>

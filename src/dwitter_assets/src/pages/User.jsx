@@ -2,6 +2,7 @@ import React, {useEffect, useState, useContext} from 'react';
 import { AuthContext } from '../context/index.js';
 import PostsList from '../components/UI/PostsList/PostsList.jsx';
 import PostForm from '../components/UI/PostForm/PostForm.jsx';
+import UserCard from '../components/UI/UserCard/UserCard.jsx';
 import { useParams } from "react-router-dom";
 import { Box, Grid } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
@@ -41,7 +42,6 @@ const User = () => {
         } else {
             const getByUsernameResp = await ctx.dwitterActor.getByUsername(username);
             if (getByUsernameResp && getByUsernameResp[0]) {
-                console.log(getByUsernameResp);
                 setUser(getByUsernameResp[0]);
             } else {
                 setUserNotFound(true);
@@ -68,26 +68,7 @@ const User = () => {
         <Grid container spacing={2}>
             <Grid item lg={3} md={3} sm={0}/>
             <Grid item lg={6} md={6} sm={12}>
-                {(userLoading)
-                    && 
-                    <Card elevation={0}>
-                        <CardHeader
-                            avatar={<Avatar></Avatar>}
-                            title="Loading..."
-                            subheader={`@${username}`}
-                        />
-                    </Card>
-                }
-                {(!userLoading && !!user)
-                    && 
-                    <Card elevation={0}>
-                        <CardHeader
-                            avatar={<Avatar></Avatar>}
-                            title={user.displayname}
-                            subheader={`@${user.username}`}
-                        />
-                    </Card>
-                }
+                <UserCard userLoading={userLoading} username={username} user={user} />
             </Grid>
             <Grid item lg={3} md={3} sm={0}/>
 

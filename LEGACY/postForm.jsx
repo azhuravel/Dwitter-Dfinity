@@ -7,7 +7,7 @@ import { Typography } from '@mui/material';
 import { Button, TextField } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
-export const PostForm = (props) => {
+export const PostForm = () => {
     const {authCtx} = useContext(AuthContext); 
     const [charRemains, setCharRemains] = useState(140);
     const [posting, setPosting] = useState(false);

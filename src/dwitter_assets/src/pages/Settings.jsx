@@ -44,14 +44,14 @@ const Settings = () => {
                         control={control}
                         defaultValue={ctx.currentUser.displayname} 
                         render={({field: {onChange, value}, fieldState: {error}}) => (
-                        <TextField
-                            label="Display name"
-                            value={value}
-                            onChange={onChange}
-                            error={!!error}
-                            helperText={error ? error.message : null}
-                            disabled={submitting}
-                        />
+                            <TextField
+                                label="Display name"
+                                value={value}
+                                onChange={onChange}
+                                error={!!error}
+                                helperText={error ? error.message : null}
+                                disabled={submitting}
+                            />
                         )}
                         rules={{
                             required: 'this is a required',

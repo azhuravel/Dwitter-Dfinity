@@ -31,7 +31,6 @@ const App = () => {
         }}>
             <BrowserRouter>
                 {ctx.dwitterActor && <Navbar/>}
-                {/* <Navbar/> */}
                 <Container maxWidth="md">
                     <CssBaseline />
                     <AppRouter/>
