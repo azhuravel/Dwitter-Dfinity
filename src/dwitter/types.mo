@@ -24,6 +24,7 @@ module {
 
   public type User = {
     id : UserId;
+    createdTime : Int;
     username : Text;
     displayname : Text;
   };

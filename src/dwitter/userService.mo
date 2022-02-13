@@ -1,6 +1,7 @@
 import Array "mo:base/Array";
 import Types "./types";
 import Storage "./storage";
+import Time "mo:base/Time";
 
 module {
     type UserId = Types.UserId;
@@ -22,8 +23,11 @@ module {
 
             // TODO: add validation of request fields
 
+            let now = Time.now();
+
             let user : User = {
                 id = userId; 
+                createdTime = now;
                 username = request.username;
                 displayname = request.displayname;
             };
@@ -38,6 +42,7 @@ module {
                 case(?user) { 
                     let updatedUser : User = {
                         id = user.id;
+                        createdTime = user.createdTime;
                         username = user.username;
                         displayname = request.displayname;
                     };
