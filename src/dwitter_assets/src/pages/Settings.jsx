@@ -1,20 +1,11 @@
 import React, { useState, useContext } from 'react';
 import TextField from '@mui/material/TextField';
 import LoadingButton from '@mui/lab/LoadingButton';
-import Stack from '@mui/material/Stack';
 import { useForm, Controller } from 'react-hook-form';
 import { AuthContext } from '../context/index.js';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import Link from '@mui/material/Link';
-import Avatar from '@mui/material/Avatar';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Box from '@mui/material/Box';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
 
 
 const Settings = () => {

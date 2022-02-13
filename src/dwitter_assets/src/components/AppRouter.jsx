@@ -13,7 +13,7 @@ const AppRouter = () => {
     const {ctx, isLoading} = useContext(AuthContext);
 
     if (isLoading) {
-        return <Loader/>
+        return <Loader fullScreen />
     }
 
     if (!ctx?.dwitterActor) {

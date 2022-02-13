@@ -1,8 +1,8 @@
 import React from 'react';
 import { Avatar, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { Link } from "react-router-dom";
 import moment from "moment";
+import Typography from '@mui/material/Typography';
 
 
 const PostsList = (props) => {
@@ -35,7 +35,9 @@ const PostsList = (props) => {
                                     {moment.unix(Number(item.createdTime / 1000000000n)).fromNow()}
                                 </React.Fragment>
                             }
-                            secondary={renderText(item.text)}
+                            secondary={
+                                <Typography style={{whiteSpace: 'pre-line'}}>{renderText(item.text)}</Typography>
+                            }
                         />
                     </ListItem>
                 )

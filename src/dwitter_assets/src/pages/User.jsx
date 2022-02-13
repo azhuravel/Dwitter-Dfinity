@@ -3,11 +3,9 @@ import { AuthContext } from '../context/index.js';
 import PostsList from '../components/UI/PostsList/PostsList.jsx';
 import PostForm from '../components/UI/PostForm/PostForm.jsx';
 import UserCard from '../components/UI/UserCard/UserCard.jsx';
+import Loader from '../components/UI/Loader/Loader.jsx';
 import { useParams } from "react-router-dom";
 import { Box, Grid } from '@mui/material';
-import Avatar from '@mui/material/Avatar';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
 
 
 const User = () => {
@@ -30,7 +28,9 @@ const User = () => {
         setPostsLoading(true);
         const getUserPostsResp = await ctx.dwitterActor.getUserPosts(username);
         if (getUserPostsResp) {
-            setPosts(getUserPostsResp[0] || []);
+            const posts = getUserPostsResp[0] || [];
+            console.log(posts);
+            setPosts(posts);
         }
         setPostsLoading(false);
     }
@@ -85,10 +85,12 @@ const User = () => {
 
             <Grid item lg={3} md={3} sm={0}/>
             <Grid item lg={6} md={6} sm={12}>
-                <Box sx={{ display: 'flex' }}>
-                    {!postsLoading && <PostsList posts={posts}/>}
-                    {postsLoading && <p>Loading...</p>}
-                </Box>
+                {postsLoading && <Loader/>}
+                {!postsLoading && 
+                    <Box sx={{ display: 'flex' }}>
+                        <PostsList posts={posts}/>
+                    </Box>
+                }
             </Grid>
             <Grid item lg={3} md={3} sm={0}/>
         </Grid>

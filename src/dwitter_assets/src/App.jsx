@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {BrowserRouter} from "react-router-dom";
 import AppRouter from "./components/AppRouter";
 import Navbar from "./components/UI/Navbar/Navbar.jsx";
+import Footer from "./components/UI/Footer/Footer.jsx";
 import {AuthContext} from "./context";
 import AuthService from "./services/authService.js";
 import Container from '@mui/material/Container';
@@ -17,6 +18,7 @@ const App = () => {
 
         const dwitterActor = await AuthService.getDwitterActor();
         const currentUser = await AuthService.getCurrentUser(dwitterActor);
+        // const currentUser = {displayname: "dqeqwdq24г", username: "qweqwe1"};
         
         setCtx({dwitterActor, currentUser});
         setLoading(false);
@@ -32,8 +34,9 @@ const App = () => {
             <BrowserRouter>
                 {ctx.dwitterActor && <Navbar/>}
                 <Container maxWidth="md">
-                    <CssBaseline />
+                    <CssBaseline/>
                     <AppRouter/>
+                    {ctx.dwitterActor && <Footer/>}
                 </Container>
             </BrowserRouter>
         </AuthContext.Provider>
