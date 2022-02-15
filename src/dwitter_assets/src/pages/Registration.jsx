@@ -20,7 +20,7 @@ const Registration = () => {
         const displayname = data.displayname;
 
         // Проверить, нет ли пользователя с введенным username.
-        const usernameResponse = await ctx.dwitterActor.getByUsername(username);
+        const usernameResponse = await ctx.dwitterActor.getUserByUsername(username);
         const usernameAvailable = !(usernameResponse[0]);
         if (!usernameAvailable) {
             setError('username', {type: 'server', message: 'Already in use'});
@@ -29,7 +29,7 @@ const Registration = () => {
         }
 
         // Обновить информацию о пользователе.
-        await ctx.dwitterActor.saveUser({username, displayname});
+        await ctx.dwitterActor.createUser({username, displayname});
         const userResponse = await ctx.dwitterActor.getCurrentUser();
         const user = userResponse[0];
         setCtx({...ctx, currentUser: user});
@@ -47,6 +47,7 @@ const Registration = () => {
                 <Controller
                     name="username"
                     control={control}
+                    defaultValue={''}
                     render={({field: {onChange, value}, fieldState: {error}}) => (
                     <TextField
                         label="Username"
@@ -70,6 +71,7 @@ const Registration = () => {
                 <Controller
                     name="displayname"
                     control={control}
+                    defaultValue={''}
                     render={({field: {onChange, value}, fieldState: {error}}) => (
                     <TextField
                         label="Display name"

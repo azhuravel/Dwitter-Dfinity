@@ -25,7 +25,7 @@ export const PostForm = () => {
         text : text
       }
       setPostText("");
-      const response = await authCtx.dwitterActor.savePost(post);
+      const response = await authCtx.dwitterActor.createPost(post);
       fetchData();
       setPosting(false);
     }

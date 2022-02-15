@@ -23,12 +23,17 @@ const Head = () => {
     });
   }
 
+  async function settings() {
+    navigate('/settings');
+  }
+
   return (
     <AppBar position="static">
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Dwitter
         </Typography>
+        {!!authCtx && <Button color="inherit" onClick={settings}>Settings</Button>}
         {!!authCtx && <Button color="inherit" onClick={logOut}>Logout</Button>}
       </Toolbar>
     </AppBar>

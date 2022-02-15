@@ -22,7 +22,7 @@ const PostForm = (props) => {
         
         setSubmitting(true);
         const post = {text: preparedText};
-        await ctx.dwitterActor.savePost(post);
+        await ctx.dwitterActor.createPost(post);
         props.postCreatedCallback();
         reset({text:''});
         setSubmitting(false);

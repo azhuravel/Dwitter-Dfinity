@@ -27,7 +27,7 @@ const RegisterUserPage = () => {
         } else if (username.length < 4 || username.length > 15) {
             error = "Length should be between 4 and 15 symbols";
         } else {
-            const usernameResponse = await authCtx.dwitterActor.getByUsername(username);
+            const usernameResponse = await authCtx.dwitterActor.getUserByUsername(username);
             const available = !(usernameResponse[0]);
             if (!available) {
                 error = "Already existing";
@@ -84,13 +84,10 @@ const RegisterUserPage = () => {
         setDisplayname(e.target.value);
     }
 
-    const saveUser = () => {
+    const createUser = () => {
         setSaveDisabled(true);
         let _save = async () => {
-            await authCtx.dwitterActor.saveUser({username, displayname});
-
-            // TODO: or redirect to LoginPage or optimized (saveUser can return User object)
-            const userResponse = await authCtx.dwitterActor.getCurrentUser();
+            const userResponse = await authCtx.dwitterActor.createUser({username, displayname});
             const user = userResponse[0];
             setAuthCtx({
                 dwitterActor : authCtx.dwitterActor,
@@ -122,7 +119,7 @@ const RegisterUserPage = () => {
                         onChange={handleDisplaynameChange}
                         error={!!displaynameError}
                     />
-                    <Button variant="contained" disabled={saveDisabled} onClick={saveUser}>Save</Button>
+                    <Button variant="contained" disabled={saveDisabled} onClick={createUser}>Save</Button>
                 </Grid>
             </Grid>
         </StyledEngineProvider>

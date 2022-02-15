@@ -18,7 +18,7 @@ const Settings = () => {
 
         const username = ctx.currentUser.username;
         const displayname = data.displayname;
-        await ctx.dwitterActor.saveUser({username, displayname});
+        await ctx.dwitterActor.createUser({username, displayname});
         const userResponse = await ctx.dwitterActor.getCurrentUser();
         const user = userResponse[0];
         setCtx({...ctx, currentUser: user});

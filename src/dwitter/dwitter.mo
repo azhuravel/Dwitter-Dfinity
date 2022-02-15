@@ -1,54 +1,89 @@
 import Types "./types";
 import Storage "./storage";
-import PostService "./postService";
+import PostModule "./postService";
+import UserModule "./userService";
 import Principal "mo:base/Principal";
 
+/*
+ * The Dwitter actor serves as the only API for frontend
+ */
 actor {
-    var postsStorage: Storage.Posts = Storage.Posts();
-    var usersStorage: Storage.Users = Storage.Users();
-    var postService: PostService.PostService = PostService.PostService(postsStorage, usersStorage);
-    // TODO: impl UserService and UserInfo entity
-    //var userService: UserService = UserService(postsStorage, usersStorage);
+    /*
+     * Storages and services
+     */
+
+    let postsStorage: Storage.Posts = Storage.Posts();
+    let usersStorage: Storage.Users = Storage.Users();
+
+    let postService: PostModule.PostService = PostModule.PostService(postsStorage, usersStorage);
+    let userService: UserModule.UserService = UserModule.UserService(usersStorage);
+
+    /*
+     * Data types
+     */
 
     type UserId = Types.UserId;
     type User = Types.User;
-    type ApiUser = Types.ApiUser;
+    type CreateUserRequest = Types.CreateUserRequest;
+    type UpdateUserRequest = Types.UpdateUserRequest;
 
     type Post = Types.Post;
     type PostInfo = Types.PostInfo;
     type CreatePostRequest = Types.CreatePostRequest;
 
-    public shared(msg) func savePost(request : CreatePostRequest): async() {
-        postService.savePost(msg.caller, request)
+    /*
+     * User methods
+     */
+
+    public shared(msg) func getCurrentUser(): async ?User {
+        userService.get(msg.caller)
+    };
+
+    public shared(msg) func getUserByUsername(username : Text): async ?User  {
+        usersStorage.getByUsername(username)
+    };
+
+    public shared(msg) func createUser(request : CreateUserRequest): async ?User {
+        ?userService.create(msg.caller, request)
+    };
+
+    public shared(msg) func updateUser(request : UpdateUserRequest): async ?User {
+        userService.update(msg.caller, request)
+    };
+
+    /*
+     * Posts methods
+     */
+
+    public shared(msg) func createPost(request : CreatePostRequest): async() {
+        postService.createPost(msg.caller, request)
     };
 
     public shared(msg) func getMyPosts(): async ?[PostInfo] {
-        postService.getByUserId(msg.caller);
+        postService.getByUserId(msg.caller)
     };
 
     public func getUserPosts(username : Text): async ?[PostInfo] {
-        postService.getByUsername(username);
+        postService.getByUsername(username)
     };
 
-    public func getUsers(): async [UserId] {
-        postsStorage.getUsers()
+    /*
+     * Canister upgrade logic
+     */
+
+    stable var posts : [Post] = [];
+    stable var users : [User] = []; 
+
+    system func preupgrade() {
+        posts := postService.toArray();
+        users := userService.toArray();
     };
 
-    public shared(msg) func getCurrentUser(): async ?User {
-        usersStorage.get(msg.caller)
-    };
+    system func postupgrade() {
+        postService.fromArray(posts);
+        userService.fromArray(users);
 
-    public shared(msg) func saveUser(apiUser : ApiUser): async() {
-        // TODO: add validation
-        let user : User = object {
-            public let id = msg.caller; 
-            public let username = apiUser.username;
-            public let displayname = apiUser.displayname;
-        };
-        usersStorage.saveUser(msg.caller, user)
-    };
-
-    public shared(msg) func getByUsername(username : Text): async ?User  {
-        usersStorage.getByUsername(username);
+        posts := [];
+        users := [];
     };
 };

@@ -57,7 +57,7 @@ export const InternetIdentityAuth = () => {
           onSuccess: async () => {
             doLoginWithAuthClient(authClient);
           },
-          identityProvider: process.env.LOCAL_II_CANISTER,
+          identityProvider: process.env.II_CANISTER_ID,
         });
       }
     }
@@ -96,7 +96,9 @@ export const InternetIdentityAuth = () => {
 
       // Ошибка "Fail to verify certificate" решается запросом rootKey().
       // Подробней: https://forum.dfinity.org/t/fail-to-verify-certificate-in-development-update-calls/4078
-      await window.ic.plug.agent.fetchRootKey();
+      if (process.env.NODE_ENV === 'development') {
+        await window.ic.plug.agent.fetchRootKey();
+      }
 
       const dwitterActor = await window.ic.plug.createActor({
         canisterId: dwitterCanisterId,

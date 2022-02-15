@@ -40,9 +40,9 @@ const User = () => {
         if (isCurrentUserProfile) {
             setUser(ctx.currentUser);
         } else {
-            const getByUsernameResp = await ctx.dwitterActor.getByUsername(username);
-            if (getByUsernameResp && getByUsernameResp[0]) {
-                setUser(getByUsernameResp[0]);
+            const getUserByUsernameResp = await ctx.dwitterActor.getUserByUsername(username);
+            if (getUserByUsernameResp && getUserByUsernameResp[0]) {
+                setUser(getUserByUsernameResp[0]);
             } else {
                 setUserNotFound(true);
             }
