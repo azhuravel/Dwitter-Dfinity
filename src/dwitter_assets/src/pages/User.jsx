@@ -29,7 +29,6 @@ const User = () => {
         const getUserPostsResp = await ctx.dwitterActor.getUserPosts(username);
         if (getUserPostsResp) {
             const posts = getUserPostsResp[0] || [];
-            console.log(posts);
             setPosts(posts);
         }
         setPostsLoading(false);
