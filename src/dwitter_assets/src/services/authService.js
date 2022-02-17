@@ -72,6 +72,45 @@ export default class AuthService {
     }
 
     static async getDwitterActor() {
+        if (process.env.USE_MOCKS) {
+            return {
+                createPost: () => {
+                    return [];
+                },
+                createUser: () => {
+                    return [];
+                },
+                getCurrentUser: () => { 
+                    return [{
+                        'id': '123123',
+                        'username': 'mockeduser',
+                        'displayname': 'Mock User',
+                        'createdTime': 1000000000n,
+                    }]; 
+                },
+                getMyPosts: () => {
+                    return [];
+                },
+                getUserByUsername: () => {
+                    return {};
+                },
+                getUserPosts: () => {
+                    return [[
+                        {
+                            id: '3123123',
+                            username: 'mockeduser',
+                            displayname: 'mockeduser',
+                            text: 'This is my post',
+                            createdTime: 1000000000n,
+                        },
+                    ]];
+                },
+                updateUser: () => {
+                    return [];
+                },
+            };
+        }
+
         const authedBy = localStorage.getItem(keyLocalStorageAuth);
         let dwitterActor = null;
         switch (authedBy) {

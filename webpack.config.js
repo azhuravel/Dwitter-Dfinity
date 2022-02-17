@@ -5,6 +5,7 @@ const TerserPlugin = require("terser-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 
 let internetIdentityCanisterId = 'rwlgt-iiaaa-aaaaa-aaaaa-cai';
+console.log('----', process.env);
 if (process.env.INTERNET_IDENTITY_CANISTER_ID) {
   internetIdentityCanisterId = process.env.INTERNET_IDENTITY_CANISTER_ID;
 }
@@ -102,7 +103,8 @@ module.exports = {
       NODE_ENV: 'development',
       DWITTER_CANISTER_ID: canisters["dwitter"],
       DWITTER_ASSETS_CANISTER_ID: canisters["dwitter_assets"],
-      II_CANISTER_ID: isDevelopment ? LOCAL_II_CANISTER : PROD_II_CANISTER
+      II_CANISTER_ID: isDevelopment ? LOCAL_II_CANISTER : PROD_II_CANISTER,
+      USE_MOCKS: process.env.USE_MOCKS, // Используется для имитации dwitterActor, для ускорения работы над UI.
     }),
     new webpack.ProvidePlugin({
       Buffer: [require.resolve("buffer/"), "Buffer"],

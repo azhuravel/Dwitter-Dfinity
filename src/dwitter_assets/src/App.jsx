@@ -14,11 +14,8 @@ const App = () => {
     const [isLoading, setLoading] = useState(true);
 
     useEffect(async () => {
-        setLoading(true);
-
         const dwitterActor = await AuthService.getDwitterActor();
         const currentUser = await AuthService.getCurrentUser(dwitterActor);
-        // const currentUser = {displayname: "dqeqwdq24г", username: "qweqwe1"};
         
         setCtx({dwitterActor, currentUser});
         setLoading(false);
