@@ -27,34 +27,41 @@ const mockDwitterActor = () => {
             return [];
         },
         getCurrentUser: async () => { 
-            await delay(1000);
+            // await delay(1000);
             return [{
-                'id': '123123',
-                'username': 'mockeduser',
-                'displayname': 'Mock User',
-                'createdTime': 1000000000n,
+                id: '123123',
+                username: 'mockeduser',
+                displayname: 'Mock User',
+                createdTime: 1000000000n,
             }]; 
         },
         getMyPosts: async () => {
             return [];
         },
         getUserByUsername: async () => {
-            await delay(800);
+            // await delay(800);
             return [{
-                'id': '123123',
-                'username': 'qweqweq',
-                'displayname': 'Mock User 2',
-                'createdTime': 1000000000n,
+                id: '123123',
+                username: 'qweqweq',
+                displayname: 'Mock User 2',
+                createdTime: 1000000000n,
             }]; 
         },
         getUserPosts: async () => {
             await delay(500);
             return [[
                 {
-                    id: '3123123',
+                    id: '1111111',
                     username: 'mockeduser',
                     displayname: 'mockeduser',
                     text: 'This is my post @qweqweq',
+                    createdTime: 1000000000n,
+                },
+                {
+                    id: '2222222',
+                    username: 'mockeduser',
+                    displayname: 'mockeduser',
+                    text: 'This is my SECOND post @ntynt',
                     createdTime: 1000000000n,
                 },
             ]];
