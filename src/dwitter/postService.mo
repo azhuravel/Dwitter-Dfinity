@@ -10,8 +10,9 @@ module {
     type CreatePostRequest = Types.CreatePostRequest;
 
     public class PostService(postsStorage: Storage.Posts, usersStorage: Storage.Users) {
-        public func createPost(userId : UserId, request : CreatePostRequest): () {
-            postsStorage.savePost(userId, request);
+        public func createPost(userId : UserId, request : CreatePostRequest): PostInfo {
+            let post = postsStorage.savePost(userId, request);
+            return fetchPostInfo(post);
         };
 
         public func getByUserId(userId : UserId): ?[PostInfo] {
@@ -41,30 +42,7 @@ module {
         public func fetchPostInfos(posts: [Post]) : ?[PostInfo]  {
             do ? {
                 Array.tabulate<PostInfo>(posts.size(), func(i:Nat) : PostInfo {
-                    let currentPost = posts[i];
-                    let currentUser = usersStorage.get(currentPost.userId);
-                    switch(currentUser) {
-                        case (?currentUser) {
-                            let postInfo : PostInfo = {
-                                id = currentPost.id;
-                                createdTime = currentPost.createdTime;
-                                text = currentPost.text;
-                                username = currentUser.username;
-                                displayname = currentUser.displayname;
-                            };
-                            postInfo
-                        };
-                        case (null) {
-                            let postInfo : PostInfo = {
-                                id = currentPost.id;
-                                createdTime = currentPost.createdTime;
-                                text = currentPost.text;
-                                username = "DELETED";
-                                displayname = "DELETED";
-                            };
-                            postInfo
-                        };
-                    };
+                    fetchPostInfo(posts[i])
                 })
             }
         };
@@ -76,5 +54,31 @@ module {
         public func fromArray(array : [Post]) {
             postsStorage.fromArray(array)
         };
+
+        private func fetchPostInfo(post : Post) : PostInfo {
+            let user = usersStorage.get(post.userId);
+            switch(user) {
+                case (?user) {
+                    let postInfo : PostInfo = {
+                        id = post.id;
+                        createdTime = post.createdTime;
+                        text = post.text;
+                        username = user.username;
+                        displayname = user.displayname;
+                    };
+                    return postInfo;
+                };
+                case (null) {
+                    let postInfo : PostInfo = {
+                        id = post.id;
+                        createdTime = post.createdTime;
+                        text = post.text;
+                        username = "DELETED";
+                        displayname = "DELETED";
+                    };
+                    return postInfo;
+                };
+            };
+        }
     }
 }

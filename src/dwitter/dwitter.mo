@@ -55,7 +55,7 @@ actor {
      * Posts methods
      */
 
-    public shared(msg) func createPost(request : CreatePostRequest): async() {
+    public shared(msg) func createPost(request : CreatePostRequest): async PostInfo {
         postService.createPost(msg.caller, request)
     };
 

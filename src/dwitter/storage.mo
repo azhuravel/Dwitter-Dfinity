@@ -33,7 +33,7 @@ module {
         let map = Map.HashMap<UserId, Buffer.Buffer<Post>>(1, isEq, Principal.hash);
         var idGenerator : Nat = 1;
 
-        public func savePost(uid : UserId, request : CreatePostRequest) {
+        public func savePost(uid : UserId, request : CreatePostRequest) : Post {
             idGenerator += 1;
             let now = Time.now();
 
@@ -45,6 +45,8 @@ module {
             };
 
             storePost(post);
+
+            return post;
         };
 
         public func getPosts(uid : UserId) : ?[Post]  {
