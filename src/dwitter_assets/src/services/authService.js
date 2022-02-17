@@ -8,6 +8,8 @@ const keyLocalStorageAuth_plug = 'plug';
 
 const plugWhitelist = [process.env.DWITTER_CANISTER_ID, process.env.DWITTER_ASSETS_CANISTER_ID];
 
+const delay = async (ms) => new Promise(res => setTimeout(res, ms));
+
 const isAnonymous = (identity) => {
     // Проверка на то, что текущий пользователь является анонимом. Подробней:
     // https://forum.dfinity.org/t/checking-if-principal-is-anonymous-in-motoko/9672
@@ -71,16 +73,18 @@ export default class AuthService {
         return currentUser;
     }
 
+
     static async getDwitterActor() {
         if (process.env.USE_MOCKS) {
             return {
-                createPost: () => {
+                createPost: async () => {
                     return [];
                 },
-                createUser: () => {
+                createUser: async () => {
                     return [];
                 },
-                getCurrentUser: () => { 
+                getCurrentUser: async () => { 
+                    await delay(1000);
                     return [{
                         'id': '123123',
                         'username': 'mockeduser',
@@ -88,24 +92,31 @@ export default class AuthService {
                         'createdTime': 1000000000n,
                     }]; 
                 },
-                getMyPosts: () => {
+                getMyPosts: async () => {
                     return [];
                 },
-                getUserByUsername: () => {
-                    return {};
+                getUserByUsername: async () => {
+                    await delay(800);
+                    return [{
+                        'id': '123123',
+                        'username': 'qweqweq',
+                        'displayname': 'Mock User 2',
+                        'createdTime': 1000000000n,
+                    }]; 
                 },
-                getUserPosts: () => {
+                getUserPosts: async () => {
+                    await delay(500);
                     return [[
                         {
                             id: '3123123',
                             username: 'mockeduser',
                             displayname: 'mockeduser',
-                            text: 'This is my post',
+                            text: 'This is my post @qweqweq',
                             createdTime: 1000000000n,
                         },
                     ]];
                 },
-                updateUser: () => {
+                updateUser: async () => {
                     return [];
                 },
             };

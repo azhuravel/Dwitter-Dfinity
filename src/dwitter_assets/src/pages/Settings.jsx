@@ -31,6 +31,23 @@ const Settings = () => {
             <Grid container component="form" spacing={2} onSubmit={handleSubmit(onSubmit)}>
                 <Grid item xs={12}>
                     <Controller
+                        name="username"
+                        control={control}
+                        defaultValue={ctx.currentUser.username} 
+                        render={({field: {onChange, value}, fieldState: {error}}) => (
+                            <TextField
+                                label="Username"
+                                value={value}
+                                onChange={onChange}
+                                helperText='Cannot be changed'
+                                disabled
+                            />
+                        )}
+                    />
+                </Grid>
+
+                <Grid item xs={12}>
+                    <Controller
                         name="displayname"
                         control={control}
                         defaultValue={ctx.currentUser.displayname} 

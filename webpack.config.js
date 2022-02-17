@@ -5,7 +5,6 @@ const TerserPlugin = require("terser-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 
 let internetIdentityCanisterId = 'rwlgt-iiaaa-aaaaa-aaaaa-cai';
-console.log('----', process.env);
 if (process.env.INTERNET_IDENTITY_CANISTER_ID) {
   internetIdentityCanisterId = process.env.INTERNET_IDENTITY_CANISTER_ID;
 }
