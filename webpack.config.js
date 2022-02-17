@@ -10,6 +10,7 @@ if (process.env.INTERNET_IDENTITY_CANISTER_ID) {
 }
 const LOCAL_II_CANISTER = `http://${internetIdentityCanisterId}.localhost:8000/#authorize`;
 const PROD_II_CANISTER = "https://identity.ic0.app/#authorize";
+const USE_MOCKS = process.env.USE_MOCKS || false;
 
 let localCanisters, prodCanisters, canisters;
 
@@ -103,7 +104,7 @@ module.exports = {
       DWITTER_CANISTER_ID: canisters["dwitter"],
       DWITTER_ASSETS_CANISTER_ID: canisters["dwitter_assets"],
       II_CANISTER_ID: isDevelopment ? LOCAL_II_CANISTER : PROD_II_CANISTER,
-      USE_MOCKS: process.env.USE_MOCKS, // Используется для имитации dwitterActor, для ускорения работы над UI.
+      USE_MOCKS: USE_MOCKS, // Used to mock dwitterActor in development mode.
     }),
     new webpack.ProvidePlugin({
       Buffer: [require.resolve("buffer/"), "Buffer"],
