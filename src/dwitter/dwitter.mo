@@ -43,8 +43,8 @@ actor {
         usersStorage.getByUsername(username)
     };
 
-    public shared(msg) func createUser(request : CreateUserRequest): async ?User {
-        ?userService.create(msg.caller, request)
+    public shared(msg) func createUser(request : CreateUserRequest): async User {
+        userService.create(msg.caller, request)
     };
 
     public shared(msg) func updateUser(request : UpdateUserRequest): async ?User {
@@ -55,7 +55,7 @@ actor {
      * Posts methods
      */
 
-    public shared(msg) func createPost(request : CreatePostRequest): async() {
+    public shared(msg) func createPost(request : CreatePostRequest): async PostInfo {
         postService.createPost(msg.caller, request)
     };
 
