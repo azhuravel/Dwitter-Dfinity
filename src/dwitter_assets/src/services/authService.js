@@ -88,9 +88,11 @@ export default class AuthService {
             await plug.createAgent({ whitelist: plugWhitelist, host: AuthService.getPlugHost() });
         }
 
-        // Ошибка "Fail to verify certificate" решается запросом rootKey().
+        // Ошибка при запуске локально "Fail to verify certificate" решается запросом rootKey().
         // Подробней: https://forum.dfinity.org/t/fail-to-verify-certificate-in-development-update-calls/4078
-        await plug.agent.fetchRootKey();
+        if (process.env.NODE_ENV === 'development') {
+            await plug.agent.fetchRootKey();
+        }
 
         const dwitterActor = await plug.createActor({
             canisterId: process.env.DWITTER_CANISTER_ID,
@@ -165,7 +167,7 @@ export default class AuthService {
 
     static async loginByII() {
         const authClient = await AuthClient.create();
-        await authClient.login({ identityProvider: process.env.LOCAL_II_CANISTER });
+        await authClient.login({ identityProvider: process.env.II_CANISTER_ID });
         const identity = await authClient.getIdentity();
         const dwitterActor = await createActor(canisterId, { agentOptions: { identity }});
         const currentUser = await AuthService.getCurrentUser(dwitterActor);
