@@ -173,7 +173,7 @@ export default class AuthService {
                 onSuccess: resolve,
                 onError: reject,
             });
-          });
+        });
         const identity = await authClient.getIdentity();
         const dwitterActor = await createActor(canisterId, { agentOptions: { identity }});
         const currentUser = await AuthService.getCurrentUser(dwitterActor);
