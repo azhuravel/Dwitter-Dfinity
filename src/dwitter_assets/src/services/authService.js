@@ -174,8 +174,8 @@ export default class AuthService {
                 onError: reject,
             });
         });
-        const identity = await authClient.getIdentity();
-        const dwitterActor = await createActor(canisterId, { agentOptions: { identity }});
+        const identity = authClient.getIdentity();
+        const dwitterActor = createActor(canisterId, { agentOptions: { identity }});
         const currentUser = await AuthService.getCurrentUser(dwitterActor);
         localStorage.setItem(keyLocalStorageAuth, keyLocalStorageAuth_ii);
         return {dwitterActor, currentUser};
