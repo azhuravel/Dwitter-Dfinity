@@ -103,17 +103,11 @@ export default class AuthService {
 
     static async getDwitterActorByII() {
         const authClient = await AuthClient.create();
-        console.log('authClient =', authClient);
         const identity = await authClient.getIdentity();
-        console.log('identity =', identity);
-        console.log('authClient.isAuthenticated() =', authClient.isAuthenticated());
-        console.log('isAnonymous(identity) =', isAnonymous(identity));
         if (!authClient.isAuthenticated() || isAnonymous(identity)) {
-            console.log('---111');
             return;
         }
         const dwitterActor = await createActor(process.env.DWITTER_CANISTER_ID, { agentOptions: { identity }});
-        console.log('---', dwitterActor);
         return dwitterActor;
     }
 
@@ -123,7 +117,6 @@ export default class AuthService {
         }
 
         const userResponse = await dwitterActor.getCurrentUser();
-        console.log('userResponse =', userResponse);
         if (!userResponse) {
             return null;
         }
@@ -143,7 +136,6 @@ export default class AuthService {
         }
 
         const authedBy = localStorage.getItem(keyLocalStorageAuth);
-        console.log('authedBy =', authedBy);
         let dwitterActor = null;
         switch (authedBy) {
             case keyLocalStorageAuth_ii:
@@ -153,7 +145,6 @@ export default class AuthService {
                 dwitterActor = await AuthService.getDwitterActorByPlug();
                 break;
         }
-        console.log('dwitterActor =', dwitterActor);
         return dwitterActor;
     }
 
