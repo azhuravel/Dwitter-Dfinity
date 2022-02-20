@@ -22,7 +22,8 @@ module {
                     return null;
                 };
                 case (?posts) {
-                    return fetchPostInfos(posts);
+                    // posts should be reversed to be ordered descending by created time
+                    return reverseAndFetchPostInfos(posts);
                 };
             }
         };
@@ -39,10 +40,13 @@ module {
             }
         };
 
-        public func fetchPostInfos(posts: [Post]) : ?[PostInfo]  {
+        public func reverseAndFetchPostInfos(posts: [Post]) : ?[PostInfo]  {
             do ? {
-                Array.tabulate<PostInfo>(posts.size(), func(i:Nat) : PostInfo {
-                    fetchPostInfo(posts[i])
+                let N = posts.size(); // total amount of posts
+                Array.tabulate<PostInfo>(N, func(i:Nat) : PostInfo {
+                    // posts[] stores posts orders by created time ASCending
+                    // the last created post is post[N-1]
+                    fetchPostInfo(posts[N - i - 1])
                 })
             }
         };
