@@ -66,8 +66,8 @@ const App = () => {
                         {ctx.dwitterActor && <Navbar/>}
                         <Container maxWidth="lg">
                             <AppRouter/>
-                            {ctx.dwitterActor && <Footer/>}
                         </Container>
+                        {ctx.dwitterActor && <Footer/>}
                     </BrowserRouter>
                 </AuthContext.Provider>
             </ThemeProvider>

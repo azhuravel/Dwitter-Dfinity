@@ -2,6 +2,7 @@
 .npmrc
 node_modules/
 dist/
+.tmp
 
 # dfx generated
 src/declarations/
