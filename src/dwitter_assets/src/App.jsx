@@ -7,7 +7,45 @@ import {AuthContext} from "./context";
 import AuthService from "./services/authService.js";
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { red, blue } from '@mui/material/colors';
 
+
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: blue[500],
+        },
+    },
+    typography: {
+        fontFamily: 'PT Mono',
+        body1: {
+            fontFamily: 'PT Mono',
+        },
+        h6: {
+            fontFamily: 'PT Mono',
+        },
+        button: {
+            fontFamily: 'PT Mono',
+        },
+        body2: {
+            fontFamily: 'PT Mono',
+            fontSize: "1rem",
+        },
+        button: {
+            textTransform: 'none',
+        },
+    },
+    components: {
+        MuiLink: {
+            styleOverrides: {
+                root: {
+                    cursor: 'pointer',
+                }
+            },
+        },
+    },
+});
 
 const App = () => {
     const [ctx, setCtx] = useState({});
@@ -22,21 +60,25 @@ const App = () => {
     }, [])
 
     return (
-        <AuthContext.Provider value={{
-            ctx, 
-            setCtx,
-            isLoading,
-            setLoading
-        }}>
-            <BrowserRouter>
-                {ctx.dwitterActor && <Navbar/>}
-                <Container maxWidth="md">
-                    <CssBaseline/>
-                    <AppRouter/>
-                    {ctx.dwitterActor && <Footer/>}
-                </Container>
-            </BrowserRouter>
-        </AuthContext.Provider>
+        <React.StrictMode>
+            <ThemeProvider theme={theme}>
+                <CssBaseline/>
+                <AuthContext.Provider value={{
+                    ctx, 
+                    setCtx,
+                    isLoading,
+                    setLoading
+                }}>
+                    <BrowserRouter>
+                        {ctx.dwitterActor && <Navbar/>}
+                        <Container maxWidth="lg">
+                            <AppRouter/>
+                        </Container>
+                        {ctx.dwitterActor && <Footer/>}
+                    </BrowserRouter>
+                </AuthContext.Provider>
+            </ThemeProvider>
+        </React.StrictMode>
     )
 }
 

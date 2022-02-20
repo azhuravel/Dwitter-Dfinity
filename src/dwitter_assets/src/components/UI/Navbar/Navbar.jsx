@@ -9,7 +9,7 @@ import {Link} from "react-router-dom";
 import Container from '@mui/material/Container';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Avatar from '@mui/material/Avatar';
+import DwitterAvatar from "../DwitterAvatar/DwitterAvatar";
 
 
 const Navbar = () => {
@@ -33,7 +33,7 @@ const Navbar = () => {
     return (
         <React.Fragment>
             <AppBar position="fixed">
-                <Container maxWidth="md">
+                <Container maxWidth="lg">
                     <Toolbar variant="regular" disableGutters>
                         <Typography variant="h6" component="div" sx={{flexGrow: 1}}>Dwitter</Typography>
 
@@ -45,7 +45,7 @@ const Navbar = () => {
                             aria-expanded={open ? 'true' : undefined}
                             onClick={handleClick}
                         >
-                            <Avatar sx={{mr: 1}}></Avatar>
+                            <DwitterAvatar mr={1} name={displayname}/>
                             {displayname}
                         </Button>
                         <Menu
@@ -64,7 +64,7 @@ const Navbar = () => {
                     </Toolbar>
                 </Container>
             </AppBar>
-            <Toolbar/>
+            <Toolbar variant="regular" disableGutters/>
         </React.Fragment>
     );
 };

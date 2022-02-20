@@ -64,26 +64,26 @@ const User = () => {
     }
   
     return (
-        <Grid container spacing={2}>
-            <Grid item lg={3} md={3} sm={0}/>
-            <Grid item lg={6} md={6} sm={12}>
+        <Grid container spacing={3} sx={{mt: 0}}>
+            <Grid item lg={2} md={2} sm={0}/>
+            <Grid item lg={8} md={8} sm={12}>
                 <UserCard userLoading={userLoading} username={username} user={user} />
             </Grid>
-            <Grid item lg={3} md={3} sm={0}/>
+            <Grid item lg={2} md={2} sm={0}/>
 
             {isCurrentUserProfile 
                 && 
                 <React.Fragment>
-                    <Grid item lg={3} md={3} sm={0}/>
-                    <Grid item lg={6} md={6} sm={12}>
+                    <Grid item lg={2} md={2} sm={0}/>
+                    <Grid item lg={8} md={8} sm={12}>
                         <PostForm postCreatedCallback={fetchPosts} />
                     </Grid>
-                    <Grid item lg={3} md={3} sm={0}/>
+                    <Grid item lg={2} md={2} sm={0}/>
                 </React.Fragment>
             }
 
-            <Grid item lg={3} md={3} sm={0}/>
-            <Grid item lg={6} md={6} sm={12}>
+            <Grid item lg={2} md={2} sm={0}/>
+            <Grid item lg={8} md={8} sm={12}>
                 {postsLoading && <Loader/>}
                 {!postsLoading && 
                     <Box sx={{ display: 'flex' }}>
@@ -91,7 +91,7 @@ const User = () => {
                     </Box>
                 }
             </Grid>
-            <Grid item lg={3} md={3} sm={0}/>
+            <Grid item lg={2} md={2} sm={0}/>
         </Grid>
     )
 };

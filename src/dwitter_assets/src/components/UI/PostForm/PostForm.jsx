@@ -2,7 +2,7 @@ import React, {useState, useContext} from 'react';
 import Box from '@mui/material/Box';
 import { AuthContext } from '../../../context/index.js';
 import {TextField} from '@mui/material';
-import Avatar from '@mui/material/Avatar';
+import DwitterAvatar from "../DwitterAvatar/DwitterAvatar";
 import { useForm, Controller } from 'react-hook-form';
 import LoadingButton from '@mui/lab/LoadingButton';
 
@@ -31,7 +31,7 @@ const PostForm = (props) => {
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <Box sx={{ display: 'flex', alignItems: 'flex-start', mt: 3, mb: 1 }}>
-                <Avatar sx={{mr: 1}}></Avatar>
+                <DwitterAvatar mr={1} name={ctx?.currentUser?.displayname}/>
                 <Controller
                     name="text"
                     control={control}
@@ -56,7 +56,7 @@ const PostForm = (props) => {
             </Box>
 
             <Box sx={{ display: 'flex', flexDirection: 'row-reverse' }}>
-                <LoadingButton type="submit" variant="contained" loading={submitting}>Save</LoadingButton>
+                <LoadingButton type="submit" variant="contained" loading={submitting}>Send</LoadingButton>
             </Box>
         </form>
     );

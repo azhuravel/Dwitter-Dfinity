@@ -30,7 +30,7 @@ const mockDwitterActor = () => {
             // await delay(1000);
             return [{
                 id: '123123',
-                username: 'mockeduser',
+                username: 'uuuserrr',
                 displayname: 'Mock User',
                 createdTime: 1000000000n,
             }]; 
@@ -42,7 +42,7 @@ const mockDwitterActor = () => {
             // await delay(800);
             return [{
                 id: '123123',
-                username: 'qweqweq',
+                username: 'uuuserrr',
                 displayname: 'Mock User 2',
                 createdTime: 1000000000n,
             }]; 
@@ -52,14 +52,14 @@ const mockDwitterActor = () => {
             return [[
                 {
                     id: '1111111',
-                    username: 'mockeduser',
+                    username: 'uuuserrr',
                     displayname: 'mockeduser',
                     text: 'This is my post @qweqweq',
                     createdTime: 1000000000n,
                 },
                 {
                     id: '2222222',
-                    username: 'mockeduser',
+                    username: 'uuuserrr',
                     displayname: 'mockeduser',
                     text: 'This is my SECOND post @ntynt',
                     createdTime: 1000000000n,
