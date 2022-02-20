@@ -1,8 +1,10 @@
 import React from 'react';
 import { Avatar, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
+import Link from '@mui/material/Link';
 import moment from "moment";
 import Typography from '@mui/material/Typography';
+import DwitterAvatar from "../DwitterAvatar/DwitterAvatar";
 
 
 const PostsList = (props) => {
@@ -12,7 +14,7 @@ const PostsList = (props) => {
         let parts = text.split(re);
         for (let i = 1; i < parts.length; i += 2) {
             const username = parts[i];
-            parts[i] = <Link to={`/user/${username}`} key={i}>@{username}</Link>
+            parts[i] = <Link component={RouterLink} underline='hover' to={`/user/${username}`} key={i}>@{username}</Link>
         }
         return parts
     }
@@ -23,14 +25,15 @@ const PostsList = (props) => {
                 props.posts.map(item => 
                     <ListItem disableGutters key={item.id} alignItems="flex-start">
                         <ListItemAvatar>
-                            <Avatar></Avatar>
+                            {/* <Avatar/> */}
+                            <DwitterAvatar name={item.displayname}/>
                         </ListItemAvatar>
                         <ListItemText
                             primary={
                                 <React.Fragment>
                                     {item.displayname}
                                     {" "}
-                                    <Link to={`/user/${item.username}`}>@{item.username}</Link>
+                                    <Link component={RouterLink} underline='hover' to={`/user/${item.username}`}>@{item.username}</Link>
                                     {" - "}
                                     {moment.unix(Number(item.createdTime / 1000000000n)).fromNow()}
                                 </React.Fragment>

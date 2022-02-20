@@ -1,6 +1,5 @@
 import React from 'react';
-import {Avatar} from '@mui/material';
-import Avatar from '@mui/material/Avatar';
+import DwitterAvatar from "../DwitterAvatar/DwitterAvatar";
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import moment from "moment";
@@ -12,21 +11,17 @@ const UserCard = (props) => {
     if (!props.userLoading) {
         displayname = props?.user?.displayname;
     }
+    const createdTime = (props?.user?.createdTime || 0n ) / 1000000000n;
 
     return (
-        <Card elevation={0}>
+        <Card elevation={0} variant='body1'>
             <CardHeader
                 sx={{px:0}}
-                avatar={<Avatar></Avatar>}
-                title={displayname}
-                subheader={`@${username}`}
-                subheader={
-                    <React.Fragment>
-                        {username}
-                        {/* {" - "}
-                        {moment.unix(Number(props?.user?.createdTime / 1000000000n)).fromNow()} */}
-                    </React.Fragment>
+                avatar={
+                    <DwitterAvatar name={displayname}/>
                 }
+                title={displayname}
+                subheader={`@${username} - joined ${moment.unix(Number(createdTime)).fromNow()}`}
             />
         </Card>
     )
