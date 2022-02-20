@@ -18,7 +18,14 @@ const theme = createTheme({
         },
     },
     typography: {
+        fontFamily: 'PT Mono',
         body1: {
+            fontFamily: 'PT Mono',
+        },
+        h6: {
+            fontFamily: 'PT Mono',
+        },
+        button: {
             fontFamily: 'PT Mono',
         },
         body2: {
