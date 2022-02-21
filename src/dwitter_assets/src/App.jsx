@@ -74,7 +74,7 @@ const App = () => {
                         <Container maxWidth="lg">
                             <AppRouter/>
                         </Container>
-                        {ctx.dwitterActor && <Footer/>}
+                        <Footer/>
                     </BrowserRouter>
                 </AuthContext.Provider>
             </ThemeProvider>

@@ -19,6 +19,7 @@ const isAnonymous = (identity) => {
 }
 
 const mockDwitterActor = () => {
+    // return null;
     return {
         createPost: async () => {
             return [];
