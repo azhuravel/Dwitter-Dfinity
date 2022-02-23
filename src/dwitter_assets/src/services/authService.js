@@ -22,7 +22,14 @@ const mockDwitterActor = () => {
     // return null;
     return {
         createPost: async () => {
-            return [];
+            await delay(1000);
+            return [{
+                id: '665444',
+                username: 'uuuserrr',
+                displayname: 'mockeduser',
+                text: 'Created!!!',
+                createdTime: 1000000000n,
+            }];
         },
         createUser: async () => {
             return [];
@@ -37,14 +44,39 @@ const mockDwitterActor = () => {
             }]; 
         },
         getMyPosts: async () => {
-            return [];
+            // await delay(500);
+            return [[
+                {
+                    id: '1111111',
+                    username: 'uuuserrr',
+                    displayname: 'mockeduser',
+                    text: 'This is my post @qweqweq @ntynt',
+                    createdTime: 1000000000n,
+                },
+                {
+                    id: '2222222',
+                    username: 'uuuserrr',
+                    displayname: 'mockeduser',
+                    text: 'This is my SECOND post @ntynt',
+                    createdTime: 1000000000n,
+                },
+            ]];
         },
-        getUserByUsername: async () => {
-            // await delay(800);
+        getUserByUsername: async (username) => {
+            switch (username) {
+                case 'qweqwe':
+                    await delay(800);
+                    break;
+                case 'ntynt':
+                    await delay(200);
+                    break;
+                default:
+                    await delay(2000);
+            }
             return [{
                 id: '123123',
-                username: 'uuuserrr',
-                displayname: 'Mock User 2',
+                username: username,
+                displayname: 'USER:' + username,
                 createdTime: 1000000000n,
             }]; 
         },
@@ -55,7 +87,7 @@ const mockDwitterActor = () => {
                     id: '1111111',
                     username: 'uuuserrr',
                     displayname: 'mockeduser',
-                    text: 'This is my post @qweqweq',
+                    text: 'This is my post @qweqweq @ntynt',
                     createdTime: 1000000000n,
                 },
                 {

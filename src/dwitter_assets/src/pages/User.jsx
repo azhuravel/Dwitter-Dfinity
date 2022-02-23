@@ -8,48 +8,64 @@ import { useParams } from "react-router-dom";
 import { Box, Grid } from '@mui/material';
 
 
+const makeCancelable = (promise) => {
+    let canceled = false;
+
+    const wrappedPromise = new Promise((resolve, reject) => {
+        promise.then(
+            val => canceled ? reject({isCanceled: true}) : resolve(val),
+            error => canceled ? reject({isCanceled: true}) : reject(error)
+        );
+    });
+
+    return {
+        promise: wrappedPromise,
+        cancel: () => canceled = true,
+    };
+};
+
 const User = () => {
     const {ctx} = useContext(AuthContext); 
-    const [postsLoading, setPostsLoading] = useState(false); 
-    const [userLoading, setUserLoading] = useState(false); 
-    const [userNotFound, setUserNotFound] = useState(false); 
+    const [postsLoading, setPostsLoading] = useState(true); 
+    const [userLoading, setUserLoading] = useState(true); 
     const [posts, setPosts] = useState([]);
-    const [user, setUser] = useState(null);
-    const params = useParams();
-    const username = params.username;
+    const [user, setUser] = useState(undefined);
+    const {username} = useParams();
     const isCurrentUserProfile = (username === ctx.currentUser.username);
 
+    // Load user profile info.
     useEffect(() => {
-        fetchPosts();
-        fetchUser();
+        setUserLoading(true);
+        const cancelable = makeCancelable(ctx.dwitterActor.getUserByUsername(username));
+
+        cancelable.promise
+            .then((resp) => ((resp && resp[0]) || null))
+            .then((user) => setUser(user))
+            .then(() => setUserLoading(false))
+            .catch((err) => {});
+
+        return () => cancelable.cancel();
     }, [username]);
 
-    const fetchPosts = async () => {
+    // Load posts of user.
+    useEffect(() => {
         setPostsLoading(true);
-        const getUserPostsResp = await ctx.dwitterActor.getUserPosts(username);
-        if (getUserPostsResp) {
-            const posts = getUserPostsResp[0] || [];
-            setPosts(posts);
-        }
-        setPostsLoading(false);
+        const cancelable = makeCancelable(ctx.dwitterActor.getUserPosts(username));
+                
+        cancelable.promise
+            .then((resp) => ((resp && resp[0]) || []))
+            .then((posts) => setPosts(posts))
+            .then(() => setPostsLoading(false))
+            .catch((err) => {});
+
+        return () => cancelable.cancel();
+    }, [username]);
+
+    const addPost = (post) => {
+        setPosts(currentPosts => ([...currentPosts, post]));
     }
 
-    const fetchUser = async () => {
-        setUserLoading(true);
-        if (isCurrentUserProfile) {
-            setUser(ctx.currentUser);
-        } else {
-            const getUserByUsernameResp = await ctx.dwitterActor.getUserByUsername(username);
-            if (getUserByUsernameResp && getUserByUsernameResp[0]) {
-                setUser(getUserByUsernameResp[0]);
-            } else {
-                setUserNotFound(true);
-            }
-        }
-        setUserLoading(false);
-    }
-
-    if (userNotFound) {
+    if (!userLoading && user === null) {
         return (
             <Grid container spacing={2}>
                 <Grid item lg={3} md={3} sm={0}/>
@@ -76,7 +92,7 @@ const User = () => {
                 <React.Fragment>
                     <Grid item lg={2} md={2} sm={0}/>
                     <Grid item lg={8} md={8} sm={12}>
-                        <PostForm postCreatedCallback={fetchPosts} />
+                        <PostForm postCreatedCallback={addPost} />
                     </Grid>
                     <Grid item lg={2} md={2} sm={0}/>
                 </React.Fragment>
