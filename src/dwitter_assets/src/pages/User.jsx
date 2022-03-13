@@ -6,7 +6,10 @@ import UserCard from '../components/UI/UserCard/UserCard.jsx';
 import Loader from '../components/UI/Loader/Loader.jsx';
 import { useParams } from "react-router-dom";
 import { Box, Grid } from '@mui/material';
-
+import { Principal } from '@dfinity/principal';
+import { getAllUserNFTs } from '@psychedelic/dab-js';
+import RosettaApi from '../services/rosettaApi.js';
+import { principalToAccountIdentifier } from '../services/utils.js';
 
 const User = () => {
     const {ctx} = useContext(AuthContext); 
@@ -18,10 +21,12 @@ const User = () => {
     const params = useParams();
     const username = params.username;
     const isCurrentUserProfile = (username === ctx.currentUser.username);
+    const rosettaApi = new RosettaApi();
 
     useEffect(() => {
         fetchPosts();
         fetchUser();
+        fetchBalance();
     }, [username]);
 
     const fetchPosts = async () => {
@@ -47,6 +52,12 @@ const User = () => {
             }
         }
         setUserLoading(false);
+    }
+
+    const fetchBalance = async() => {
+        const principal = 'r4rmh-mbkzp-gv2na-yvly3-zcp3r-ocllf-pt3p3-zsri5-6gqvr-stvs2-4ae';
+        const identifier = principalToAccountIdentifier(principal, 0); // 0 is for main wallet
+        const balance = await rosettaApi.getAccountBalance(identifier);
     }
 
     if (userNotFound) {

@@ -41,7 +41,9 @@ module {
                 id = idGenerator;
                 createdTime = now;
                 userId = uid;
+                kind = request.kind;
                 text = request.text;
+                nft = request.nft;
             };
 
             storePost(post);
