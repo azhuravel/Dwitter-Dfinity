@@ -10,11 +10,15 @@ import { principalToAccountIdentifier } from '../services/utils.js';
 const rosettaApi = new RosettaApi();
 
 export default class WealthService {
+
+    // returns accountIdentifier - wallet, in simple words
     static getAccountIdentifier(principal) {
+        // the second param '0' is for main accountIdentifier (main wallet) of principal
         return principalToAccountIdentifier(principal, 0);
     }
 
+    // get balance by accountIdentifier (wallet, in simple words)
     static async getBalance(accountIdentifier) {
-        return rosettaApi.getAccountBalance(accountIdentifier, 0); // 0 is for main wallet
+        return rosettaApi.getAccountBalance(accountIdentifier);
     }
 }

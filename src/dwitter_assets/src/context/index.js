@@ -4,5 +4,5 @@ import {createContext} from 'react'
 // Fields:
 // - currentUser
 // - dwitterActor
-// - accountIdentifier
+// - accountIdentifier (wallet, in simple words)
 export const AuthContext = createContext({});
