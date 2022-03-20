@@ -6,10 +6,7 @@ import UserCard from '../components/UI/UserCard/UserCard.jsx';
 import Loader from '../components/UI/Loader/Loader.jsx';
 import { useParams } from "react-router-dom";
 import { Box, Grid } from '@mui/material';
-import { Principal } from '@dfinity/principal';
-import { getAllUserNFTs } from '@psychedelic/dab-js';
-import RosettaApi from '../services/rosettaApi.js';
-import { principalToAccountIdentifier } from '../services/utils.js';
+import WealthService from '../services/wealthService.js';
 
 const User = () => {
     const {ctx} = useContext(AuthContext); 
@@ -18,10 +15,10 @@ const User = () => {
     const [userNotFound, setUserNotFound] = useState(false); 
     const [posts, setPosts] = useState([]);
     const [user, setUser] = useState(null);
+    const [balance, setBalance] = useState(null);
     const params = useParams();
     const username = params.username;
     const isCurrentUserProfile = (username === ctx.currentUser.username);
-    const rosettaApi = new RosettaApi();
 
     useEffect(() => {
         fetchPosts();
@@ -55,9 +52,8 @@ const User = () => {
     }
 
     const fetchBalance = async() => {
-        const principal = 'r4rmh-mbkzp-gv2na-yvly3-zcp3r-ocllf-pt3p3-zsri5-6gqvr-stvs2-4ae';
-        const identifier = principalToAccountIdentifier(principal, 0); // 0 is for main wallet
-        const balance = await rosettaApi.getAccountBalance(identifier);
+        const balance = await WealthService.getBalance(ctx.accountIdentifier);
+        setBalance(balance);
     }
 
     if (userNotFound) {
@@ -78,7 +74,7 @@ const User = () => {
         <Grid container spacing={3} sx={{mt: 0}}>
             <Grid item lg={2} md={2} sm={0}/>
             <Grid item lg={8} md={8} sm={12}>
-                <UserCard userLoading={userLoading} username={username} user={user} />
+                <UserCard userLoading={userLoading} username={username} user={user} balance={balance} />
             </Grid>
             <Grid item lg={2} md={2} sm={0}/>
 

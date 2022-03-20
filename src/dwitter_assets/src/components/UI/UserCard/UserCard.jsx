@@ -8,8 +8,10 @@ import moment from "moment";
 const UserCard = (props) => {
     const username = props.username;
     let displayname = 'Loading...';
+    let balance = '?'
     if (!props.userLoading) {
         displayname = props?.user?.displayname;
+        balance = props?.balance;
     }
     const createdTime = (props?.user?.createdTime || 0n ) / 1000000000n;
 
@@ -21,7 +23,7 @@ const UserCard = (props) => {
                     <DwitterAvatar name={displayname}/>
                 }
                 title={displayname}
-                subheader={`@${username} - joined ${moment.unix(Number(createdTime)).fromNow()}`}
+                subheader={`@${username} - joined ${moment.unix(Number(createdTime)).fromNow()} - balance ${balance} ICP`}
             />
         </Card>
     )
