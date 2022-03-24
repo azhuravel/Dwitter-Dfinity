@@ -8,6 +8,9 @@ import { useParams } from "react-router-dom";
 import { Box, Grid } from '@mui/material';
 
 
+// Get common promise and return cancalable promise.
+// Manual:
+// https://reactjs.org/blog/2015/12/16/ismounted-antipattern.html
 const makeCancelable = (promise) => {
     let canceled = false;
 
@@ -61,8 +64,8 @@ const User = () => {
         return () => cancelable.cancel();
     }, [username]);
 
-    const addPost = (post) => {
-        setPosts(currentPosts => ([...currentPosts, post]));
+    const postCreatedCallback = (post) => {
+        setPosts(currentPosts => ([post, ...currentPosts]));
     }
 
     if (!userLoading && user === null) {
@@ -92,7 +95,7 @@ const User = () => {
                 <React.Fragment>
                     <Grid item lg={2} md={2} sm={0}/>
                     <Grid item lg={8} md={8} sm={12}>
-                        <PostForm postCreatedCallback={addPost} />
+                        <PostForm postCreatedCallback={postCreatedCallback} />
                     </Grid>
                     <Grid item lg={2} md={2} sm={0}/>
                 </React.Fragment>
