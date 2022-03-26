@@ -6,7 +6,7 @@ import UserCard from '../components/UI/UserCard/UserCard.jsx';
 import Loader from '../components/UI/Loader/Loader.jsx';
 import { useParams } from "react-router-dom";
 import { Box, Grid } from '@mui/material';
-import WealthService from '../services/wealthService.js';
+import wealthService from '../services/wealthService.js';
 
 const User = () => {
     const {ctx} = useContext(AuthContext); 
@@ -52,7 +52,7 @@ const User = () => {
     }
 
     const fetchBalance = async() => {
-        const balance = await WealthService.getBalance(ctx.accountIdentifier);
+        const balance = await wealthService.getBalance(ctx.accountIdentifier);
         setBalance(balance);
     }
 

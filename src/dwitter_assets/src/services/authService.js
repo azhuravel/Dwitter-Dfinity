@@ -1,7 +1,7 @@
 import {idlFactory} from '../../../declarations/dwitter/dwitter.did.js';
 import {AuthClient} from "@dfinity/auth-client";
 import {canisterId, createActor} from '../../../declarations/dwitter';
-import { principalToAccountIdentifier } from '../services/utils.js';
+import { principalToAccountIdentifier } from '../utils/utils.js';
 
 const keyLocalStorageAuth = 'authed';
 const keyLocalStorageAuth_ii = 'ii';
