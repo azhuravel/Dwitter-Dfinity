@@ -1,6 +1,7 @@
 import {idlFactory} from '../../../declarations/dwitter/dwitter.did.js';
 import {AuthClient} from "@dfinity/auth-client";
 import {canisterId, createActor} from '../../../declarations/dwitter';
+import { principalToAccountIdentifier } from '../services/utils.js';
 
 const keyLocalStorageAuth = 'authed';
 const keyLocalStorageAuth_ii = 'ii';
@@ -106,15 +107,15 @@ const mockDwitterActor = () => {
 }
 
 export default class AuthService {
-    static async getDwitterActorByPlug() {
+    static async getAuthInfoByPlug() {
         const plug = window?.ic?.plug;
         if (!plug) {
-            return;
+            return {};
         }
 
         const plugIsConnected = await plug.isConnected();
         if (!plugIsConnected) {
-            return;
+            return {};
         }
 
         if (!plug.agent) {
@@ -131,17 +132,22 @@ export default class AuthService {
             canisterId: process.env.DWITTER_CANISTER_ID,
             interfaceFactory: idlFactory,
         });
-        return dwitterActor;
+
+        const principal = await window.ic.plug.agent.getPrincipal();
+        const accountIdentifier = AuthService.principalToAccountIdentifier(principal);
+
+        return { dwitterActor, accountIdentifier };
     }
 
-    static async getDwitterActorByII() {
+    static async getAuthInfoByII() {
         const authClient = await AuthClient.create();
         const identity = await authClient.getIdentity();
         if (!authClient.isAuthenticated() || isAnonymous(identity)) {
-            return;
+            return {};
         }
         const dwitterActor = await createActor(process.env.DWITTER_CANISTER_ID, { agentOptions: { identity }});
-        return dwitterActor;
+        const accountIdentifier = AuthService.identityToAccountIdentifier(identity);
+        return { dwitterActor, accountIdentifier };
     }
 
     static async getCurrentUser(dwitterActor) {
@@ -163,22 +169,23 @@ export default class AuthService {
     }
 
 
-    static async getDwitterActor() {
+    static async getAuthCtx() {
         if (process.env.USE_MOCKS) {
             return mockDwitterActor();
         }
 
         const authedBy = localStorage.getItem(keyLocalStorageAuth);
-        let dwitterActor = null;
+        let authCtx = {};
         switch (authedBy) {
             case keyLocalStorageAuth_ii:
-                dwitterActor = await AuthService.getDwitterActorByII();
+                authCtx = await AuthService.getAuthInfoByII();
                 break;
             case keyLocalStorageAuth_plug:
-                dwitterActor = await AuthService.getDwitterActorByPlug();
+                authCtx = await AuthService.getAuthInfoByPlug();
                 break;
         }
-        return dwitterActor;
+
+        return authCtx;
     }
 
     static getPlugHost() {
@@ -192,10 +199,10 @@ export default class AuthService {
     }
 
     static async loginByPlug() {
-        const dwitterActor = await AuthService.getDwitterActorByPlug();
+        const { dwitterActor, accountIdentifier } = await AuthService.getAuthInfoByPlug();
         const currentUser = await AuthService.getCurrentUser(dwitterActor);
         localStorage.setItem(keyLocalStorageAuth, keyLocalStorageAuth_plug);
-        return {dwitterActor, currentUser};
+        return { dwitterActor, currentUser, accountIdentifier };
     }
 
     static async loginByII() {
@@ -211,7 +218,8 @@ export default class AuthService {
         const dwitterActor = createActor(canisterId, { agentOptions: { identity }});
         const currentUser = await AuthService.getCurrentUser(dwitterActor);
         localStorage.setItem(keyLocalStorageAuth, keyLocalStorageAuth_ii);
-        return {dwitterActor, currentUser};
+        const accountIdentifier = AuthService.identityToAccountIdentifier(identity);
+        return { dwitterActor, currentUser, accountIdentifier };
     }
 
     static async logout() {
@@ -223,5 +231,10 @@ export default class AuthService {
                 break;
         }
         localStorage.removeItem(keyLocalStorageAuth);
+    }
+
+    static identityToAccountIdentifier(identity) {
+        const principal = identity.getPrincipal().toText();
+        return principalToAccountIdentifier(principal);
     }
 }

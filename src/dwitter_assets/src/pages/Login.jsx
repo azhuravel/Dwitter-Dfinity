@@ -15,16 +15,16 @@ const Login = () => {
 
     const auth = async () => {
         setLoading(true);
-        const {dwitterActor, currentUser} = await AuthService.loginByII();
+        const ctx = await AuthService.loginByII();
         setLoading(false);
-        setCtx({ dwitterActor, currentUser });
+        setCtx(ctx);
     }
     
     const plugBtnCallback = async () => {
         setLoading(true);
-        const {dwitterActor, currentUser} = await AuthService.loginByPlug();
+        const ctx = await AuthService.loginByPlug();
         setLoading(false);
-        setCtx({dwitterActor, currentUser});
+        setCtx(ctx);
     }
 
     return (

@@ -51,6 +51,10 @@ actor {
         userService.update(msg.caller, request)
     };
 
+    public shared(msg) func getAllUsers(): async [User] {
+        userService.toArray()
+    };
+
     /*
      * Posts methods
      */

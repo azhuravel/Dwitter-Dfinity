@@ -52,10 +52,10 @@ const App = () => {
     const [isLoading, setLoading] = useState(true);
 
     useEffect(async () => {
-        const dwitterActor = await AuthService.getDwitterActor();
+        const {dwitterActor, accountIdentifier} = await AuthService.getAuthCtx();
         const currentUser = await AuthService.getCurrentUser(dwitterActor);
         
-        setCtx({dwitterActor, currentUser});
+        setCtx({dwitterActor, accountIdentifier, currentUser});
         setLoading(false);
     }, [])
 

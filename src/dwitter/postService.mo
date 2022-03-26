@@ -65,8 +65,10 @@ module {
                 case (?user) {
                     let postInfo : PostInfo = {
                         id = post.id;
+                        kind = post.kind;
                         createdTime = post.createdTime;
                         text = post.text;
+                        nft = post.nft;
                         username = user.username;
                         displayname = user.displayname;
                     };
@@ -75,8 +77,10 @@ module {
                 case (null) {
                     let postInfo : PostInfo = {
                         id = post.id;
+                        kind = post.kind;
                         createdTime = post.createdTime;
                         text = post.text;
+                        nft = post.nft;
                         username = "DELETED";
                         displayname = "DELETED";
                     };

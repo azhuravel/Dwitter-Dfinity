@@ -6,7 +6,7 @@ import UserCard from '../components/UI/UserCard/UserCard.jsx';
 import Loader from '../components/UI/Loader/Loader.jsx';
 import { useParams } from "react-router-dom";
 import { Box, Grid } from '@mui/material';
-
+import WealthService from '../services/wealthService.js';
 
 // Get common promise and return cancalable promise.
 // Manual:
@@ -86,7 +86,7 @@ const User = () => {
         <Grid container spacing={3} sx={{mt: 0}}>
             <Grid item lg={2} md={2} sm={0}/>
             <Grid item lg={8} md={8} sm={12}>
-                <UserCard userLoading={userLoading} username={username} user={user} />
+                <UserCard userLoading={userLoading} username={username} user={user} balance={balance} />
             </Grid>
             <Grid item lg={2} md={2} sm={0}/>
 

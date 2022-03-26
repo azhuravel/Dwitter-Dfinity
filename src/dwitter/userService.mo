@@ -26,10 +26,11 @@ module {
             let now = Time.now();
 
             let user : User = {
-                id = userId; 
+                id = userId;
                 createdTime = now;
                 username = request.username;
                 displayname = request.displayname;
+                nftAvatar = null;
             };
 
             usersStorage.save(userId, user)
@@ -45,6 +46,7 @@ module {
                         createdTime = user.createdTime;
                         username = user.username;
                         displayname = request.displayname;
+                        nftAvatar = request.nftAvatar;
                     };
                     ?usersStorage.save(user.id, updatedUser);
                 };
