@@ -3,14 +3,14 @@
 // About RosettaApi for Dfinity: https://smartcontracts.org/docs/integration/ledger-quick-start.html
 //
 // The implemenation in rosettaApi.js is really copy paste from https://www.stoicwallet.com/
-import RosettaApi from './rosettaApi.js';
+import RosettaApi from '../utils/rosettaApi.js';
+import { principalToAccountIdentifier } from '../utils/utils.js';
 
-import { principalToAccountIdentifier } from '../services/utils.js';
-
-const rosettaApi = new RosettaApi();
-
-export default class WealthService {
-
+class WealthService {
+    constructor() {
+        this.rosettaApi = new RosettaApi();
+    }
+    
     // returns accountIdentifier - wallet, in simple words
     static getAccountIdentifier(principal) {
         // the second param '0' is for main accountIdentifier (main wallet) of principal
@@ -18,7 +18,11 @@ export default class WealthService {
     }
 
     // get balance by accountIdentifier (wallet, in simple words)
-    static async getBalance(accountIdentifier) {
-        return rosettaApi.getAccountBalance(accountIdentifier);
+    async getBalance(accountIdentifier) {
+        return this.rosettaApi.getAccountBalance(accountIdentifier);
     }
 }
+
+const wealthService = new WealthService();
+
+export default wealthService;

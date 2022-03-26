@@ -6,7 +6,7 @@ import UserCard from '../components/UI/UserCard/UserCard.jsx';
 import Loader from '../components/UI/Loader/Loader.jsx';
 import { useParams } from "react-router-dom";
 import { Box, Grid } from '@mui/material';
-import WealthService from '../services/wealthService.js';
+import wealthService from '../services/wealthService.js';
 
 // Get common promise and return cancalable promise.
 // Manual:
@@ -32,7 +32,8 @@ const User = () => {
     const [postsLoading, setPostsLoading] = useState(true); 
     const [userLoading, setUserLoading] = useState(true); 
     const [posts, setPosts] = useState([]);
-    const [user, setUser] = useState(undefined);
+    const [user, setUser] = useState(null);
+    const [balance, setBalance] = useState(null);
     const {username} = useParams();
     const isCurrentUserProfile = (username === ctx.currentUser.username);
 
@@ -66,6 +67,11 @@ const User = () => {
 
     const postCreatedCallback = (post) => {
         setPosts(currentPosts => ([post, ...currentPosts]));
+    }
+
+    const fetchBalance = async() => {
+        const balance = await wealthService.getBalance(ctx.accountIdentifier);
+        setBalance(balance);
     }
 
     if (!userLoading && user === null) {
