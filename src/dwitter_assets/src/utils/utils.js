@@ -3,10 +3,14 @@ import { getCrc32 } from '@dfinity/principal/lib/esm/utils/getCrc';
 import { sha224 } from '@dfinity/principal/lib/esm/utils/sha224';
 
 const principalToAccountIdentifier = (principal, s) => {
+    if (typeof principal === 'string' || principal instanceof String) {
+        principal = Principal.fromText(principal);
+    }
+    
     const padding = Buffer("\x0Aaccount-id");
     const array = new Uint8Array([
         ...padding,
-        ...Principal.fromText(principal).toUint8Array(),
+        ...principal.toUint8Array(),
         ...getSubAccountArray(s)
     ]);
     const hash = sha224(array);

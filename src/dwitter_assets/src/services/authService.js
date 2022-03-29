@@ -134,7 +134,7 @@ export default class AuthService {
         });
 
         const principal = await window.ic.plug.agent.getPrincipal();
-        const accountIdentifier = AuthService.principalToAccountIdentifier(principal);
+        const accountIdentifier = principalToAccountIdentifier(principal);
 
         return { dwitterActor, accountIdentifier };
     }
@@ -167,7 +167,6 @@ export default class AuthService {
 
         return currentUser;
     }
-
 
     static async getAuthCtx() {
         if (process.env.USE_MOCKS) {
