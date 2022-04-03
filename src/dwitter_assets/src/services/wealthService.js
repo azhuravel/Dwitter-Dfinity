@@ -6,6 +6,8 @@
 import RosettaApi from '../utils/rosettaApi.js';
 import { principalToAccountIdentifier } from '../utils/utils.js';
 
+const delay = async (ms) => new Promise(res => setTimeout(res, ms));
+
 class WealthService {
     constructor() {
         this.rosettaApi = new RosettaApi();
@@ -19,6 +21,11 @@ class WealthService {
 
     // get balance by accountIdentifier (wallet, in simple words)
     async getBalance(accountIdentifier) {
+        if (process.env.USE_MOCKS) {
+            delay(200);
+            return 777;
+        }
+
         return this.rosettaApi.getAccountBalance(accountIdentifier);
     }
 }

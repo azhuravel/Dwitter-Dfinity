@@ -65,13 +65,18 @@ const User = () => {
         return () => cancelable.cancel();
     }, [username]);
 
+    // Load balance of user.
+    useEffect(() => {
+        const cancelable = makeCancelable(wealthService.getBalance(ctx.accountIdentifier));
+        cancelable.promise
+            .then((balance) => setBalance(balance))
+            .catch((err) => {});
+
+        return () => cancelable.cancel();
+    }, [username]);
+
     const postCreatedCallback = (post) => {
         setPosts(currentPosts => ([post, ...currentPosts]));
-    }
-
-    const fetchBalance = async() => {
-        const balance = await wealthService.getBalance(ctx.accountIdentifier);
-        setBalance(balance);
     }
 
     if (!userLoading && user === null) {

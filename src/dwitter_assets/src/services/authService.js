@@ -2,6 +2,8 @@ import {idlFactory} from '../../../declarations/dwitter/dwitter.did.js';
 import {AuthClient} from "@dfinity/auth-client";
 import {canisterId, createActor} from '../../../declarations/dwitter';
 import { principalToAccountIdentifier } from '../utils/utils.js';
+import { Principal } from '@dfinity/principal';
+import { getAllUserNFTs, getNFTActor } from '@psychedelic/dab-js';
 
 const keyLocalStorageAuth = 'authed';
 const keyLocalStorageAuth_ii = 'ii';
@@ -19,7 +21,7 @@ const isAnonymous = (identity) => {
     return principalText === '2vxsx-fae';
 }
 
-const mockDwitterActor = () => {
+const mockDwitterActor = () => {    
     // return null;
     return {
         createPost: async () => {
@@ -36,7 +38,7 @@ const mockDwitterActor = () => {
             return [];
         },
         getCurrentUser: async () => { 
-            // await delay(1000);
+            await delay(1000);
             return [{
                 id: '123123',
                 username: 'uuuserrr',
@@ -170,7 +172,7 @@ export default class AuthService {
 
     static async getAuthCtx() {
         if (process.env.USE_MOCKS) {
-            return mockDwitterActor();
+            return {dwitterActor: mockDwitterActor(), accountIdentifier: ''};
         }
 
         const authedBy = localStorage.getItem(keyLocalStorageAuth);
