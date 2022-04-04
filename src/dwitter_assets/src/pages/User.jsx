@@ -7,6 +7,12 @@ import Loader from '../components/UI/Loader/Loader.jsx';
 import { useParams } from "react-router-dom";
 import { Box, Grid } from '@mui/material';
 import wealthService from '../services/wealthService.js';
+import nftService from '../services/nftService.js';
+import SVG from "react-svg-raw";
+import ImageList from '@mui/material/ImageList';
+import ImageListItem from '@mui/material/ImageListItem';
+
+
 
 // Get common promise and return cancalable promise.
 // Manual:
@@ -34,6 +40,7 @@ const User = () => {
     const [posts, setPosts] = useState([]);
     const [user, setUser] = useState(null);
     const [balance, setBalance] = useState(null);
+    const [nfts, setNfts] = useState([]);
     const {username} = useParams();
     const isCurrentUserProfile = (username === ctx.currentUser.username);
 
@@ -75,6 +82,16 @@ const User = () => {
         return () => cancelable.cancel();
     }, [username]);
 
+    // Load nfts of user.
+    useEffect(() => {
+        const cancelable = makeCancelable(nftService.getDigestedNfts(ctx.accountIdentifier));
+        cancelable.promise
+            .then((nfts) => setNfts(nfts))
+            .catch((err) => {});
+
+        return () => cancelable.cancel();
+    }, [username]);
+
     const postCreatedCallback = (post) => {
         setPosts(currentPosts => ([post, ...currentPosts]));
     }
@@ -98,6 +115,18 @@ const User = () => {
             <Grid item lg={2} md={2} sm={0}/>
             <Grid item lg={8} md={8} sm={12}>
                 <UserCard userLoading={userLoading} username={username} user={user} balance={balance} />
+            </Grid>
+            <Grid item lg={2} md={2} sm={0}/>
+
+            <Grid item lg={2} md={2} sm={0}/>
+            <Grid item lg={8} md={8} sm={12}>
+                <ImageList cols={10} rowHeight={100}>
+                    {nfts.map((nft) => (
+                        <ImageListItem key={nft.id}>
+                            <embed src={nft.url} width="100" height="100"/>    
+                        </ImageListItem>
+                    ))}
+                </ImageList>
             </Grid>
             <Grid item lg={2} md={2} sm={0}/>
 
