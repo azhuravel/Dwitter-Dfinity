@@ -1,6 +1,9 @@
 import { Principal } from '@dfinity/principal';
 import { getCrc32 } from '@dfinity/principal/lib/esm/utils/getCrc';
 import { sha224 } from '@dfinity/principal/lib/esm/utils/sha224';
+import { HttpAgent } from "@dfinity/agent";
+import fetch from 'cross-fetch';
+
 
 const principalToAccountIdentifier = (principal, s) => {
     if (typeof principal === 'string' || principal instanceof String) {

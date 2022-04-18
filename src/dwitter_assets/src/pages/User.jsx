@@ -3,6 +3,7 @@ import { AuthContext } from '../context/index.js';
 import PostsList from '../components/UI/PostsList/PostsList.jsx';
 import PostForm from '../components/UI/PostForm/PostForm.jsx';
 import UserCard from '../components/UI/UserCard/UserCard.jsx';
+import NftsSlider from '../components/UI/NftsSlider/NftsSlider.jsx';
 import Loader from '../components/UI/Loader/Loader.jsx';
 import { useParams } from "react-router-dom";
 import { Box, Grid } from '@mui/material';
@@ -12,8 +13,6 @@ import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import ImageListItemBar from '@mui/material/ImageListItemBar';
 import { getAllUserNFTs, getNFTActor } from '@psychedelic/dab-js'
-import { Actor, HttpAgent, getDefaultAgent } from "@dfinity/agent";
-import fetch from 'cross-fetch';
 import { makeCancelable, icpAgent } from '../utils/utils.js';
 
 
@@ -29,10 +28,6 @@ const User = () => {
     const {username} = useParams();
     const isCurrentUserProfile = (username === ctx.currentUser.username);
 
-    const canisterId = "sr4qi-vaaaa-aaaah-qcaaq-cai";
-    const standard = "EXT";
-    const index = "1";
-
     // Load user profile info.
     useEffect(() => {
         setUserLoading(true);
@@ -40,12 +35,25 @@ const User = () => {
 
         cancelable.promise
             .then((resp) => ((resp && resp[0]) || null))
-            .then((user) => setUser(user))
-            .then(() => {
-                const nftActor = getNFTActor({canisterId, agent: icpAgent, standard});
-                return nftActor.details(index);
+            .then((user) => {
+                setUser(user);
+                return user;
             })
-            .then(nft => setNftAvatar(nft))
+            .then((user) => {
+                const userNftAvatars = user?.nftAvatar;
+                if (!userNftAvatars || userNftAvatars.length === 0) {
+                    return null;
+                }
+
+                const userNftAvatar = userNftAvatars[0];
+                const nftActor = getNFTActor({
+                    canisterId: userNftAvatar.canisterId, 
+                    agent: icpAgent, 
+                    standard: userNftAvatar.standard
+                });
+                return nftActor.details(userNftAvatar.index);
+            })
+            .then(userNftAvatar => setNftAvatar(userNftAvatar))
             .then(() => setUserLoading(false))
             .catch((err) => {});
 
@@ -97,7 +105,10 @@ const User = () => {
             nftAvatar: [nftId]
         })
         .then((resp) => ((resp && resp[0]) || null))
-        .then((user) => setUser(user));
+        .then((user) => { 
+            setUser(user);
+            //debugger;
+        });
     }
 
     if (!userLoading && user === null) {
@@ -124,18 +135,7 @@ const User = () => {
 
             <Grid item lg={2} md={2} sm={0}/>
             <Grid item lg={8} md={8} sm={12}>
-                <ImageList cols={10} rowHeight={200}>
-                    {nfts.map((nft) => (
-                        <ImageListItem key={nft.id}>
-                            <embed src={nft.url} width="100" height="100"/> 
-                            <ImageListItemBar
-                                title="Make avatar"
-                                position="below"
-                                onClick={() => onAvatarChanged(nft.nftId)}
-                             />   
-                        </ImageListItem>
-                    ))}
-                </ImageList>
+                <NftsSlider nfts={nfts} />
             </Grid>
             <Grid item lg={2} md={2} sm={0}/>
 
