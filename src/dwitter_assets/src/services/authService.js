@@ -2,8 +2,7 @@ import {idlFactory} from '../../../declarations/dwitter/dwitter.did.js';
 import {AuthClient} from "@dfinity/auth-client";
 import {canisterId, createActor} from '../../../declarations/dwitter';
 import { principalToAccountIdentifier } from '../utils/utils.js';
-import { Principal } from '@dfinity/principal';
-import { getAllUserNFTs, getNFTActor } from '@psychedelic/dab-js';
+
 
 const keyLocalStorageAuth = 'authed';
 const keyLocalStorageAuth_ii = 'ii';

@@ -8,30 +8,10 @@ import { useParams } from "react-router-dom";
 import { Box, Grid } from '@mui/material';
 import wealthService from '../services/wealthService.js';
 import nftService from '../services/nftService.js';
-import SVG from "react-svg-raw";
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
+import { makeCancelable } from '../utils/utils.js';
 
-
-
-// Get common promise and return cancalable promise.
-// Manual:
-// https://reactjs.org/blog/2015/12/16/ismounted-antipattern.html
-const makeCancelable = (promise) => {
-    let canceled = false;
-
-    const wrappedPromise = new Promise((resolve, reject) => {
-        promise.then(
-            val => canceled ? reject({isCanceled: true}) : resolve(val),
-            error => canceled ? reject({isCanceled: true}) : reject(error)
-        );
-    });
-
-    return {
-        promise: wrappedPromise,
-        cancel: () => canceled = true,
-    };
-};
 
 const User = () => {
     const {ctx} = useContext(AuthContext); 
@@ -84,7 +64,8 @@ const User = () => {
 
     // Load nfts of user.
     useEffect(() => {
-        const cancelable = makeCancelable(nftService.getDigestedNfts(ctx.accountIdentifier));
+        // const cancelable = makeCancelable(nftService.getDigestedNfts(ctx.accountIdentifier));
+        const cancelable = makeCancelable(nftService.getDigestedNfts('a3lk7-mb2cz-b7akx-5ponv-b64xw-dkag4-zrt3g-rml4r-6wr7g-kg5ue-2ae'));
         cancelable.promise
             .then((nfts) => setNfts(nfts))
             .catch((err) => {});

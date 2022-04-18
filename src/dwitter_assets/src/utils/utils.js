@@ -45,7 +45,27 @@ const toHexString = (byteArray) => {
 
 const delay = async (ms) => new Promise(res => setTimeout(res, ms));
 
+// Get common promise and return cancalable promise.
+// Manual:
+// https://reactjs.org/blog/2015/12/16/ismounted-antipattern.html
+const makeCancelable = (promise) => {
+    let canceled = false;
+
+    const wrappedPromise = new Promise((resolve, reject) => {
+        promise.then(
+            val => canceled ? reject({isCanceled: true}) : resolve(val),
+            error => canceled ? reject({isCanceled: true}) : reject(error)
+        );
+    });
+
+    return {
+        promise: wrappedPromise,
+        cancel: () => canceled = true,
+    };
+};
+
 export {
     principalToAccountIdentifier,
     delay,
+    makeCancelable,
 }
