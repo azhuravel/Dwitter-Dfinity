@@ -64,8 +64,12 @@ const makeCancelable = (promise) => {
     };
 };
 
+const icpAgent = new HttpAgent({ fetch, host: 'https://ic0.app/' });
+
 export {
     principalToAccountIdentifier,
     delay,
     makeCancelable,
+    icpAgent,
 }
+

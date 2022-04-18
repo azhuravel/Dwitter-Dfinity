@@ -11,15 +11,11 @@ import nftService from '../services/nftService.js';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import ImageListItemBar from '@mui/material/ImageListItemBar';
-
 import { getAllUserNFTs, getNFTActor } from '@psychedelic/dab-js'
 import { Actor, HttpAgent, getDefaultAgent } from "@dfinity/agent";
 import fetch from 'cross-fetch';
+import { makeCancelable, icpAgent } from '../utils/utils.js';
 
-import { makeCancelable } from '../utils/utils.js';
-
-// TODO: move to right place
-const DEFAULT_AGENT = new HttpAgent({ fetch, host: 'https://ic0.app/' });
 
 const User = () => {
     const {ctx} = useContext(AuthContext); 
@@ -46,7 +42,7 @@ const User = () => {
             .then((resp) => ((resp && resp[0]) || null))
             .then((user) => setUser(user))
             .then(() => {
-                const nftActor = getNFTActor({canisterId, agent : DEFAULT_AGENT, standard});
+                const nftActor = getNFTActor({canisterId, agent: icpAgent, standard});
                 return nftActor.details(index);
             })
             .then(nft => setNftAvatar(nft))
