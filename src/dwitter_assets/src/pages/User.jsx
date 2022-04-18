@@ -13,7 +13,7 @@ import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import ImageListItemBar from '@mui/material/ImageListItemBar';
 import { getAllUserNFTs, getNFTActor } from '@psychedelic/dab-js'
-import { makeCancelable, icpAgent } from '../utils/utils.js';
+import { makeCancelable, icpAgent, getUserNftAvatars } from '../utils/utils.js';
 
 
 const User = () => {
@@ -39,20 +39,7 @@ const User = () => {
                 setUser(user);
                 return user;
             })
-            .then((user) => {
-                const userNftAvatars = user?.nftAvatar;
-                if (!userNftAvatars || userNftAvatars.length === 0) {
-                    return null;
-                }
-
-                const userNftAvatar = userNftAvatars[0];
-                const nftActor = getNFTActor({
-                    canisterId: userNftAvatar.canisterId, 
-                    agent: icpAgent, 
-                    standard: userNftAvatar.standard
-                });
-                return nftActor.details(userNftAvatar.index);
-            })
+            .then((user) => nftService.getUserNftAvatars(user))
             .then(userNftAvatar => setNftAvatar(userNftAvatar))
             .then(() => setUserLoading(false))
             .catch((err) => {});
@@ -107,7 +94,6 @@ const User = () => {
         .then((resp) => ((resp && resp[0]) || null))
         .then((user) => { 
             setUser(user);
-            //debugger;
         });
     }
 

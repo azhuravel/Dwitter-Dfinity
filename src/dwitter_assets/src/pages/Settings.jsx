@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useForm, Controller } from 'react-hook-form';
@@ -6,12 +6,36 @@ import { AuthContext } from '../context/index.js';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
+import NftsSlider from '../components/UI/NftsSlider/NftsSlider.jsx';
+import { makeCancelable } from '../utils/utils.js';
+import nftService from '../services/nftService.js';
+import NftAvatar from "../components/UI/DwitterAvatar/NftAvatar";
 
 
 const Settings = () => {
     const {handleSubmit, setError, control} = useForm();
     const {ctx, setCtx} = useContext(AuthContext);
     const [submitting, setSubmitting] = useState(false);
+    const [nfts, setNfts] = useState([]);
+    const [nftAvatar, setNftAvatar] = useState(null);
+
+    // Load nfts of user.
+    useEffect(() => {
+        // const cancelable = makeCancelable(nftService.getDigestedNfts(ctx.accountIdentifier));
+        const cancelable = makeCancelable(nftService.getDigestedNfts('a3lk7-mb2cz-b7akx-5ponv-b64xw-dkag4-zrt3g-rml4r-6wr7g-kg5ue-2ae'));
+        cancelable.promise
+            .then((nfts) => setNfts(nfts))
+            .catch((err) => {});
+
+        return () => cancelable.cancel();
+    }, []);
+
+    // Load user profile info.
+    useEffect(() => {
+        nftService.getUserNftAvatars(ctx.currentUser).then(userNftAvatar => {
+            setNftAvatar(userNftAvatar)
+        });
+    }, []);
     
     const onSubmit = async (data) => {
         setSubmitting(true);
@@ -71,6 +95,16 @@ const Settings = () => {
                     
                 <Grid item xs={12}>
                     <LoadingButton type="submit" variant="contained" loading={submitting}>Save</LoadingButton>
+                </Grid>
+            </Grid>
+
+            <Grid container spacing={2}>
+                {nftAvatar 
+                    && 
+                    <NftAvatar nft={nftAvatar}/>
+                }
+                <Grid item lg={8} md={8} sm={12}>
+                    <NftsSlider nfts={nfts} />
                 </Grid>
             </Grid>
         </Box>
