@@ -1,7 +1,8 @@
 import { delay } from '../utils/utils.js';
 import { Principal } from '@dfinity/principal';
 import { getAllUserNFTs, getNFTActor } from '@psychedelic/dab-js';
-
+import { Actor, HttpAgent, getDefaultAgent } from "@dfinity/agent";
+import { debug } from 'util';
 
 class NftService {
     constructor() {}
@@ -26,8 +27,13 @@ class NftService {
                         }
 
                         digestedNfts.push({
-                            id: token.id,
+                            tokenId: token.id,
                             url: token.url,
+                            nftId : {
+                                standard : collection.standard,
+                                canisterId : collection.canisterId,
+                                index: token.index
+                            }
                         });
                     });
                 });

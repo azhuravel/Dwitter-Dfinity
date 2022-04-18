@@ -5,7 +5,8 @@ module {
 
   public type NftId = {
     standard: Text;
-    index: Nat;
+    canisterId: Text;
+    index: Text;
   };
 
   public type Post = {

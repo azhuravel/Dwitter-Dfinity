@@ -10,8 +10,16 @@ import wealthService from '../services/wealthService.js';
 import nftService from '../services/nftService.js';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
+import ImageListItemBar from '@mui/material/ImageListItemBar';
+
+import { getAllUserNFTs, getNFTActor } from '@psychedelic/dab-js'
+import { Actor, HttpAgent, getDefaultAgent } from "@dfinity/agent";
+import fetch from 'cross-fetch';
+
 import { makeCancelable } from '../utils/utils.js';
 
+// TODO: move to right place
+const DEFAULT_AGENT = new HttpAgent({ fetch, host: 'https://ic0.app/' });
 
 const User = () => {
     const {ctx} = useContext(AuthContext); 
@@ -20,9 +28,14 @@ const User = () => {
     const [posts, setPosts] = useState([]);
     const [user, setUser] = useState(null);
     const [balance, setBalance] = useState(null);
+    const [nftAvatar, setNftAvatar] = useState(null);
     const [nfts, setNfts] = useState([]);
     const {username} = useParams();
     const isCurrentUserProfile = (username === ctx.currentUser.username);
+
+    const canisterId = "sr4qi-vaaaa-aaaah-qcaaq-cai";
+    const standard = "EXT";
+    const index = "1";
 
     // Load user profile info.
     useEffect(() => {
@@ -32,6 +45,11 @@ const User = () => {
         cancelable.promise
             .then((resp) => ((resp && resp[0]) || null))
             .then((user) => setUser(user))
+            .then(() => {
+                const nftActor = getNFTActor({canisterId, agent : DEFAULT_AGENT, standard});
+                return nftActor.details(index);
+            })
+            .then(nft => setNftAvatar(nft))
             .then(() => setUserLoading(false))
             .catch((err) => {});
 
@@ -77,6 +95,15 @@ const User = () => {
         setPosts(currentPosts => ([post, ...currentPosts]));
     }
 
+    const onAvatarChanged = (nftId) => {
+        ctx.dwitterActor.updateUser({
+            displayname: ctx.currentUser.displayname,
+            nftAvatar: [nftId]
+        })
+        .then((resp) => ((resp && resp[0]) || null))
+        .then((user) => setUser(user));
+    }
+
     if (!userLoading && user === null) {
         return (
             <Grid container spacing={2}>
@@ -95,16 +122,21 @@ const User = () => {
         <Grid container spacing={3} sx={{mt: 0}}>
             <Grid item lg={2} md={2} sm={0}/>
             <Grid item lg={8} md={8} sm={12}>
-                <UserCard userLoading={userLoading} username={username} user={user} balance={balance} />
+                <UserCard userLoading={userLoading} username={username} user={user} balance={balance} nftAvatar={nftAvatar} />
             </Grid>
             <Grid item lg={2} md={2} sm={0}/>
 
             <Grid item lg={2} md={2} sm={0}/>
             <Grid item lg={8} md={8} sm={12}>
-                <ImageList cols={10} rowHeight={100}>
+                <ImageList cols={10} rowHeight={200}>
                     {nfts.map((nft) => (
                         <ImageListItem key={nft.id}>
-                            <embed src={nft.url} width="100" height="100"/>    
+                            <embed src={nft.url} width="100" height="100"/> 
+                            <ImageListItemBar
+                                title="Make avatar"
+                                position="below"
+                                onClick={() => onAvatarChanged(nft.nftId)}
+                             />   
                         </ImageListItem>
                     ))}
                 </ImageList>

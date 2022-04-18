@@ -1,5 +1,6 @@
 import React from 'react';
 import DwitterAvatar from "../DwitterAvatar/DwitterAvatar";
+import NftAvatar from "../DwitterAvatar/NftAvatar";
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import moment from "moment";
@@ -20,7 +21,7 @@ const UserCard = (props) => {
             <CardHeader
                 sx={{px:0}}
                 avatar={
-                    <DwitterAvatar name={displayname}/>
+                    props.nftAvatar ? <NftAvatar nft={props.nftAvatar}/> : <DwitterAvatar name={displayname}/> 
                 }
                 title={displayname}
                 subheader={`@${username} - joined ${moment.unix(Number(createdTime)).fromNow()} - balance ${balance} ICP`}
