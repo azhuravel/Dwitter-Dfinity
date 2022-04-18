@@ -33,9 +33,9 @@ const User = () => {
     const {username} = useParams();
     const isCurrentUserProfile = (username === ctx.currentUser.username);
 
-    const canisterId = "sr4qi-vaaaa-aaaah-qcaaq-cai";
-    const standard = "EXT";
-    const index = "1";
+    // const canisterId = "sr4qi-vaaaa-aaaah-qcaaq-cai";
+    // const standard = "EXT";
+    // const index = "1";
 
     // Load user profile info.
     useEffect(() => {
@@ -46,8 +46,18 @@ const User = () => {
             .then((resp) => ((resp && resp[0]) || null))
             .then((user) => setUser(user))
             .then(() => {
-                const nftActor = getNFTActor({canisterId, agent : DEFAULT_AGENT, standard});
-                return nftActor.details(index);
+                if (user.nftAvatar && user.nftAvatar.length > 0) {
+                    const nftAvatar = user.nftAvatar; // naming...
+
+                    const nftActor = getNFTActor({
+                        canisterId : nftAvatar.canisterId, 
+                        agent : DEFAULT_AGENT, 
+                        standard : nftAvatar.standard
+                    });
+                    return nftActor.details(nftAvatar.index);
+                } else {
+                    return null;
+                }
             })
             .then(nft => setNftAvatar(nft))
             .then(() => setUserLoading(false))
@@ -101,7 +111,10 @@ const User = () => {
             nftAvatar: [nftId]
         })
         .then((resp) => ((resp && resp[0]) || null))
-        .then((user) => setUser(user));
+        .then((user) => { 
+            setUser(user);
+            //debugger;
+        });
     }
 
     if (!userLoading && user === null) {
