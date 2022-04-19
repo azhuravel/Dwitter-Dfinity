@@ -10,6 +10,7 @@ import NftsSlider from '../components/UI/NftsSlider/NftsSlider.jsx';
 import { makeCancelable } from '../utils/utils.js';
 import nftService from '../services/nftService.js';
 import NftAvatar from "../components/UI/DwitterAvatar/NftAvatar";
+import Button from '@mui/material/Button';
 
 
 const Settings = () => {
@@ -17,24 +18,27 @@ const Settings = () => {
     const {ctx, setCtx} = useContext(AuthContext);
     const [submitting, setSubmitting] = useState(false);
     const [nfts, setNfts] = useState([]);
+    const [nftsLoading, setNftsLoading] = useState(true); 
     const [nftAvatar, setNftAvatar] = useState(null);
 
     // Load nfts of user.
     useEffect(() => {
+        setNftsLoading(true);
+
         // const cancelable = makeCancelable(nftService.getDigestedNfts(ctx.accountIdentifier));
         const cancelable = makeCancelable(nftService.getDigestedNfts('a3lk7-mb2cz-b7akx-5ponv-b64xw-dkag4-zrt3g-rml4r-6wr7g-kg5ue-2ae'));
         cancelable.promise
             .then((nfts) => setNfts(nfts))
+            .then(() => setNftsLoading(false))
             .catch((err) => {});
 
         return () => cancelable.cancel();
     }, []);
 
-    // Load user profile info.
+    // Load user avatar.
     useEffect(() => {
-        nftService.getUserNftAvatars(ctx.currentUser).then(userNftAvatar => {
-            setNftAvatar(userNftAvatar)
-        });
+        nftService.getUserNftAvatars(ctx.currentUser?.nftAvatar)
+            .then(userNftAvatar => setNftAvatar(userNftAvatar));
     }, []);
     
     const onSubmit = async (data) => {
@@ -48,6 +52,29 @@ const Settings = () => {
         setCtx({...ctx, currentUser: user});
 
         setSubmitting(false);
+    }
+
+    const onNftAvatarSelected = async (nftAvatar) => {
+        console.log(nftAvatar);
+        const nftId = nftAvatar.nftId;
+        ctx.dwitterActor
+            .updateUser({
+                displayname: ctx.currentUser.displayname,
+                nftAvatar: [nftId],
+            })
+            .then(resp => ((resp && resp[0]) || null))
+            .then(user => (nftService.getUserNftAvatars(user?.nftAvatar)))
+            .then(userNftAvatar => setNftAvatar(userNftAvatar));
+    }
+
+    const removeAvatar = async () => {
+        ctx.dwitterActor
+            .updateUser({
+                displayname: ctx.currentUser.displayname,
+                nftAvatar: [],
+            })
+            .then((resp) => ((resp && resp[0]) || null))
+            .then((user) => setNftAvatar(null));
     }
 
     return (
@@ -98,15 +125,17 @@ const Settings = () => {
                 </Grid>
             </Grid>
 
+            {nftAvatar 
+                && 
+                <NftAvatar nft={nftAvatar}/>
+            }
             <Grid container spacing={2}>
-                {nftAvatar 
-                    && 
-                    <NftAvatar nft={nftAvatar}/>
-                }
                 <Grid item lg={8} md={8} sm={12}>
-                    <NftsSlider nfts={nfts} />
+                    <NftsSlider nfts={nfts} onNftAvatarSelected={onNftAvatarSelected} nftSelectable isLoading={nftsLoading} />
                 </Grid>
             </Grid>
+            
+            <Button onClick={removeAvatar}>Remove current avatar</Button>
         </Box>
     );
 };

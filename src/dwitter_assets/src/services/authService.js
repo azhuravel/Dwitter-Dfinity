@@ -114,7 +114,18 @@ const mockDwitterActor = () => {
             ]];
         },
         updateUser: async () => {
-            return [];
+            return [{
+                id: '123123',
+                username: 'uuuserrr',
+                displayname: 'Mock User',
+                createdTime: 1000000000n,
+                // nftAvatar: null,
+                nftAvatar: [{
+                    standard: 'EXT',
+                    canisterId: 'pk6rk-6aaaa-aaaae-qaazq-cai',
+                    index: '1496',
+                }],
+            }]; 
         },
     };
 }

@@ -9,10 +9,6 @@ import { useParams } from "react-router-dom";
 import { Box, Grid } from '@mui/material';
 import wealthService from '../services/wealthService.js';
 import nftService from '../services/nftService.js';
-import ImageList from '@mui/material/ImageList';
-import ImageListItem from '@mui/material/ImageListItem';
-import ImageListItemBar from '@mui/material/ImageListItemBar';
-import { getAllUserNFTs, getNFTActor } from '@psychedelic/dab-js'
 import { makeCancelable, icpAgent, getUserNftAvatars } from '../utils/utils.js';
 
 
@@ -24,6 +20,7 @@ const User = () => {
     const [user, setUser] = useState(null);
     const [balance, setBalance] = useState(null);
     const [nftAvatar, setNftAvatar] = useState(null);
+    const [nftsLoading, setNftsLoading] = useState(true); 
     const [nfts, setNfts] = useState([]);
     const {username} = useParams();
     const isCurrentUserProfile = (username === ctx.currentUser.username);
@@ -39,7 +36,7 @@ const User = () => {
                 setUser(user);
                 return user;
             })
-            .then((user) => nftService.getUserNftAvatars(user))
+            .then((user) => nftService.getUserNftAvatars(user?.nftAvatar))
             .then(userNftAvatar => setNftAvatar(userNftAvatar))
             .then(() => setUserLoading(false))
             .catch((err) => {});
@@ -73,10 +70,13 @@ const User = () => {
 
     // Load nfts of user.
     useEffect(() => {
+        setNftsLoading(true);
+
         // const cancelable = makeCancelable(nftService.getDigestedNfts(ctx.accountIdentifier));
         const cancelable = makeCancelable(nftService.getDigestedNfts('a3lk7-mb2cz-b7akx-5ponv-b64xw-dkag4-zrt3g-rml4r-6wr7g-kg5ue-2ae'));
         cancelable.promise
             .then((nfts) => setNfts(nfts))
+            .then(() => setNftsLoading(false))
             .catch((err) => {});
 
         return () => cancelable.cancel();
@@ -84,17 +84,6 @@ const User = () => {
 
     const postCreatedCallback = (post) => {
         setPosts(currentPosts => ([post, ...currentPosts]));
-    }
-
-    const onAvatarChanged = (nftId) => {
-        ctx.dwitterActor.updateUser({
-            displayname: ctx.currentUser.displayname,
-            nftAvatar: [nftId]
-        })
-        .then((resp) => ((resp && resp[0]) || null))
-        .then((user) => { 
-            setUser(user);
-        });
     }
 
     if (!userLoading && user === null) {
@@ -121,7 +110,7 @@ const User = () => {
 
             <Grid item lg={2} md={2} sm={0}/>
             <Grid item lg={8} md={8} sm={12}>
-                <NftsSlider nfts={nfts} />
+                <NftsSlider nfts={nfts} isLoading={nftsLoading} />
             </Grid>
             <Grid item lg={2} md={2} sm={0}/>
 
