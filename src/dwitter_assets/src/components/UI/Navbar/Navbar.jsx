@@ -45,7 +45,7 @@ const Navbar = () => {
                             aria-expanded={open ? 'true' : undefined}
                             onClick={handleClick}
                         >
-                            <DwitterAvatar mr={1} name={displayname}/>
+                            <DwitterAvatar mr={1} displayname={displayname}/>
                             {displayname}
                         </Button>
                         <Menu

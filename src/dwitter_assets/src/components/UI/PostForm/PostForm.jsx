@@ -31,7 +31,7 @@ const PostForm = (props) => {
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <Box sx={{ display: 'flex', alignItems: 'flex-start', mt: 3, mb: 1 }}>
-                <DwitterAvatar mr={1} name={ctx?.currentUser?.displayname}/>
+                <DwitterAvatar mr={1} displayname={ctx?.currentUser?.displayname}/>
                 <Controller
                     name="text"
                     control={control}

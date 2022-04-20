@@ -26,7 +26,7 @@ const PostsList = (props) => {
                     <ListItem disableGutters key={item.id} alignItems="flex-start">
                         <ListItemAvatar>
                             {/* <Avatar/> */}
-                            <DwitterAvatar name={item.displayname}/>
+                            <DwitterAvatar displayname={item.displayname}/>
                         </ListItemAvatar>
                         <ListItemText
                             primary={

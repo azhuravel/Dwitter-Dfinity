@@ -37,7 +37,7 @@ const mockDwitterActor = () => {
             return [];
         },
         getCurrentUser: async () => { 
-            await delay(1000);
+            await delay(100);
             return [{
                 id: '123123',
                 username: 'uuuserrr',

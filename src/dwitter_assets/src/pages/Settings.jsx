@@ -9,7 +9,7 @@ import Grid from '@mui/material/Grid';
 import NftsSlider from '../components/UI/NftsSlider/NftsSlider.jsx';
 import { makeCancelable } from '../utils/utils.js';
 import nftService from '../services/nftService.js';
-import NftAvatar from "../components/UI/DwitterAvatar/NftAvatar";
+import DwitterAvatar from "../components/UI/DwitterAvatar/DwitterAvatar";
 import Button from '@mui/material/Button';
 
 
@@ -125,10 +125,8 @@ const Settings = () => {
                 </Grid>
             </Grid>
 
-            {nftAvatar 
-                && 
-                <NftAvatar nft={nftAvatar}/>
-            }
+            <DwitterAvatar displayname={ctx.currentUser.displayname} nftAvatar={nftAvatar} hasNftAvatar={!!ctx.currentUser?.nftAvatar}/>
+            
             <Grid container spacing={2}>
                 <Grid item lg={8} md={8} sm={12}>
                     <NftsSlider nfts={nfts} onNftAvatarSelected={onNftAvatarSelected} nftSelectable isLoading={nftsLoading} />

@@ -1,5 +1,6 @@
 import React from 'react';
 import Avatar from '@mui/material/Avatar';
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 function stringToColor(string) {
@@ -26,11 +27,11 @@ function stringToColor(string) {
     return color;
 }
 
+function makeShortName(name) {
+    if (!name) {
+        name = '';
+    }
 
-const DwitterAvatar = (props) => {
-    let {name, mr} = props;
-    name = name || '';
-    
     const nameParts = name.split(' ');
     let shortName = '';
     switch (nameParts.length) {
@@ -45,8 +46,26 @@ const DwitterAvatar = (props) => {
         default:
             shortName = nameParts[0][0] + nameParts[1][0];
     }
+    return shortName;
+}
+
+
+const DwitterAvatar = (props) => {
+    const {mr, nftAvatar, displayname, hasNftAvatar} = props;
+    console.log('nftAvatar =', nftAvatar);
+    console.log('hasNftAvatar =', hasNftAvatar);
+
+    if (hasNftAvatar && !nftAvatar) {
+        return (<CircularProgress sx={{mr: mr}}/>)
+    }
+
+    if (hasNftAvatar && nftAvatar) {
+        return (<Avatar sx={{mr: mr}}><embed src={nftAvatar.url} /></Avatar>)
+    }
+
+    const shortName = makeShortName(displayname);
     return (
-        <Avatar sx={{mr: mr, bgcolor: stringToColor(name), fontSize: "1rem"}}>
+        <Avatar sx={{mr: mr, bgcolor: stringToColor(displayname), fontSize: "1rem"}}>
             {shortName}
         </Avatar>
     );
