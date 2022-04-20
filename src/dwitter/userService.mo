@@ -31,6 +31,7 @@ module {
                 username = request.username;
                 displayname = request.displayname;
                 nftAvatar = null;
+                bio = null;
             };
 
             usersStorage.save(userId, user)
@@ -47,6 +48,7 @@ module {
                         username = user.username;
                         displayname = request.displayname;
                         nftAvatar = request.nftAvatar;
+                        bio = request.bio;
                     };
                     ?usersStorage.save(user.id, updatedUser);
                 };

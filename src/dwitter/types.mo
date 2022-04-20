@@ -40,6 +40,7 @@ module {
     createdTime : Int;
     username : Text;
     displayname : Text;
+    bio : ?Text;
   };
 
   public type CreateUserRequest = {
@@ -50,5 +51,6 @@ module {
   public type UpdateUserRequest = {
     displayname : Text;
     nftAvatar : ?NftId;
+    bio : ?Text;
   };
 };
