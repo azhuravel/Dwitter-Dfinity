@@ -8,10 +8,12 @@ import moment from "moment";
 const UserCard = (props) => {
     const {username, nftAvatar} = props;
     let displayname = 'Loading...';
-    let balance = '?'
+    let balance = '?';
+    let nftWealth = '?';
     if (!props.userLoading) {
         displayname = props?.user?.displayname;
         balance = props?.balance;
+        nftWealth = props?.nftWealth;
     }
     const createdTime = (props?.user?.createdTime || 0n ) / 1000000000n;
 
@@ -21,7 +23,7 @@ const UserCard = (props) => {
                 sx={{px:0}}
                 avatar={<DwitterAvatar loading={props.userLoading} displayname={props?.user?.displayname} nftAvatar={nftAvatar} />}
                 title={displayname}
-                subheader={`@${username} - joined ${moment.unix(Number(createdTime)).fromNow()} - balance ${balance} ICP`}
+                subheader={`@${username} - joined ${moment.unix(Number(createdTime)).fromNow()} - balance ${balance} ICP - NFT wealth ${nftWealth} ICP`}
             />
         </Card>
     )

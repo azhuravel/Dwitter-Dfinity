@@ -1,7 +1,6 @@
 import {idlFactory} from '../../../declarations/dwitter/dwitter.did.js';
 import {AuthClient} from "@dfinity/auth-client";
 import {canisterId, createActor} from '../../../declarations/dwitter';
-import { principalToAccountIdentifier } from '../utils/utils.js';
 
 
 const keyLocalStorageAuth = 'authed';
@@ -156,11 +155,9 @@ export default class AuthService {
             canisterId: process.env.DWITTER_CANISTER_ID,
             interfaceFactory: idlFactory,
         });
-
         const principal = await window.ic.plug.agent.getPrincipal();
-        const accountIdentifier = principalToAccountIdentifier(principal);
 
-        return { dwitterActor, accountIdentifier };
+        return { dwitterActor, principal };
     }
 
     static async getAuthInfoByII() {
@@ -170,8 +167,8 @@ export default class AuthService {
             return {};
         }
         const dwitterActor = await createActor(process.env.DWITTER_CANISTER_ID, { agentOptions: { identity }});
-        const accountIdentifier = AuthService.identityToAccountIdentifier(identity);
-        return { dwitterActor, accountIdentifier };
+        const principal = identity.getPrincipal();
+        return { dwitterActor, principal };
     }
 
     static async getCurrentUser(dwitterActor) {
@@ -194,7 +191,7 @@ export default class AuthService {
 
     static async getAuthCtx() {
         if (process.env.USE_MOCKS) {
-            return {dwitterActor: mockDwitterActor(), accountIdentifier: ''};
+            return {dwitterActor: mockDwitterActor(), principal: ''};
         }
 
         const authedBy = localStorage.getItem(keyLocalStorageAuth);
@@ -222,10 +219,10 @@ export default class AuthService {
     }
 
     static async loginByPlug() {
-        const { dwitterActor, accountIdentifier } = await AuthService.getAuthInfoByPlug();
+        const { dwitterActor, principal } = await AuthService.getAuthInfoByPlug();
         const currentUser = await AuthService.getCurrentUser(dwitterActor);
         localStorage.setItem(keyLocalStorageAuth, keyLocalStorageAuth_plug);
-        return { dwitterActor, currentUser, accountIdentifier };
+        return { dwitterActor, currentUser, principal };
     }
 
     static async loginByII() {
@@ -241,8 +238,8 @@ export default class AuthService {
         const dwitterActor = createActor(canisterId, { agentOptions: { identity }});
         const currentUser = await AuthService.getCurrentUser(dwitterActor);
         localStorage.setItem(keyLocalStorageAuth, keyLocalStorageAuth_ii);
-        const accountIdentifier = AuthService.identityToAccountIdentifier(identity);
-        return { dwitterActor, currentUser, accountIdentifier };
+        const principal = identity.getPrincipal();
+        return { dwitterActor, currentUser, principal };
     }
 
     static async logout() {
@@ -254,10 +251,5 @@ export default class AuthService {
                 break;
         }
         localStorage.removeItem(keyLocalStorageAuth);
-    }
-
-    static identityToAccountIdentifier(identity) {
-        const principal = identity.getPrincipal().toText();
-        return principalToAccountIdentifier(principal);
     }
 }

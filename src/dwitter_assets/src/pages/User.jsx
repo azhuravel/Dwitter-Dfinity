@@ -7,7 +7,7 @@ import NftsSlider from '../components/UI/NftsSlider/NftsSlider.jsx';
 import Loader from '../components/UI/Loader/Loader.jsx';
 import { useParams } from "react-router-dom";
 import { Box, Grid } from '@mui/material';
-import wealthService from '../services/wealthService.js';
+import wealthService from '../services/wealthService';
 import nftService from '../services/nftService.js';
 import { makeCancelable, icpAgent, getUserNftAvatars } from '../utils/utils.js';
 
@@ -19,6 +19,7 @@ const User = () => {
     const [posts, setPosts] = useState([]);
     const [user, setUser] = useState(null);
     const [balance, setBalance] = useState(null);
+    const [nftWealth, setNftWealth] = useState(null);
     const [nftAvatar, setNftAvatar] = useState(null);
     const [nftsLoading, setNftsLoading] = useState(true); 
     const [nfts, setNfts] = useState([]);
@@ -60,9 +61,20 @@ const User = () => {
 
     // Load balance of user.
     useEffect(() => {
-        const cancelable = makeCancelable(wealthService.getBalance(ctx.accountIdentifier));
+       //const cancelable = makeCancelable(wealthService.getBalance(ctx.principal));
+       const cancelable = makeCancelable(wealthService.getBalance('cuqd4-b54ae-keit4-7qgoa-ro7vy-3vdpi-6ni2h-rckht-atdp2-s3ugp-uae'));
         cancelable.promise
             .then((balance) => setBalance(balance))
+            .catch((err) => {});
+
+        return () => cancelable.cancel();
+    }, [username]);
+
+    // Load NFT wealth of user.
+    useEffect(() => {
+        const cancelable = makeCancelable(wealthService.getNftWealth(ctx.principal));
+        cancelable.promise
+            .then((nftWealth) => setNftWealth(nftWealth))
             .catch((err) => {});
 
         return () => cancelable.cancel();
@@ -104,7 +116,7 @@ const User = () => {
         <Grid container spacing={3} sx={{mt: 0}}>
             <Grid item lg={2} md={2} sm={0}/>
             <Grid item lg={8} md={8} sm={12}>
-                <UserCard userLoading={userLoading} username={username} user={user} balance={balance} nftAvatar={nftAvatar} />
+                <UserCard userLoading={userLoading} username={username} user={user} balance={balance} nftWealth={nftWealth} nftAvatar={nftAvatar} />
             </Grid>
             <Grid item lg={2} md={2} sm={0}/>
 
