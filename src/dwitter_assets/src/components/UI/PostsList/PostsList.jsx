@@ -25,8 +25,7 @@ const PostsList = (props) => {
                 props.posts.map(item => 
                     <ListItem disableGutters key={item.id} alignItems="flex-start">
                         <ListItemAvatar>
-                            {/* <Avatar/> */}
-                            <DwitterAvatar displayname={item.displayname}/>
+                            <DwitterAvatar mr={1} displayname={item.displayname} nftAvatarId={item?.nftAvatar}/>
                         </ListItemAvatar>
                         <ListItemText
                             primary={

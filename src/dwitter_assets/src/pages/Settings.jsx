@@ -19,7 +19,6 @@ const Settings = () => {
     const [submitting, setSubmitting] = useState(false);
     const [nfts, setNfts] = useState([]);
     const [nftsLoading, setNftsLoading] = useState(true); 
-    const [nftAvatar, setNftAvatar] = useState(null);
 
     // Load nfts of user.
     useEffect(() => {
@@ -33,12 +32,6 @@ const Settings = () => {
             .catch((err) => {});
 
         return () => cancelable.cancel();
-    }, []);
-
-    // Load user avatar.
-    useEffect(() => {
-        nftService.getUserNftAvatars(ctx.currentUser?.nftAvatar)
-            .then(userNftAvatar => setNftAvatar(userNftAvatar));
     }, []);
     
     const onSubmit = async (data) => {
@@ -55,7 +48,6 @@ const Settings = () => {
     }
 
     const onNftAvatarSelected = async (nftAvatar) => {
-        console.log(nftAvatar);
         const nftId = nftAvatar.nftId;
         ctx.dwitterActor
             .updateUser({
@@ -63,18 +55,21 @@ const Settings = () => {
                 nftAvatar: [nftId],
             })
             .then(resp => ((resp && resp[0]) || null))
-            .then(user => (nftService.getUserNftAvatars(user?.nftAvatar)))
-            .then(userNftAvatar => setNftAvatar(userNftAvatar));
+            .then(user => setCtx({...ctx, currentUser: user}));
     }
 
     const removeAvatar = async () => {
+        if (!confirm('Are you sure?')) {
+            return;
+        }
+        
         ctx.dwitterActor
             .updateUser({
                 displayname: ctx.currentUser.displayname,
                 nftAvatar: [],
             })
             .then((resp) => ((resp && resp[0]) || null))
-            .then((user) => setNftAvatar(null));
+            .then(user => setCtx({...ctx, currentUser: user}));
     }
 
     return (
@@ -125,7 +120,7 @@ const Settings = () => {
                 </Grid>
             </Grid>
 
-            <DwitterAvatar displayname={ctx.currentUser.displayname} nftAvatar={nftAvatar} hasNftAvatar={!!ctx.currentUser?.nftAvatar}/>
+            <DwitterAvatar displayname={ctx.currentUser?.displayname} nftAvatarId={ctx.currentUser?.nftAvatar} />
             
             <Grid container spacing={2}>
                 <Grid item lg={8} md={8} sm={12}>

@@ -65,7 +65,6 @@ class WealthService {
             // actor of nft collection
             const nftActor = Actor.createActor(idl, {agent : this.icpAgent, canisterId});
             const stats = await this.getStats(nftActor);
-            debugger;
             if (stats.average) { // if not, than impossible to calculate
                 wealth += stats.average * count;
             }

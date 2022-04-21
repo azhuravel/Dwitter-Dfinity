@@ -28,7 +28,7 @@ const Navbar = () => {
 
     const currentUserIsSignedUp = !!ctx.currentUser;
     const username = ctx?.currentUser?.username || 'me';
-    const displayname = ctx?.currentUser?.displayname || 'Menu';
+    const displayname = ctx?.currentUser?.displayname || 'No name';
 
     return (
         <React.Fragment>
@@ -45,7 +45,7 @@ const Navbar = () => {
                             aria-expanded={open ? 'true' : undefined}
                             onClick={handleClick}
                         >
-                            <DwitterAvatar mr={1} displayname={displayname}/>
+                            <DwitterAvatar mr={1} displayname={displayname} nftAvatarId={ctx.currentUser?.nftAvatar} />
                             {displayname}
                         </Button>
                         <Menu

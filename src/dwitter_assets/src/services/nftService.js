@@ -18,6 +18,10 @@ class NftService {
     }
 
     getUserNftAvatars(nftIds) {
+        if (!nftIds) {
+            return new Promise((resolve, reject) => {resolve();});
+        }
+
         const nftId = nftIds[0];
         const nftActor = getNFTActor({
             canisterId: nftId.canisterId, 

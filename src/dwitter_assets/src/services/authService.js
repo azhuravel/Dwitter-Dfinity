@@ -121,9 +121,9 @@ const mockDwitterActor = () => {
                 createdTime: 1000000000n,
                 // nftAvatar: null,
                 nftAvatar: [{
-                    standard: 'EXT',
-                    canisterId: 'pk6rk-6aaaa-aaaae-qaazq-cai',
-                    index: '1496',
+                    canisterId: "3db6u-aiaaa-aaaah-qbjbq-cai",
+                    index: "1295",
+                    standard: "EXT",
                 }],
             }]; 
         },

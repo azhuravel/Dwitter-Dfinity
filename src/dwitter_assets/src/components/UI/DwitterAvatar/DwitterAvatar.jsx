@@ -1,6 +1,8 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import Avatar from '@mui/material/Avatar';
 import CircularProgress from '@mui/material/CircularProgress';
+import nftService from '../../../services/nftService.js';
+import { makeCancelable } from '../../../utils/utils.js';
 
 
 function stringToColor(string) {
@@ -49,24 +51,41 @@ function makeShortName(name) {
     return shortName;
 }
 
-
 const DwitterAvatar = (props) => {
-    const {mr, nftAvatar, displayname, hasNftAvatar} = props;
-    console.log('nftAvatar =', nftAvatar);
-    console.log('hasNftAvatar =', hasNftAvatar);
+    const {mr, displayname, nftAvatarId} = props;
+    const defaultState = {
+        isLoading: true,
+        shortName: makeShortName(displayname),
+        avatarUrl: '',
+    };
+    const [state, setState] = useState(defaultState);
 
-    if (hasNftAvatar && !nftAvatar) {
-        return (<CircularProgress sx={{mr: mr}}/>)
+    useEffect(() => {
+        setState({...state, isLoading: false, shortName: makeShortName(displayname)});
+    }, [displayname]);
+
+    useEffect(() => {
+        setState({...state, isLoading: true, avatarUrl: ''});
+
+        const cancelable = makeCancelable(nftService.getUserNftAvatars(nftAvatarId));
+        cancelable.promise
+            .then(userNftAvatar => setState({...state, isLoading: false, avatarUrl: userNftAvatar?.url}))
+            .catch((err) => {});
+
+        return () => cancelable.cancel();
+    }, [nftAvatarId]);
+
+    if (state.isLoading) {
+        return (<CircularProgress color="inherit" sx={{mr: mr}}/>)
     }
 
-    if (hasNftAvatar && nftAvatar) {
-        return (<Avatar sx={{mr: mr}}><embed src={nftAvatar.url} /></Avatar>)
+    if (state.avatarUrl) {
+        return (<Avatar variant="rounded" sx={{mr: mr}} src={state.avatarUrl} />)
     }
 
-    const shortName = makeShortName(displayname);
     return (
-        <Avatar sx={{mr: mr, bgcolor: stringToColor(displayname), fontSize: "1rem"}}>
-            {shortName}
+        <Avatar variant="rounded" sx={{mr: mr, bgcolor: stringToColor(displayname), fontSize: "1rem"}}>
+            {state.shortName}
         </Avatar>
     );
 };
