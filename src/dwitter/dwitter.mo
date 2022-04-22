@@ -1,7 +1,8 @@
 import Types "./types";
-import Storage "./storage";
 import PostModule "./postService";
 import UserModule "./userService";
+import UserCanisterModule "./userCanisterModule";
+
 import Principal "mo:base/Principal";
 
 /*
@@ -9,14 +10,13 @@ import Principal "mo:base/Principal";
  */
 actor {
     /*
-     * Storages and services
+     * Services
      */
 
-    let postsStorage: Storage.Posts = Storage.Posts();
-    let usersStorage: Storage.Users = Storage.Users();
+    let userCanisterService: UserCanisterModule.UserCanisterService  = UserCanisterModule.UserCanisterService();
 
-    let postService: PostModule.PostService = PostModule.PostService(postsStorage, usersStorage);
-    let userService: UserModule.UserService = UserModule.UserService(usersStorage);
+    let postService: PostModule.PostService = PostModule.PostService(userCanisterService);
+    let userService: UserModule.UserService = UserModule.UserService(userCanisterService);
 
     /*
      * Data types
@@ -36,58 +36,38 @@ actor {
      */
 
     public shared(msg) func getCurrentUser(): async ?User {
-        userService.get(msg.caller)
+        await userService.get(msg.caller)
     };
 
     public shared(msg) func getUserByUsername(username : Text): async ?User  {
-        usersStorage.getByUsername(username)
+        await userService.getByUsername(username)
     };
 
     public shared(msg) func createUser(request : CreateUserRequest): async User {
-        userService.create(msg.caller, request)
+        await userService.create(msg.caller, request)
     };
 
     public shared(msg) func updateUser(request : UpdateUserRequest): async ?User {
-        userService.update(msg.caller, request)
+        await userService.update(msg.caller, request)
     };
 
-    public shared(msg) func getAllUsers(): async [User] {
-        userService.toArray()
-    };
+    // public shared(msg) func getAllUsers(): async [User] {
+    //     userService.toArray()
+    // };
 
     /*
      * Posts methods
      */
 
-    public shared(msg) func createPost(request : CreatePostRequest): async PostInfo {
-        postService.createPost(msg.caller, request)
+    public shared(msg) func createPost(request : CreatePostRequest): async ?PostInfo {
+        await postService.createPost(msg.caller, request)
     };
 
     public shared(msg) func getMyPosts(): async ?[PostInfo] {
-        postService.getByUserId(msg.caller)
+        await postService.getByUserId(msg.caller)
     };
 
     public func getUserPosts(username : Text): async ?[PostInfo] {
-        postService.getByUsername(username)
-    };
-
-    /*
-     * Canister upgrade logic
-     */
-
-    stable var posts : [Post] = [];
-    stable var users : [User] = []; 
-
-    system func preupgrade() {
-        posts := postService.toArray();
-        users := userService.toArray();
-    };
-
-    system func postupgrade() {
-        postService.fromArray(posts);
-        userService.fromArray(users);
-
-        posts := [];
-        users := [];
+        await postService.getByUsername(username)
     };
 };
