@@ -43,7 +43,7 @@ const Settings = () => {
         await ctx.dwitterActor.updateUser({
             username, 
             displayname, 
-            bio,
+            bio : [bio],
             nftAvatar: ctx.currentUser.nftAvatar,
         });
         const userResponse = await ctx.dwitterActor.getCurrentUser();
@@ -58,7 +58,7 @@ const Settings = () => {
         ctx.dwitterActor
             .updateUser({
                 displayname: ctx.currentUser.displayname,
-                bio: ctx.currentUser.bio,
+                bio: [ctx.currentUser.bio],
                 nftAvatar: [nftId],
             })
             .then(resp => ((resp && resp[0]) || null))
@@ -73,7 +73,7 @@ const Settings = () => {
         ctx.dwitterActor
             .updateUser({
                 displayname: ctx.currentUser.displayname,
-                bio: ctx.currentUser.bio,
+                bio: [ctx.currentUser.bio],
                 nftAvatar: [],
             })
             .then((resp) => ((resp && resp[0]) || null))
