@@ -39,7 +39,13 @@ const Settings = () => {
 
         const username = ctx.currentUser.username;
         const displayname = data.displayname;
-        await ctx.dwitterActor.updateUser({username, displayname});
+        const bio = data.bio;
+        await ctx.dwitterActor.updateUser({
+            username, 
+            displayname, 
+            bio,
+            nftAvatar: ctx.currentUser.nftAvatar,
+        });
         const userResponse = await ctx.dwitterActor.getCurrentUser();
         const user = userResponse[0];
         setCtx({...ctx, currentUser: user});
@@ -52,6 +58,7 @@ const Settings = () => {
         ctx.dwitterActor
             .updateUser({
                 displayname: ctx.currentUser.displayname,
+                bio: ctx.currentUser.bio,
                 nftAvatar: [nftId],
             })
             .then(resp => ((resp && resp[0]) || null))
@@ -62,10 +69,11 @@ const Settings = () => {
         if (!confirm('Are you sure?')) {
             return;
         }
-        
+
         ctx.dwitterActor
             .updateUser({
                 displayname: ctx.currentUser.displayname,
+                bio: ctx.currentUser.bio,
                 nftAvatar: [],
             })
             .then((resp) => ((resp && resp[0]) || null))
@@ -111,6 +119,28 @@ const Settings = () => {
                             required: 'this is a required',
                             minLength: {value: 4, message: 'Min length is 4'},
                             maxLength: {value: 15, message: 'Max length is 15'},
+                        }}
+                    />
+                </Grid>
+
+                <Grid item xs={12}>
+                    <Controller
+                        name="bio"
+                        control={control}
+                        defaultValue={ctx.currentUser.bio} 
+                        render={({field: {onChange, value}, fieldState: {error}}) => (
+                            <TextField
+                                label="Bio"
+                                value={value}
+                                onChange={onChange}
+                                error={!!error}
+                                helperText={error ? error.message : null}
+                                disabled={submitting}
+                                multiline
+                            />
+                        )}
+                        rules={{
+                            maxLength: {value: 100, message: 'Max length is 100'},
                         }}
                     />
                 </Grid>

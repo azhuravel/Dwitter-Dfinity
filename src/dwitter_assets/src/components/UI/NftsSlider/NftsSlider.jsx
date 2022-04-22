@@ -16,8 +16,10 @@ const NftsSlider = (props) => {
         return (<p>Nfts are loading...</p>)
     }
 
+    const rowHeight = nftSelectable ? 200 : 110;
+
     return (
-        <ImageList cols={10} rowHeight={200}>
+        <ImageList cols={10} rowHeight={rowHeight}>
             {nfts.map((nft) => (
                 <ImageListItem key={nft.tokenId}>
                     <embed src={nft.url} width="100" height="100" /> 

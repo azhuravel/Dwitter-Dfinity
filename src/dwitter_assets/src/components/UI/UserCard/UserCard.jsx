@@ -16,6 +16,7 @@ const UserCard = (props) => {
         nftWealth = props?.nftWealth;
     }
     const createdTime = (props?.user?.createdTime || 0n ) / 1000000000n;
+    const bio = props?.user?.bio || '';
 
     return (
         <Card elevation={0} variant='body1'>
@@ -23,7 +24,7 @@ const UserCard = (props) => {
                 sx={{px:0}}
                 avatar={<DwitterAvatar loading={props.userLoading} displayname={props?.user?.displayname} nftAvatar={nftAvatar} />}
                 title={displayname}
-                subheader={`@${username} - joined ${moment.unix(Number(createdTime)).fromNow()} - balance ${balance} ICP - NFT wealth ${nftWealth} ICP`}
+                subheader={`@${username} ${bio} - joined ${moment.unix(Number(createdTime)).fromNow()} - balance ${balance} ICP - NFT wealth ${nftWealth} ICP`}
             />
         </Card>
     )
