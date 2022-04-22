@@ -18,7 +18,7 @@ class NftService {
     }
 
     getUserNftAvatars(nftIds) {
-        if (!nftIds) {
+        if (!nftIds || nftIds.length === 0) {
             return new Promise((resolve, reject) => {resolve();});
         }
 
