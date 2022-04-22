@@ -122,7 +122,7 @@ const User = () => {
 
             <Grid item lg={2} md={2} sm={0}/>
             <Grid item lg={8} md={8} sm={12}>
-                <NftsSlider nfts={nfts} isLoading={nftsLoading} />
+                <NftsSlider nftsOfCurrentUser={isCurrentUserProfile} nfts={nfts} isLoading={nftsLoading} />
             </Grid>
             <Grid item lg={2} md={2} sm={0}/>
 

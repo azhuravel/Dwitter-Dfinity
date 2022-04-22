@@ -150,11 +150,11 @@ const Settings = () => {
                 </Grid>
             </Grid>
 
-            <DwitterAvatar displayname={ctx.currentUser?.displayname} nftAvatarId={ctx.currentUser?.nftAvatar} />
+            <DwitterAvatar mr={1} displayname={ctx.currentUser?.displayname} nftAvatarId={ctx.currentUser?.nftAvatar} />
             
             <Grid container spacing={2}>
                 <Grid item lg={8} md={8} sm={12}>
-                    <NftsSlider nfts={nfts} onNftAvatarSelected={onNftAvatarSelected} nftSelectable isLoading={nftsLoading} />
+                    <NftsSlider nfts={nfts} nftsOfCurrentUser={true} onNftAvatarSelected={onNftAvatarSelected} nftSelectable isLoading={nftsLoading} />
                 </Grid>
             </Grid>
             

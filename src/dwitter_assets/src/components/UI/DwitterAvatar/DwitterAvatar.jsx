@@ -84,7 +84,7 @@ const DwitterAvatar = (props) => {
     }
 
     return (
-        <Avatar variant="rounded" sx={{mr: mr, bgcolor: stringToColor(displayname), fontSize: "1rem"}}>
+        <Avatar variant="rounded" sx={{mr: mr, bgcolor: stringToColor(displayname)}}>
             {state.shortName}
         </Avatar>
     );

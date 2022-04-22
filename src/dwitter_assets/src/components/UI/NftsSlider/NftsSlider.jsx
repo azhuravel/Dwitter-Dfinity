@@ -11,9 +11,18 @@ const NftsSlider = (props) => {
     const nftSelectable = props?.nftSelectable || false;
     const onNftAvatarSelected = props.onNftAvatarSelected;
     const isLoading = props.isLoading;
+    const nftsOfCurrentUser = props.nftsOfCurrentUser;
 
     if (isLoading) {
-        return (<p>Nfts are loading...</p>)
+        return (<p>NFTs are loading...</p>)
+    }
+
+    if (nfts.length === 0) {
+        if (nftsOfCurrentUser) {
+            return (<p>You don't have NFTs, but you can buy them <a target="_blank" href="https://entrepot.app">here</a></p>)
+        } else {
+            return (<p>User doesn't have NFTs</p>)
+        }
     }
 
     const rowHeight = nftSelectable ? 200 : 110;
