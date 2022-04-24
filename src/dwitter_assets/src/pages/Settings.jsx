@@ -11,6 +11,8 @@ import { makeCancelable } from '../utils/utils.js';
 import nftService from '../services/nftService.js';
 import DwitterAvatar from "../components/UI/DwitterAvatar/DwitterAvatar";
 import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 const Settings = () => {
@@ -54,8 +56,10 @@ const Settings = () => {
     }
 
     const onNftAvatarSelected = async (nftAvatar) => {
+        setSubmitting(true);
+
         const nftId = nftAvatar.nftId;
-        ctx.dwitterActor
+        await ctx.dwitterActor
             .updateUser({
                 displayname: ctx.currentUser.displayname,
                 bio: [ctx.currentUser.bio],
@@ -63,6 +67,8 @@ const Settings = () => {
             })
             .then(resp => ((resp && resp[0]) || null))
             .then(user => setCtx({...ctx, currentUser: user}));
+
+        setSubmitting(false);
     }
 
     const removeAvatar = async () => {
@@ -70,7 +76,9 @@ const Settings = () => {
             return;
         }
 
-        ctx.dwitterActor
+        setSubmitting(true);
+
+        await ctx.dwitterActor
             .updateUser({
                 displayname: ctx.currentUser.displayname,
                 bio: [ctx.currentUser.bio],
@@ -78,11 +86,19 @@ const Settings = () => {
             })
             .then((resp) => ((resp && resp[0]) || null))
             .then(user => setCtx({...ctx, currentUser: user}));
+        
+        setSubmitting(false);
     }
 
     return (
-        <Box sx={{marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+        <React.Fragment>
+        <Box sx={{marginTop: 8, display: 'flex', flexDirection: 'column'}}>
+
             <Grid container component="form" spacing={2} onSubmit={handleSubmit(onSubmit)}>
+                <Grid item xs={12}>
+                    <Typography variant="h6" sx={{mb: 3}}>Common info</Typography>
+                </Grid>
+
                 <Grid item xs={12}>
                     <Controller
                         name="username"
@@ -149,17 +165,37 @@ const Settings = () => {
                     <LoadingButton type="submit" variant="contained" loading={submitting}>Save</LoadingButton>
                 </Grid>
             </Grid>
+        </Box>
 
-            <DwitterAvatar mr={1} displayname={ctx.currentUser?.displayname} nftAvatarId={ctx.currentUser?.nftAvatar} />
-            
+        <Box sx={{marginTop: 8, display: 'flex', flexDirection: 'column'}}>
             <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <Typography variant="h6" sx={{mb: 1}}>Avatar</Typography>
+                </Grid>
+
+                <Grid item xs={12}>
+                    <Typography variant="p" sx={{mb: 1}}>Current avatar:</Typography>
+                </Grid>
+                
+                <Grid item xs={12}>
+                    {submitting && <CircularProgress color="inherit" sx={{mr: 1}}/>}
+                    {!submitting && <DwitterAvatar mr={1} displayname={ctx.currentUser?.displayname} nftAvatarId={ctx.currentUser?.nftAvatar} />}
+                </Grid>
+
+                <Grid item xs={12} sx={{mb: 2}}>
+                    <Button disabled={!ctx.currentUser?.nftAvatar || submitting} variant="contained" onClick={removeAvatar}>Remove current NFT from avatar</Button>
+                </Grid>
+
+                <Grid item xs={12}>
+                    <Typography variant="p">You can set any your NFT as avatar</Typography>
+                </Grid>
+                
                 <Grid item lg={8} md={8} sm={12}>
-                    <NftsSlider nfts={nfts} nftsOfCurrentUser={true} onNftAvatarSelected={onNftAvatarSelected} nftSelectable isLoading={nftsLoading} />
+                    <NftsSlider nfts={nfts} nftsOfCurrentUser={true} onNftAvatarSelected={onNftAvatarSelected} nftSelectable isLoading={nftsLoading} disableButtons={submitting} />
                 </Grid>
             </Grid>
-            
-            <Button onClick={removeAvatar}>Remove current avatar</Button>
         </Box>
+        </React.Fragment>
     );
 };
 

@@ -42,12 +42,12 @@ const mockDwitterActor = () => {
                 username: 'uuuserrr',
                 displayname: 'Mock User',
                 createdTime: 1000000000n,
-                // nftAvatar: null,
-                nftAvatar: [{
-                    standard: 'EXT',
-                    canisterId: 'sr4qi-vaaaa-aaaah-qcaaq-cai',
-                    index: '1',
-                }],
+                nftAvatar: null,
+                // nftAvatar: [{
+                //     standard: 'EXT',
+                //     canisterId: 'sr4qi-vaaaa-aaaah-qcaaq-cai',
+                //     index: '1',
+                // }],
             }]; 
         },
         getMyPosts: async () => {
@@ -113,6 +113,7 @@ const mockDwitterActor = () => {
             ]];
         },
         updateUser: async () => {
+            await delay(2000);
             return [{
                 id: '123123',
                 username: 'uuuserrr',
