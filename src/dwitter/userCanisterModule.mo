@@ -4,26 +4,62 @@ import Principal "mo:base/Principal";
 import Text "mo:base/Text";
 import UserModule "./user";
 import Iter "mo:base/Iter";
+import Array "mo:base/Array";
 
 module {
     type User = Types.User;
     type UserId = Types.UserId;
     type UserCanister = UserModule.UserCanister;
 
-    public class UserCanisterService() {
-        let userCanisters = Map.HashMap<UserId, UserCanister>(1, isEq, Principal.hash);
+    /* Serialization info */
+    public type UsersCanistersInfo = {
+        userCanistersEntries : [(UserId, Text)]; // store Principal to create UserCanister
+        byUsernameEntries : [(Text, UserId)];
+    };
+
+    /* Canister managment types and methods */
+    type CanisterSettings = {
+        controller : ?Principal;
+        compute_allocation : ?Nat;
+        memory_allocation : ?Nat;
+        freezing_threshold : ?Nat;
+    };
+    let IC = actor ("aaaaa-aa") : actor {
+        update_settings : {canister_id  : Principal; settings : CanisterSettings} -> async ();
+    };
+
+    /* Service */
+    public class UserCanisterService(dwitterOwner : Principal) {
+        let userCanisters = Map.HashMap<UserId, Text>(1, isEq, Principal.hash);
         let byUsername = Map.HashMap<Text, UserId>(1, Text.equal, Text.hash);
 
         public func create(user : User) : async UserCanister {
+            // create user canister
             let userCanister = await UserModule.UserCanister();
+
+            // transfer rights to the Dwitter owner
+            await changeCanisterController(Principal.fromActor(userCanister));
+
+            // write the user data to canister
             await userCanister.updateUser(user);
-            userCanisters.put(user.id, userCanister);
+
+            // add the canister in maps (indexes in nutshell)
+            let canisterPrincipal = Principal.toText(Principal.fromActor(userCanister));
+            userCanisters.put(user.id, canisterPrincipal);
             byUsername.put(user.username, user.id);
+
             return userCanister;
         };
 
         public func getByUserId(userId : UserId) : ?UserCanister {
-            return userCanisters.get(userId);
+            let principal = userCanisters.get(userId);
+            switch(principal) {
+                case (null) { return null; };
+                case (?principal) {
+                    let userCanister : UserCanister = actor(principal);
+                    return ?userCanister;
+                } 
+            }
         };
 
         public func getByUsername(username : Text) : ?UserCanister {
@@ -33,27 +69,54 @@ module {
                     return null;
                 };
                 case (?userId) {
-                    return userCanisters.get(userId);
+                    return getByUserId(userId);
                 };
             };
         };
 
-        // public func toArray() : [UserCanister] {
-        //     return Iter.toArray(userCanisters.vals());
-        // };
+        func changeCanisterController(canisterId : Principal) : async() {
+            let settings : CanisterSettings = {
+                controller = ?dwitterOwner;
+                compute_allocation = null;
+                memory_allocation = null;
+                freezing_threshold = null;
+            };
 
-        // public func fromArray(array : [UserCanister])  {
-        //     for (userCanister in array.vals()) {
-        //         let user = userCanister.getUser();
-        //         switch (user) {
-        //             case (null) {  }; // nothing, should throw exception
-        //             case (?user) {
-        //                 userCanisters.put(user.id, userCanister);
-        //                 byUsername.put(user.username, user.id);
-        //             };
-        //         }
-        //     };
-        // };
+            await IC.update_settings(
+                {
+                    canister_id = canisterId;
+                    settings = settings;
+                }
+            );
+        };
+
+        public func getAllUsersIds() : [UserId] {
+            return Iter.toArray(userCanisters.keys());
+        };
+
+        public func serialize() : UsersCanistersInfo {
+            let data : UsersCanistersInfo = {
+                userCanistersEntries = Iter.toArray(userCanisters.entries());
+                byUsernameEntries = Iter.toArray(byUsername.entries());
+            };
+            return data;
+        };
+
+        public func deserialize(info : UsersCanistersInfo)  {
+            for (entry in info.userCanistersEntries.vals()) {
+                let userId = entry.0;
+                let canisterPrincipal = entry.1;
+
+                userCanisters.put(userId, canisterPrincipal);
+            };
+
+            for (entry in info.byUsernameEntries.vals()) {
+                let username = entry.0;
+                let userId = entry.1;
+
+                byUsername.put(username, userId);
+            };
+        };
     };
 
     func isEq(x: UserId, y: UserId): Bool { 

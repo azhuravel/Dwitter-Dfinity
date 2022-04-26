@@ -9,7 +9,7 @@ actor class UserCanister() {
     type User = Types.User;
     type Post = Types.Post;
 
-    var user : ?User = null;
+    stable var user : ?User = null;
 
     // extendable list of user posts
     let posts = Buffer.Buffer<Post>(0);
@@ -30,12 +30,7 @@ actor class UserCanister() {
     };
 
     public func savePost(post : Post) : async () {
-        // add post in the storage
-        posts.add(post);
-
-        // add post to index
-        let bufferIndex : Nat = posts.size() - 1;
-        postById.put(post.id, bufferIndex);
+        storePost(post);
     };
 
     public func getUser() : async ?User {
@@ -45,6 +40,33 @@ actor class UserCanister() {
     public func updateUser(updatedUser : User) : async() {
         user := ?updatedUser;
     };
+
+    private func storePost(post : Post) {
+        // add post in the storage
+        posts.add(post);
+
+        // add post to index
+        let bufferIndex : Nat = posts.size() - 1;
+        postById.put(post.id, bufferIndex);
+    };
+
+    /* Canister update logic */
+
+    stable var serializedPosts : [Post] = [];
+
+    system func preupgrade() {
+        serializedPosts := posts.toArray();
+    };
+
+    system func postupgrade() {
+        for (post in serializedPosts.vals()) {
+            storePost(post);
+        };
+
+        serializedPosts := [];
+    };
+
+    /* Utils methods */
 
     func isEq(x: UserId, y: UserId): Bool { x == y };
 };

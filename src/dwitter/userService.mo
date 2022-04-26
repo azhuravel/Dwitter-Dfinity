@@ -78,12 +78,8 @@ module {
             }
         };
 
-        // public func toArray() : [User] {
-        //     usersStorage.toArray()
-        // };
-
-        // public func fromArray(array : [User]) {
-        //     usersStorage.fromArray(array)
-        // };
+        public func getAllUsersPrincipals() : [UserId] {
+            return userCanisterService.getAllUsersIds();
+        }
     }
 }

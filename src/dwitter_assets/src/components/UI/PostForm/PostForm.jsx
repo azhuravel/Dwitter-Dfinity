@@ -21,7 +21,7 @@ const PostForm = (props) => {
         }
         
         setSubmitting(true);
-        const post = {text: preparedText};
+        const post = {text: preparedText, nft: [], kind: "TEXT"};
         const resp = await ctx.dwitterActor.createPost(post);
         props.postCreatedCallback(resp[0]);
         reset({text:''});

@@ -8,12 +8,12 @@ import Principal "mo:base/Principal";
 /*
  * The Dwitter actor serves as the only API for frontend
  */
-actor {
+shared ({ caller = dwitterOwner }) actor class Dwitter() = this {
     /*
      * Services
      */
 
-    let userCanisterService: UserCanisterModule.UserCanisterService  = UserCanisterModule.UserCanisterService();
+    let userCanisterService: UserCanisterModule.UserCanisterService  = UserCanisterModule.UserCanisterService(dwitterOwner);
 
     let postService: PostModule.PostService = PostModule.PostService(userCanisterService);
     let userService: UserModule.UserService = UserModule.UserService(userCanisterService);
@@ -30,6 +30,8 @@ actor {
     type Post = Types.Post;
     type PostInfo = Types.PostInfo;
     type CreatePostRequest = Types.CreatePostRequest;
+
+    type UsersCanistersInfo = UserCanisterModule.UsersCanistersInfo;
 
     /*
      * User methods
@@ -51,9 +53,9 @@ actor {
         await userService.update(msg.caller, request)
     };
 
-    // public shared(msg) func getAllUsers(): async [User] {
-    //     userService.toArray()
-    // };
+    public shared(msg) func getAllUsers(): async [UserId] {
+        return userService.getAllUsersPrincipals();
+    };
 
     /*
      * Posts methods
@@ -69,5 +71,25 @@ actor {
 
     public func getUserPosts(username : Text): async ?[PostInfo] {
         await postService.getByUsername(username)
+    };
+
+    /*
+     * Upgrade logic
+     */
+    stable var usersCanistersInfo : UsersCanistersInfo = {
+        userCanistersEntries = [];
+        byUsernameEntries = [];
+    };
+
+    system func preupgrade() {
+        usersCanistersInfo := userCanisterService.serialize();
+    };
+
+    system func postupgrade() {
+        userCanisterService.deserialize(usersCanistersInfo);
+        usersCanistersInfo := {
+            userCanistersEntries = [];
+            byUsernameEntries = [];
+        };
     };
 };
