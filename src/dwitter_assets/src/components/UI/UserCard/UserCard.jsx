@@ -16,7 +16,7 @@ const UserCard = (props) => {
         nftWealth = props?.nftWealth;
     }
     const createdTime = (props?.user?.createdTime || 0n ) / 1000000000n;
-    const bio = props?.user?.bio || '';
+    const bio = !props?.user?.bio ? props?.user?.bio[0] : '';
 
     return (
         <Card elevation={0} variant='body1'>
