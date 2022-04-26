@@ -43,6 +43,7 @@ const mockDwitterActor = () => {
                 displayname: 'Mock User',
                 createdTime: 1000000000n,
                 nftAvatar: null,
+                bio: [],
                 // nftAvatar: [{
                 //     standard: 'EXT',
                 //     canisterId: 'sr4qi-vaaaa-aaaah-qcaaq-cai',

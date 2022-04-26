@@ -45,7 +45,7 @@ const Settings = () => {
         await ctx.dwitterActor.updateUser({
             username, 
             displayname, 
-            bio : [bio],
+            bio: [bio],
             nftAvatar: ctx.currentUser.nftAvatar,
         });
         const userResponse = await ctx.dwitterActor.getCurrentUser();
@@ -62,7 +62,7 @@ const Settings = () => {
         await ctx.dwitterActor
             .updateUser({
                 displayname: ctx.currentUser.displayname,
-                bio: [ctx.currentUser.bio],
+                bio: ctx.currentUser.bio,
                 nftAvatar: [nftId],
             })
             .then(resp => ((resp && resp[0]) || null))
@@ -81,7 +81,7 @@ const Settings = () => {
         await ctx.dwitterActor
             .updateUser({
                 displayname: ctx.currentUser.displayname,
-                bio: [ctx.currentUser.bio],
+                bio: ctx.currentUser.bio,
                 nftAvatar: [],
             })
             .then((resp) => ((resp && resp[0]) || null))
@@ -143,7 +143,7 @@ const Settings = () => {
                     <Controller
                         name="bio"
                         control={control}
-                        defaultValue={ctx.currentUser.bio} 
+                        defaultValue={ctx.currentUser.bio[0] || ''} 
                         render={({field: {onChange, value}, fieldState: {error}}) => (
                             <TextField
                                 label="Bio"
