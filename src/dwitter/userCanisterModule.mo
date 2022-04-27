@@ -5,6 +5,7 @@ import Text "mo:base/Text";
 import UserModule "./user";
 import Iter "mo:base/Iter";
 import Array "mo:base/Array";
+import Cycles "mo:base/ExperimentalCycles";
 
 module {
     type User = Types.User;
@@ -34,6 +35,10 @@ module {
         let byUsername = Map.HashMap<Text, UserId>(1, Text.equal, Text.hash);
 
         public func create(user : User) : async UserCanister {
+            // sponsor the transactions: +10% from needed
+            Cycles.add(210000000000); // the sum is x2.1 from the needed to create a canister
+            // TODO: to add cycles to canister when needed
+
             // create user canister
             let userCanister = await UserModule.UserCanister();
 
