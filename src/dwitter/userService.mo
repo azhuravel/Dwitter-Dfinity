@@ -78,7 +78,7 @@ module {
             }
         };
 
-        public func getAllUsersPrincipals() : [UserId] {
+        public func getAllUsersPrincipals() : [Text] {
             return userCanisterService.getAllUsersIds();
         }
     }

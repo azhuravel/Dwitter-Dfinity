@@ -90,8 +90,8 @@ module {
             );
         };
 
-        public func getAllUsersIds() : [UserId] {
-            return Iter.toArray(userCanisters.keys());
+        public func getAllUsersIds() : [Text] {
+            return Iter.toArray(userCanisters.vals());
         };
 
         public func serialize() : UsersCanistersInfo {

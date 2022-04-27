@@ -53,7 +53,7 @@ shared ({ caller = dwitterOwner }) actor class Dwitter() = this {
         await userService.update(msg.caller, request)
     };
 
-    public shared(msg) func getAllUsers(): async [UserId] {
+    public shared(msg) func getAllUsers(): async [Text] {
         return userService.getAllUsersPrincipals();
     };
 
