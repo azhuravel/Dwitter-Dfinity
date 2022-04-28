@@ -5,6 +5,9 @@ import UserCanisterModule "./userCanisterModule";
 
 import Principal "mo:base/Principal";
 
+import Nat64 "mo:base/Nat64";
+import Cycles "mo:base/ExperimentalCycles";
+
 /*
  * The Dwitter actor serves as the only API for frontend
  */
@@ -91,5 +94,12 @@ shared ({ caller = dwitterOwner }) actor class Dwitter() = this {
             userCanistersEntries = [];
             byUsernameEntries = [];
         };
+    };
+
+    /* Method to allow topup canister */
+    public func wallet_receive() : async { accepted: Nat64 } {
+        let amount = Cycles.available();
+        let deposit = Cycles.accept(amount);
+        { accepted = Nat64.fromNat(deposit) };
     };
 };
