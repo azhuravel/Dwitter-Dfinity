@@ -85,6 +85,7 @@ module {
                         nft = post.nft;
                         username = user.username;
                         displayname = user.displayname;
+                        nftAvatar = user.nftAvatar;
                     };
                     return postInfo;
                 };
@@ -97,6 +98,7 @@ module {
                         nft = post.nft;
                         username = "DELETED";
                         displayname = "DELETED";
+                        nftAvatar = null;
                     };
                     return postInfo;
                 };

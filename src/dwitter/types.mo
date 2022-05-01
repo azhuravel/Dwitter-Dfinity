@@ -26,6 +26,7 @@ module {
     nft : ?NftId;
     username : Text;
     displayname: Text;
+    nftAvatar : ?NftId;
   };
 
   public type CreatePostRequest = {

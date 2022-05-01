@@ -22,7 +22,7 @@ const UserCard = (props) => {
         <Card elevation={0} variant='body1'>
             <CardHeader
                 sx={{px:0}}
-                avatar={<DwitterAvatar loading={props.userLoading} displayname={props?.user?.displayname} nftAvatar={nftAvatar} />}
+                avatar={<DwitterAvatar loading={props.userLoading} displayname={props?.user?.displayname} nftAvatarId={nftAvatar} />}
                 title={displayname}
                 subheader={`@${username} ${bio} - joined ${moment.unix(Number(createdTime)).fromNow()} - balance ${balance} ICP - NFT wealth ${nftWealth} ICP`}
             />

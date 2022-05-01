@@ -37,8 +37,7 @@ const User = () => {
                 setUser(user);
                 return user;
             })
-            .then((user) => nftService.getUserNftAvatars(user?.nftAvatar))
-            .then(userNftAvatar => setNftAvatar(userNftAvatar))
+            .then(user => setNftAvatar(user?.nftAvatar))
             .then(() => setUserLoading(false))
             .catch((err) => {});
 
