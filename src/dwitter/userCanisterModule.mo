@@ -35,15 +35,18 @@ module {
         let byUsername = Map.HashMap<Text, UserId>(1, Text.equal, Text.hash);
 
         public func create(user : User) : async UserCanister {
-            // sponsor the transactions: +10% from needed
-            Cycles.add(210000000000); // the sum is x2.1 from the needed to create a canister
-            // TODO: to add cycles to canister when needed
+            // Cost of computation table:
+            // https://smartcontracts.org/docs/developers-guide/computation-and-storage-costs.html
+            let CANISTER_CREATED_CYCLES = 100_000_000_000;
+            let USER_CANISTER_START_BALANCE = 100_000_000_000;
+            Cycles.add(CANISTER_CREATED_CYCLES + USER_CANISTER_START_BALANCE);
 
+            // actor class docs: https://smartcontracts.org/docs/language-guide/actor-classes.html#actor_classes
             // create user canister
             let userCanister = await UserModule.UserCanister();
 
-            // transfer rights to the Dwitter owner
-            await changeCanisterController(Principal.fromActor(userCanister));
+            // transfer controller to the Dwitter owner
+            await transferOwnership(Principal.fromActor(userCanister), dwitterOwner);
 
             // write the user data to canister
             await userCanister.updateUser(user);
@@ -79,9 +82,9 @@ module {
             };
         };
 
-        func changeCanisterController(canisterId : Principal) : async() {
+        func transferOwnership(canisterId : Principal, newOwner : Principal) : async() {
             let settings : CanisterSettings = {
-                controller = ?dwitterOwner;
+                controller = ?newOwner;
                 compute_allocation = null;
                 memory_allocation = null;
                 freezing_threshold = null;

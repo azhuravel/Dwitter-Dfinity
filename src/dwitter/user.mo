@@ -4,6 +4,9 @@ import Map "mo:base/HashMap";
 import Nat "mo:base/Nat";
 import Hash "mo:base/Hash";
 
+import Nat64 "mo:base/Nat64";
+import Cycles "mo:base/ExperimentalCycles";
+
 actor class UserCanister() {
     type UserId = Types.UserId;
     type User = Types.User;
@@ -48,6 +51,14 @@ actor class UserCanister() {
         // add post to index
         let bufferIndex : Nat = posts.size() - 1;
         postById.put(post.id, bufferIndex);
+    };
+
+    /* Method to allow topup canister */
+
+    public func wallet_receive() : async { accepted: Nat64 } {
+        let amount = Cycles.available();
+        let deposit = Cycles.accept(amount);
+        { accepted = Nat64.fromNat(deposit) };
     };
 
     /* Canister update logic */
