@@ -37,31 +37,41 @@ const Navbar = () => {
                     <Toolbar variant="regular" disableGutters>
                         <Typography variant="h6" component="div" sx={{flexGrow: 1}}>Dwitter</Typography>
 
-                        <Button
-                            id="basic-button"
-                            color="inherit"
-                            aria-controls={open ? 'basic-menu' : undefined}
-                            aria-haspopup="true"
-                            aria-expanded={open ? 'true' : undefined}
-                            onClick={handleClick}
-                        >
-                            {currentUserIsSignedUp && <DwitterAvatar mr={1} displayname={displayname} nftAvatarId={ctx.currentUser?.nftAvatar} />}
-                            {currentUserIsSignedUp && displayname}
-                            {!currentUserIsSignedUp && <span>Menu</span>}
-                        </Button>
-                        <Menu
-                            id="basic-menu"
-                            anchorEl={anchorEl}
-                            open={open}
-                            onClose={handleClose}
-                            MenuListProps={{'aria-labelledby': 'basic-button'}}
-                            transformOrigin={{horizontal: 'right', vertical: 'top'}}
-                            anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
-                        >
-                            {currentUserIsSignedUp && <MenuItem component={Link} to={`/user/${username}`} onClick={handleClose}>Profile</MenuItem>}
-                            {currentUserIsSignedUp && <MenuItem component={Link} to='/settings' onClick={handleClose}>Settings</MenuItem>}
-                            <MenuItem onClick={logout}>Logout</MenuItem>
-                        </Menu>
+                        {!currentUserIsSignedUp && 
+                            <Button color="inherit" onClick={logout}>
+                                <span>Logout</span>
+                            </Button>
+                        }
+
+                        {currentUserIsSignedUp && 
+                            <React.Fragment>
+                                <Button
+                                    id="basic-button"
+                                    color="inherit"
+                                    aria-controls={open ? 'basic-menu' : undefined}
+                                    aria-haspopup="true"
+                                    aria-expanded={open ? 'true' : undefined}
+                                    onClick={handleClick}
+                                >
+                                    <DwitterAvatar mr={1} displayname={displayname} nftAvatarId={ctx.currentUser?.nftAvatar} />
+                                    {displayname}
+                                </Button>
+
+                                <Menu
+                                    id="basic-menu"
+                                    anchorEl={anchorEl}
+                                    open={open}
+                                    onClose={handleClose}
+                                    MenuListProps={{'aria-labelledby': 'basic-button'}}
+                                    transformOrigin={{horizontal: 'right', vertical: 'top'}}
+                                    anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
+                                >
+                                    <MenuItem component={Link} to={`/user/${username}`} onClick={handleClose}>Profile</MenuItem>
+                                    <MenuItem component={Link} to='/settings' onClick={handleClose}>Settings</MenuItem>
+                                    <MenuItem onClick={logout}>Logout</MenuItem>
+                                </Menu>
+                            </React.Fragment>
+                        }
                     </Toolbar>
                 </Container>
             </AppBar>
