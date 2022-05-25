@@ -8,25 +8,26 @@ import Array "mo:base/Array";
 module {
     type UserId = Types.UserId;
     type User = Types.User;
+    type UserInfo = Types.UserInfo;
     type CreateUserRequest = Types.CreateUserRequest;
     type UpdateUserRequest = Types.UpdateUserRequest;
     type UserCanisterService = UserCanisterModule.UserCanisterService;
     type UserCanister = UserModule.UserCanister;
 
     public class UserService(userCanisterService : UserCanisterService) {
-        public func get(userId : UserId) : async ?User {
+        public func get(userId : UserId) : async ?UserInfo {
             let userCanister = userCanisterService.getByUserId(userId);
             switch (userCanister) {
                 case (null) { return null };
-                case (?userCanister) { return await userCanister.getUser() };
+                case (?userCanister) { return await userCanister.getUserInfo() };
             }
         };
 
-        public func getByUsername(username : Text) : async ?User {
+        public func getByUsername(username : Text) : async ?UserInfo {
             let userCanister = userCanisterService.getByUsername(username);
             switch (userCanister) {
                 case (null) { return null };
-                case (?userCanister) { return await userCanister.getUser() };
+                case (?userCanister) { return await userCanister.getUserInfo() };
             }
         };
 

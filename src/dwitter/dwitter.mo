@@ -27,6 +27,7 @@ shared ({ caller = dwitterOwner }) actor class Dwitter() = this {
 
     type UserId = Types.UserId;
     type User = Types.User;
+    type UserInfo = Types.UserInfo;
     type CreateUserRequest = Types.CreateUserRequest;
     type UpdateUserRequest = Types.UpdateUserRequest;
 
@@ -40,11 +41,11 @@ shared ({ caller = dwitterOwner }) actor class Dwitter() = this {
      * User methods
      */
 
-    public shared(msg) func getCurrentUser(): async ?User {
+    public shared(msg) func getCurrentUser(): async ?UserInfo {
         await userService.get(msg.caller)
     };
 
-    public shared(msg) func getUserByUsername(username : Text): async ?User  {
+    public shared(msg) func getUserByUsername(username : Text): async ?UserInfo  {
         await userService.getByUsername(username)
     };
 

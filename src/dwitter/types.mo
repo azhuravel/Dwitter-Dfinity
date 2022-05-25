@@ -44,6 +44,31 @@ module {
     bio : ?Text;
   };
 
+  public type UserInfo = {
+    id : UserId;
+    nftAvatar : ?NftId;
+    createdTime : Int;
+    username : Text;
+    displayname : Text;
+    bio : ?Text;
+    token : UserTokenInfo;
+  };
+
+  public type UserTokenInfo = {
+    nextPrice : Nat64; // price to buy next token
+    lastPrice : Nat64; // 0 if no transactions
+    totalCount : Nat; // count of tokens in circulation
+    ownedCount : Nat; // counf of owned tokens
+  };
+
+  public type TokenResponse = {
+    #ok;
+
+    #err : { 
+      text : Text 
+    };
+  };
+
   public type CreateUserRequest = {
     username : Text;
     displayname : Text;
