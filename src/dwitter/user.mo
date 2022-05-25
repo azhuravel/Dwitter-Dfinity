@@ -28,6 +28,7 @@ actor class UserCanister() {
     // tokens
     let tokensOwners = Map.HashMap<UserId, Nat>(1, Principal.equal, Principal.hash);
     stable var tokensCount : Nat = 0;
+    var totalLocked : Nat64 = 0;
 
     var lastTokenPrice : Nat64 = 0;
     var nextTokenPrice : Nat64 = 1;
@@ -66,6 +67,7 @@ actor class UserCanister() {
             lastPrice = lastTokenPrice;
             totalCount = tokensCount;
             ownedCount = ownedTotalCount;
+            totalLocked = totalLocked;
         };
 
         // fix this ...
@@ -76,7 +78,7 @@ actor class UserCanister() {
 
             case (?user) {
                 let userInfo : UserInfo = {
-                    id = user.id;
+                    id = Principal.toText(user.id);
                     nftAvatar = user.nftAvatar;
                     createdTime = user.createdTime;
                     username = user.username;
@@ -123,11 +125,14 @@ actor class UserCanister() {
         // assert price < payment;
 
         // 3. mint token
+        let price = nextTokenPrice;
+
         let callerTokens = Option.get(tokensOwners.get(msg.caller), 0);
         tokensOwners.put(msg.caller, callerTokens + 1);
         tokensCount := tokensCount + 1;
         //transactions.put(blockIndex, price);
 
+        totalLocked := totalLocked + price;
         nextTokenPrice := Nat64.fromNat(tokensCount);
 
         // 4. return the payment

@@ -45,7 +45,7 @@ module {
   };
 
   public type UserInfo = {
-    id : UserId;
+    id : Text;
     nftAvatar : ?NftId;
     createdTime : Int;
     username : Text;
@@ -55,10 +55,14 @@ module {
   };
 
   public type UserTokenInfo = {
+    // info for all users
     nextPrice : Nat64; // price to buy next token
-    lastPrice : Nat64; // 0 if no transactions
+    lastPrice : Nat64; // last bought price, 0 if no transactions
     totalCount : Nat; // count of tokens in circulation
-    ownedCount : Nat; // counf of owned tokens
+    totalLocked : Nat64; // value locked (sum price of totalCount tokens)
+
+    // info specific for the caller user
+    ownedCount : Nat; // count of owned tokens
   };
 
   public type TokenResponse = {
