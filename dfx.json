@@ -4,9 +4,13 @@
       "main": "src/dwitter/dwitter.mo",
       "type": "motoko"
     },
+    "user": {
+      "main": "src/dwitter/user.mo",
+      "type": "motoko"
+    },
     "dwitter_assets": {
       "dependencies": [
-        "dwitter"
+        "dwitter", "user"
       ],
       "frontend": {
         "entrypoint": "src/dwitter_assets/src/index.html"

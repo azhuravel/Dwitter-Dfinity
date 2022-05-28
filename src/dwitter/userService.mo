@@ -59,22 +59,16 @@ module {
                 };
                 case(?userCanister) { 
                     let user = await userCanister.getUser();
-                    switch (user) {
-                        case(null) {  }; // nothing, throw an exception
-                        case (?user) { 
-                            let updatedUser : User = {
-                                id = user.id;
-                                createdTime = user.createdTime;
-                                username = user.username;
-                                displayname = request.displayname;
-                                nftAvatar = request.nftAvatar;
-                                bio = request.bio;
-                            };
-                            await userCanister.updateUser(updatedUser);
-                            return ?updatedUser;
-                        };
+                    let updatedUser : User = {
+                        id = user.id;
+                        createdTime = user.createdTime;
+                        username = user.username;
+                        displayname = request.displayname;
+                        nftAvatar = request.nftAvatar;
+                        bio = request.bio;
                     };
-                    return user;
+                    await userCanister.updateUser(updatedUser);
+                    return ?updatedUser;
                 };
             }
         };

@@ -9,15 +9,16 @@ import Option "mo:base/Option";
 
 import Cycles "mo:base/ExperimentalCycles";
 
-actor class UserCanister() {
-    type UserId = Types.UserId;
+shared(msg) actor class UserCanister(_user : Types.User) {
     type User = Types.User;
+    type UserId = Types.UserId;
     type UserInfo = Types.UserInfo;
     type Post = Types.Post;
     type TokenResponse = Types.TokenResponse;
     type UserTokenInfo = Types.UserTokenInfo;
 
-    stable var user : ?User = null;
+    stable var user = _user;
+    stable let owner = msg.caller;
 
     // extendable list of user posts
     let posts = Buffer.Buffer<Post>(0);
@@ -49,18 +50,19 @@ actor class UserCanister() {
         return posts.toArray();
     };
 
-    public func savePost(post : Post) : async () {
+    public shared(msg) func savePost(post : Post) : async () {
+        let isSelfPost = msg.caller == user.id;
         // ensure that have enough tokens to make a post
         storePost(post);
     };
 
     // deprecated
-    public shared(msg) func getUser() : async ?User {
+    public shared query (msg) func getUser() : async User {
         return user;
     };
 
-    public shared(msg) func getUserInfo() : async ?UserInfo {
-        let ownedTotalCount = Option.get(tokensOwners.get(msg.caller), 0);
+    public shared query (msg) func getUserInfo() : async ?UserInfo {
+        let ownedTotalCount = nullToZero(tokensOwners.get(msg.caller));
 
         let tokenInfo : UserTokenInfo = {
             nextPrice = nextTokenPrice;
@@ -70,30 +72,23 @@ actor class UserCanister() {
             totalLocked = totalLocked;
         };
 
-        // fix this ...
-        switch (user) {
-            case (null) {
-                return null;
-            };
+        let userInfo : UserInfo = {
+            id = Principal.toText(user.id);
+            nftAvatar = user.nftAvatar;
+            createdTime = user.createdTime;
+            username = user.username;
+            displayname = user.displayname;
+            bio = user.bio;
+            
+            token = tokenInfo;
+        };
 
-            case (?user) {
-                let userInfo : UserInfo = {
-                    id = Principal.toText(user.id);
-                    nftAvatar = user.nftAvatar;
-                    createdTime = user.createdTime;
-                    username = user.username;
-                    displayname = user.displayname;
-                    bio = user.bio;
-                    token = tokenInfo;
-                };
-
-                return ?userInfo;
-            };
-        }
+        return ?userInfo;
     };
 
-    public func updateUser(updatedUser : User) : async() {
-        user := ?updatedUser;
+    public shared(msg) func updateUser(updatedUser : User) : async() {
+        assert (owner == msg.caller);
+        user := updatedUser;
     };
 
     private func storePost(post : Post) {
@@ -127,7 +122,7 @@ actor class UserCanister() {
         // 3. mint token
         let price = nextTokenPrice;
 
-        let callerTokens = Option.get(tokensOwners.get(msg.caller), 0);
+        let callerTokens = nullToZero(tokensOwners.get(msg.caller));
         tokensOwners.put(msg.caller, callerTokens + 1);
         tokensCount := tokensCount + 1;
         //transactions.put(blockIndex, price);
@@ -137,6 +132,10 @@ actor class UserCanister() {
 
         // 4. return the payment
         return #ok;
+    };
+
+    private func nullToZero(n : ?Nat) : Nat {
+        return Option.get(n, 0);
     };
 
     /* Method to allow topup canister */
