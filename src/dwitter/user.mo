@@ -6,6 +6,7 @@ import Nat64 "mo:base/Nat64";
 import Hash "mo:base/Hash";
 import Principal "mo:base/Principal";
 import Option "mo:base/Option";
+import Stack "mo:base/Stack";
 
 import Cycles "mo:base/ExperimentalCycles";
 
@@ -28,11 +29,12 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
 
     // tokens
     let tokensOwners = Map.HashMap<UserId, Nat64>(1, Principal.equal, Principal.hash);
-    stable var tokensCount : Nat64 = 0;
-    var totalLocked : Nat64 = 0;
+    let tokensPrices = Stack.Stack<Nat64>();
+    stable var tokensCount : Nat64 = 0; // need to stora as Stack has no method size
+    stable var totalLocked : Nat64 = 0; // sum of tokensPrices
 
-    var lastTokenPrice : Nat64 = 0;
-    var nextTokenPrice : Nat64 = 1;
+    stable var lastTokenPrice : Nat64 = 0;
+    stable var nextTokenPrice : Nat64 = 1;
 
     // tokens transactions
     // blockIndex -> pay amount for the token
@@ -133,8 +135,28 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
 
         totalLocked := totalLocked + price;
         nextTokenPrice := tokensCount;
+        lastTokenPrice := price;
 
         // 4. return the payment
+        return #ok;
+    };
+
+    public shared(msg) func sellToken() : async TokenResponse {
+        let tokensOwned = nullToZero( tokensOwners.get(msg.caller) );
+
+        if (tokensOwned < 1) {
+            return #err { text = "Not enough tokens to sell"; };
+        };
+
+        let sellPrice = lastTokenPrice;
+
+        tokensOwners.put(msg.caller, tokensOwned - 1);
+        tokensCount := tokensCount - 1;
+        totalLocked := totalLocked - sellPrice;
+
+        lastTokenPrice := tokensCount;
+        nextTokenPrice := tokensCount + 1;
+
         return #ok;
     };
 

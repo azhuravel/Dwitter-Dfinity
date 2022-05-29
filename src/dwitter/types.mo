@@ -12,6 +12,7 @@ module {
   public type Post = {
     id : Nat;
     userId : UserId;
+    userCanister : ?Text;
     createdTime : Int; // import Time "mo:base/Time"; -> doesn't work for unknown reason
     kind : Text;
     nft : ?NftId;
