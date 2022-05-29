@@ -43,13 +43,10 @@ module {
 
             // actor class docs: https://smartcontracts.org/docs/language-guide/actor-classes.html#actor_classes
             // create user canister
-            let userCanister = await UserModule.UserCanister();
+            let userCanister = await UserModule.UserCanister(user);
 
             // transfer controller to the Dwitter owner
             await transferOwnership(Principal.fromActor(userCanister), dwitterOwner);
-
-            // write the user data to canister
-            await userCanister.updateUser(user);
 
             // add the canister in maps (indexes in nutshell)
             let canisterPrincipal = Principal.toText(Principal.fromActor(userCanister));
@@ -81,6 +78,17 @@ module {
                 };
             };
         };
+
+        // func updateIfNeed(userCanister : UserCanister) : async() {
+        //     let currentVersion = await userCanister.getVersion();
+        //     if (currentVersion != latestVersion) {
+        //         upgradeCanister(userCanister, latestWasm);
+        //     };
+        // };
+
+        // func upgradeCanister(principal : Text, wasm : blob) {
+        //     // upgrade canister
+        // };
 
         func transferOwnership(canisterId : Principal, newOwner : Principal) : async() {
             let settings : CanisterSettings = {

@@ -55,7 +55,7 @@ module {
             }
         };
 
-        private func reverseAndFetchPostInfos(user : ?User, posts: [Post]) : ?[PostInfo]  {
+        private func reverseAndFetchPostInfos(user : User, posts: [Post]) : ?[PostInfo]  {
             do ? {
                 let N = posts.size(); // total amount of posts
                 Array.tabulate<PostInfo>(N, func(i:Nat) : PostInfo {
@@ -74,35 +74,18 @@ module {
         //     postsStorage.fromArray(array)
         // };
 
-        private func fetchPostInfo(user : ?User, post : Post) : PostInfo {
-            switch(user) {
-                case (?user) {
-                    let postInfo : PostInfo = {
-                        id = post.id;
-                        kind = post.kind;
-                        createdTime = post.createdTime;
-                        text = post.text;
-                        nft = post.nft;
-                        username = user.username;
-                        displayname = user.displayname;
-                        nftAvatar = user.nftAvatar;
-                    };
-                    return postInfo;
-                };
-                case (null) {
-                    let postInfo : PostInfo = {
-                        id = post.id;
-                        kind = post.kind;
-                        createdTime = post.createdTime;
-                        text = post.text;
-                        nft = post.nft;
-                        username = "DELETED";
-                        displayname = "DELETED";
-                        nftAvatar = null;
-                    };
-                    return postInfo;
-                };
+        private func fetchPostInfo(user : User, post : Post) : PostInfo {
+            let postInfo : PostInfo = {
+                id = post.id;
+                kind = post.kind;
+                createdTime = post.createdTime;
+                text = post.text;
+                nft = post.nft;
+                username = user.username;
+                displayname = user.displayname;
+                nftAvatar = user.nftAvatar;
             };
+            return postInfo;
         };
 
         private func createRequestToPost(uid : UserId, request : CreatePostRequest) : Post {
