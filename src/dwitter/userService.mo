@@ -4,6 +4,7 @@ import UserModule "./user";
 
 import Time "mo:base/Time";
 import Array "mo:base/Array";
+import Principal "mo:base/Principal";
 
 module {
     type UserId = Types.UserId;
@@ -53,6 +54,26 @@ module {
             let userCanister = await userCanisterService.create(user);
 
             return user;
+        };
+
+        public func createCanister(userId : UserId, request : CreateUserRequest) : async Text {
+            // assert await get(userId) == null;
+
+            // TODO: add validation of request fields
+
+            let now = Time.now();
+            let user : User = {
+                id = userId;
+                createdTime = now;
+                username = request.username;
+                displayname = request.displayname;
+                nftAvatar = null;
+                bio = null;
+            };
+
+            let userCanister = await userCanisterService.create(user);
+
+            return Principal.toText( Principal.fromActor(userCanister) );
         };
 
         public func update(userId : UserId, request : UpdateUserRequest) : async ?User {

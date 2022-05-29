@@ -54,7 +54,11 @@ shared ({ caller = dwitterOwner }) actor class Dwitter() = this {
     };
 
     public shared(msg) func createUser(request : CreateUserRequest): async User {
-        await userService.create(msg.caller, request)
+        await userService.create(msg.caller, request);
+    };
+
+    public shared(msg) func createUserCanister(request : CreateUserRequest): async Text {
+        await userService.createCanister(msg.caller, request);
     };
 
     public shared(msg) func updateUser(request : UpdateUserRequest): async ?User {

@@ -99,6 +99,7 @@ module {
                 kind = request.kind;
                 text = request.text;
                 nft = request.nft;
+                userCanister = null;
             };
 
             return post;
