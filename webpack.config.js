@@ -4,12 +4,6 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 
-let internetIdentityCanisterId = 'rwlgt-iiaaa-aaaaa-aaaaa-cai';
-if (process.env.INTERNET_IDENTITY_CANISTER_ID) {
-  internetIdentityCanisterId = process.env.INTERNET_IDENTITY_CANISTER_ID;
-}
-const LOCAL_II_CANISTER = `http://${internetIdentityCanisterId}.localhost:8000/#authorize`;
-const PROD_II_CANISTER = "https://identity.ic0.app/#authorize";
 const USE_MOCKS = process.env.USE_MOCKS || false;
 
 let localCanisters, prodCanisters, canisters;
@@ -103,7 +97,6 @@ module.exports = {
       NODE_ENV: 'development',
       DWITTER_CANISTER_ID: canisters["dwitter"],
       DWITTER_ASSETS_CANISTER_ID: canisters["dwitter_assets"],
-      II_CANISTER_ID: isDevelopment ? LOCAL_II_CANISTER : PROD_II_CANISTER,
       USE_MOCKS: USE_MOCKS, // Used to mock dwitterActor in development mode.
     }),
     new webpack.ProvidePlugin({

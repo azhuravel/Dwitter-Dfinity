@@ -4,6 +4,7 @@ import {AuthContext} from '../context/index.js';
 import Loader from './UI/Loader/Loader.jsx';
 import Login from '../pages/Login.jsx';
 import User from '../pages/User.jsx';
+import Wall from '../pages/Wall.jsx';
 import Registration from '../pages/Registration.jsx';
 import Settings from '../pages/Settings.jsx';
 import WipPage from '../pages/WipPage.jsx';
@@ -39,6 +40,7 @@ const AppRouter = () => {
     return (
         <Routes>
             <Route path="/user/:username" element={<User />} />
+            <Route path="/wall/:username" element={<Wall />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<Navigate to={currentUserProfilePath} />}/>
         </Routes>

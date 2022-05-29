@@ -1,23 +1,12 @@
 import {idlFactory} from '../../../declarations/dwitter/dwitter.did.js';
-import {AuthClient} from "@dfinity/auth-client";
-import {canisterId, createActor} from '../../../declarations/dwitter';
 
 
 const keyLocalStorageAuth = 'authed';
-const keyLocalStorageAuth_ii = 'ii';
 const keyLocalStorageAuth_plug = 'plug';
 
 const plugWhitelist = [process.env.DWITTER_CANISTER_ID, process.env.DWITTER_ASSETS_CANISTER_ID];
 
 const delay = async (ms) => new Promise(res => setTimeout(res, ms));
-
-const isAnonymous = (identity) => {
-    // Проверка на то, что текущий пользователь является анонимом. Подробней:
-    // https://forum.dfinity.org/t/checking-if-principal-is-anonymous-in-motoko/9672
-    const principal = identity.getPrincipal();
-    const principalText = principal.toText();
-    return principalText === '2vxsx-fae';
-}
 
 const mockDwitterActor = () => {    
     // return null;
@@ -162,17 +151,6 @@ export default class AuthService {
         return { dwitterActor, principal };
     }
 
-    static async getAuthInfoByII() {
-        const authClient = await AuthClient.create();
-        const identity = await authClient.getIdentity();
-        if (!authClient.isAuthenticated() || isAnonymous(identity)) {
-            return {};
-        }
-        const dwitterActor = await createActor(process.env.DWITTER_CANISTER_ID, { agentOptions: { identity }});
-        const principal = identity.getPrincipal();
-        return { dwitterActor, principal };
-    }
-
     static async getCurrentUser(dwitterActor) {
         if (!dwitterActor) {
             return null;
@@ -199,9 +177,6 @@ export default class AuthService {
         const authedBy = localStorage.getItem(keyLocalStorageAuth);
         let authCtx = {};
         switch (authedBy) {
-            case keyLocalStorageAuth_ii:
-                authCtx = await AuthService.getAuthInfoByII();
-                break;
             case keyLocalStorageAuth_plug:
                 authCtx = await AuthService.getAuthInfoByPlug();
                 break;
@@ -227,31 +202,7 @@ export default class AuthService {
         return { dwitterActor, currentUser, principal };
     }
 
-    static async loginByII() {
-        const authClient = await AuthClient.create();
-        await new Promise((resolve, reject) => {
-            authClient.login({ 
-                identityProvider: process.env.II_CANISTER_ID,
-                onSuccess: resolve,
-                onError: reject,
-            });
-        });
-        const identity = authClient.getIdentity();
-        const dwitterActor = createActor(canisterId, { agentOptions: { identity }});
-        const currentUser = await AuthService.getCurrentUser(dwitterActor);
-        localStorage.setItem(keyLocalStorageAuth, keyLocalStorageAuth_ii);
-        const principal = identity.getPrincipal();
-        return { dwitterActor, currentUser, principal };
-    }
-
     static async logout() {
-        const authedBy = localStorage.getItem(keyLocalStorageAuth);
-        switch (authedBy) {
-            case keyLocalStorageAuth_ii:
-                const authClient = await AuthClient.create();
-                authClient.logout();
-                break;
-        }
         localStorage.removeItem(keyLocalStorageAuth);
     }
 }
