@@ -22,13 +22,9 @@ const Login = () => {
         setCtx({...ctx, dwitterActor, currentUser, appState, principal});
     }
 
-    const qwe = () => {
-        ctx.apiService.getUserInfo();
-    }
-
     return (
         <Box sx={{marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-            <Typography component="h6" variant="h6" onClick={qwe}>Welcome to</Typography>
+            <Typography component="h6" variant="h6">Welcome to</Typography>
             <Typography component="h1" variant="h1" sx={{fontWeight: 'bold'}}>Dwitter</Typography>
             <Box component="main" sx={{mt: 5}}>
                 <Grid container spacing={2}  justifyContent="center" alignItems="center">

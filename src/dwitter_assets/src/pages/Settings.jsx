@@ -42,14 +42,8 @@ const Settings = () => {
         const username = ctx.currentUser.username;
         const displayname = data.displayname;
         const bio = data.bio;
-        await ctx.dwitterActor.updateUser({
-            username, 
-            displayname, 
-            bio: [bio],
-            nftAvatar: ctx.currentUser.nftAvatar,
-        });
-        const userResponse = await ctx.dwitterActor.getCurrentUser();
-        const user = userResponse[0];
+
+        const user = await ctx.apiService.updateUser(username, displayname, bio, ctx.currentUser.nftAvatar);
         setCtx({...ctx, currentUser: user});
 
         setSubmitting(false);

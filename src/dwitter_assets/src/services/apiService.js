@@ -49,8 +49,22 @@ class ApiService {
         console.log('apiService.createUser()', username, displayname, resp);
     }
 
-    getUserInfo() {
-        console.log('====', this.dwitterActor);
+    async updateUser(username, displayname, bio, nftAvatar) {
+        if (!this.dwitterActor) {
+            return null;
+        }
+
+        await this.dwitterActor.updateUser({
+            username, 
+            displayname, 
+            bio: [bio],
+            nftAvatar: nftAvatar,
+        });
+        
+        const resp = await this.dwitterActor.getUserByUsername(username);
+        const user = resp?.[0] ?? null;
+        console.log('apiService.updateUser()', username, displayname, bio, nftAvatar, resp);
+        return user;
     }
 }
 
