@@ -43,7 +43,7 @@ export default class AuthService {
     static async getDwitterActorFromPlug() {
         const authedBy = localStorage.getItem(keyLocalStorageAuth);
         if (!authedBy) {
-            return null;
+            return {};
         }
         return await AuthService._getDwitterActorFromPlug();
     }

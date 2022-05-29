@@ -19,6 +19,27 @@ class ApiService {
         return user;
     }
 
+    async getUserByUsername2(username) {
+        // Get user canisterId.
+        let resp = await this.dwitterActor.getCanisterPrincipalByUsername(username);
+        let canisterPrincipal = resp?.[0] ?? null;
+        if (!canisterPrincipal) {
+            return null;
+        }
+        
+        // Get user info.        
+        const plug = window?.ic?.plug;
+        const userActor = await plug.createActor({
+            canisterId: canisterPrincipal,
+            interfaceFactory: idlFactory,
+        });
+        resp = await userActor.getUserInfo();
+        user = resp?.[0] ?? null;
+
+        console.log('apiService.getUserByUsername2()', username, user);
+        return user;
+    }
+
     async getUserByUsername(username) {
         if (!this.dwitterActor) {
             return null;
@@ -38,13 +59,12 @@ class ApiService {
         // Check, whether user exists.
         let resp = await this.dwitterActor.getCanisterPrincipalByUsername(username);
         let canisterPrincipal = resp?.[0] ?? null;
-        if (!canisterPrincipal) {
+        if (canisterPrincipal) {
             return null;
         }
 
         // Create user canister.
-        resp = await this.dwitterActor.createUser({username, displayname});
-        canisterPrincipal = resp?.[0] ?? null;
+        canisterPrincipal = await this.dwitterActor.createUserCanister({username, displayname});
         
         // Get user info.        
         const plug = window?.ic?.plug;
@@ -55,7 +75,7 @@ class ApiService {
         resp = await userActor.getUserInfo();
         user = resp?.[0] ?? null;
 
-        console.log('apiService.makeUser()', username, displayname, canisterPrincipal, user);
+        console.log('apiService.signUpUser()', username, displayname, canisterPrincipal, user);
         return user;
     }
 
