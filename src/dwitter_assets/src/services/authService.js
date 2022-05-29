@@ -7,7 +7,7 @@ const keyLocalStorageAuth = 'authed';
 const plugWhitelist = [process.env.DWITTER_CANISTER_ID, process.env.DWITTER_ASSETS_CANISTER_ID];
 
 export default class AuthService {
-    static async getAuthInfoByPlug() {
+    static async _getDwitterActorFromPlug() {
         const plug = window?.ic?.plug;
         if (!plug) {
             return null;
@@ -45,7 +45,7 @@ export default class AuthService {
         if (!authedBy) {
             return null;
         }
-        return await AuthService.getAuthInfoByPlug();
+        return await AuthService._getAuthInfoByPlug();
     }
 
     static getPlugHost() {
@@ -60,7 +60,7 @@ export default class AuthService {
 
     static async loginByPlug() {
         localStorage.setItem(keyLocalStorageAuth, true);
-        return await AuthService.getAuthInfoByPlug();
+        return await AuthService._getAuthInfoByPlug();
     }
 
     static async logout() {

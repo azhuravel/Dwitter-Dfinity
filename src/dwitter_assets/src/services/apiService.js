@@ -1,11 +1,3 @@
-import { delay } from '../utils/utils.js';
-import { Principal } from '@dfinity/principal';
-import { getAllUserNFTs, getNFTActor } from '@psychedelic/dab-js';
-import { Actor, HttpAgent, getDefaultAgent } from "@dfinity/agent";
-import { debug } from 'util';
-import { icpAgent } from '../utils/utils.js';
-
-
 class ApiService {
     setDwitterActor(dwitterActor) {
         this.dwitterActor = dwitterActor;
