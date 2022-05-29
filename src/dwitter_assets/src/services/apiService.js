@@ -1,8 +1,13 @@
+import { Actor } from "@dfinity/agent";
+import {idlFactory} from '../../../declarations/user/user.did.js';
+
+
 class ApiService {
     setDwitterActor(dwitterActor) {
         this.dwitterActor = dwitterActor;
     }
 
+    // 1
     async getCurrentUser() {
         if (!this.dwitterActor) {
             return null;
@@ -22,6 +27,35 @@ class ApiService {
         const resp = await this.dwitterActor.getUserByUsername(username);
         const user = resp?.[0] ?? null;
         console.log('apiService.getUserByUsername()', username, user);
+        return user;
+    }
+
+    async signUpUser(username, displayname) {
+        if (!this.dwitterActor) {
+            return null;
+        }
+
+        // Check, whether user exists.
+        let resp = await this.dwitterActor.getCanisterPrincipalByUsername(username);
+        let canisterPrincipal = resp?.[0] ?? null;
+        if (!canisterPrincipal) {
+            return null;
+        }
+
+        // Create user canister.
+        resp = await this.dwitterActor.createUser({username, displayname});
+        canisterPrincipal = resp?.[0] ?? null;
+        
+        // Get user info.        
+        const plug = window?.ic?.plug;
+        const userActor = await plug.createActor({
+            canisterId: canisterPrincipal,
+            interfaceFactory: idlFactory,
+        });
+        resp = await userActor.getUserInfo();
+        user = resp?.[0] ?? null;
+
+        console.log('apiService.makeUser()', username, displayname, canisterPrincipal, user);
         return user;
     }
 
