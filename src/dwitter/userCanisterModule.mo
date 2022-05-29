@@ -79,6 +79,18 @@ module {
             };
         };
 
+        public func getCanisterPrincipalByUsername(username : Text) : ?Text {
+            let userId = byUsername.get(username);
+            switch (userId) {
+                case (null) {
+                    return null;
+                };
+                case (?userId) {
+                    return userCanisters.get(userId);
+                };
+            };
+        };
+
         // func updateIfNeed(userCanister : UserCanister) : async() {
         //     let currentVersion = await userCanister.getVersion();
         //     if (currentVersion != latestVersion) {

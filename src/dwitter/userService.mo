@@ -31,6 +31,10 @@ module {
             }
         };
 
+        public func getCanisterPrincipalByUsername(username : Text) : ?Text {
+            return userCanisterService.getCanisterPrincipalByUsername(username);
+        };
+
         public func create(userId : UserId, request : CreateUserRequest) : async User {
             // assert await get(userId) == null;
 
