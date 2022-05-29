@@ -45,7 +45,7 @@ export default class AuthService {
         if (!authedBy) {
             return null;
         }
-        return await AuthService._getAuthInfoByPlug();
+        return await AuthService._getDwitterActorFromPlug();
     }
 
     static getPlugHost() {
@@ -60,7 +60,7 @@ export default class AuthService {
 
     static async loginByPlug() {
         localStorage.setItem(keyLocalStorageAuth, true);
-        return await AuthService._getAuthInfoByPlug();
+        return await AuthService._getDwitterActorFromPlug();
     }
 
     static async logout() {
