@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useContext} from 'react';
-import { AuthContext } from '../context/index.js';
+import { AppContext } from '../context/index.js';
 import PostsList from '../components/UI/PostsList/PostsList.jsx';
 import PostForm from '../components/UI/PostForm/PostForm.jsx';
 import UserCard from '../components/UI/UserCard/UserCard.jsx';
@@ -13,7 +13,7 @@ import { makeCancelable, icpAgent, getUserNftAvatars } from '../utils/utils.js';
 
 
 const User = () => {
-    const {ctx} = useContext(AuthContext); 
+    const {ctx} = useContext(AppContext); 
     const [postsLoading, setPostsLoading] = useState(true); 
     const [userLoading, setUserLoading] = useState(true); 
     const [posts, setPosts] = useState([]);
@@ -29,15 +29,13 @@ const User = () => {
     // Load user profile info.
     useEffect(() => {
         setUserLoading(true);
-        const cancelable = makeCancelable(ctx.dwitterActor.getUserByUsername(username));
+        const cancelable = makeCancelable(ctx.apiService.getUserByUsername(username));
 
         cancelable.promise
-            .then((resp) => ((resp && resp[0]) || null))
             .then((user) => {
                 setUser(user);
-                return user;
+                setNftAvatar(user?.nftAvatar);
             })
-            .then(user => setNftAvatar(user?.nftAvatar))
             .then(() => setUserLoading(false))
             .catch((err) => {});
 
@@ -47,10 +45,9 @@ const User = () => {
     // Load posts of user.
     useEffect(() => {
         setPostsLoading(true);
-        const cancelable = makeCancelable(ctx.dwitterActor.getUserPosts(username));
+        const cancelable = makeCancelable(ctx.apiService.getUserPosts(username));
                 
         cancelable.promise
-            .then((resp) => ((resp && resp[0]) || []))
             .then((posts) => setPosts(posts))
             .then(() => setPostsLoading(false))
             .catch((err) => {});

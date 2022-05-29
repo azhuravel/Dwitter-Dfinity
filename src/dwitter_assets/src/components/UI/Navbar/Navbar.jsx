@@ -1,5 +1,6 @@
 import React, {useContext,useState} from 'react';
-import {AuthContext} from "../../../context";
+import {AppContext} from "../../../context";
+import {appState_loggedIn, appState_registrationPage, appState_notLoggedIn} from "../../../constants";
 import Button from '@mui/material/Button';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -13,7 +14,7 @@ import DwitterAvatar from "../DwitterAvatar/DwitterAvatar";
 
 
 const Navbar = () => {
-    const {ctx,setCtx} = useContext(AuthContext);
+    const {ctx, setCtx} = useContext(AppContext);
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
@@ -23,12 +24,16 @@ const Navbar = () => {
 
     const logout = () => {
         AuthService.logout();
-        setCtx({});
+        setCtx({...ctx, appState: appState_notLoggedIn});
     }
 
     const currentUserIsSignedUp = !!ctx.currentUser;
     const username = ctx?.currentUser?.username || 'me';
     const displayname = ctx?.currentUser?.displayname || 'No name';
+
+    if (ctx.appState !== appState_loggedIn && ctx.appState !== appState_registrationPage) {
+        return <React.Fragment />
+    }
 
     return (
         <React.Fragment>

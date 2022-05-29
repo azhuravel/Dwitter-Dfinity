@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useContext} from 'react';
-import { AuthContext } from '../context/index.js';
+import { AppContext } from '../context/index.js';
 import PostsList from '../components/UI/PostsList/PostsList.jsx';
 import PostForm from '../components/UI/PostForm/PostForm.jsx';
 import UserCard from '../components/UI/UserCard/UserCard.jsx';
@@ -14,7 +14,7 @@ import { makeCancelable, icpAgent, getUserNftAvatars } from '../utils/utils.js';
 
 
 const User = () => {
-    const {ctx} = useContext(AuthContext); 
+    const {ctx} = useContext(AppContext); 
     const [userLoading, setUserLoading] = useState(true); 
     const [user, setUser] = useState(null);
     const [nftAvatar, setNftAvatar] = useState(null);

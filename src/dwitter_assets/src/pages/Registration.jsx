@@ -2,37 +2,34 @@ import React, { useState, useContext } from 'react';
 import TextField from '@mui/material/TextField';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useForm, Controller } from 'react-hook-form';
-import { AuthContext } from '../context/index.js';
+import { AppContext } from '../context/index.js';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
+import {appState_loggedIn} from "../constants";
 
 
 const Registration = () => {
     const {handleSubmit, setError, control} = useForm();
-    const {ctx, setCtx} = useContext(AuthContext);
+    const {ctx, setCtx} = useContext(AppContext);
     const [submitting, setSubmitting] = useState(false);
     
     const onSubmit = async (data) => {
         setSubmitting(true);
-
-        const username = data.username;
-        const displayname = data.displayname;
+        const {username, displayname} = data;
 
         // Проверить, нет ли пользователя с введенным username.
-        const usernameResponse = await ctx.dwitterActor.getUserByUsername(username);
-        const usernameAvailable = !(usernameResponse[0]);
-        if (!usernameAvailable) {
+        const userByUsername = await ctx.apiService.getUserByUsername(username);
+        if (userByUsername) {
             setError('username', {type: 'server', message: 'Already in use'});
             setSubmitting(false);
             return;
         }
 
         // Обновить информацию о пользователе.
-        await ctx.dwitterActor.createUser({username, displayname});
-        const userResponse = await ctx.dwitterActor.getCurrentUser();
-        const user = userResponse[0];
-        setCtx({...ctx, currentUser: user});
+        await ctx.apiService.createUser(username, displayname);
+        const user = await ctx.apiService.getCurrentUser();
+        setCtx({...ctx, currentUser: user, appState: appState_loggedIn});
 
         setSubmitting(false);
     }

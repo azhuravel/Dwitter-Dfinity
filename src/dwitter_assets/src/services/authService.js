@@ -1,139 +1,28 @@
 import {idlFactory} from '../../../declarations/dwitter/dwitter.did.js';
+import {appState_notLoggedIn, appState_registrationPage, appState_loggedIn} from '../constants';
 
 
 const keyLocalStorageAuth = 'authed';
-const keyLocalStorageAuth_plug = 'plug';
 
 const plugWhitelist = [process.env.DWITTER_CANISTER_ID, process.env.DWITTER_ASSETS_CANISTER_ID];
-
-const delay = async (ms) => new Promise(res => setTimeout(res, ms));
-
-const mockDwitterActor = () => {    
-    // return null;
-    return {
-        createPost: async () => {
-            await delay(1000);
-            return [{
-                id: '665444',
-                username: 'uuuserrr',
-                displayname: 'mockeduser',
-                text: 'Created!!!',
-                createdTime: 1000000000n,
-            }];
-        },
-        createUser: async () => {
-            return [];
-        },
-        getCurrentUser: async () => { 
-            await delay(100);
-            return [{
-                id: '123123',
-                username: 'uuuserrr',
-                displayname: 'Mock User',
-                createdTime: 1000000000n,
-                nftAvatar: null,
-                bio: [],
-                // nftAvatar: [{
-                //     standard: 'EXT',
-                //     canisterId: 'sr4qi-vaaaa-aaaah-qcaaq-cai',
-                //     index: '1',
-                // }],
-            }]; 
-        },
-        getMyPosts: async () => {
-            // await delay(500);
-            return [[
-                {
-                    id: '1111111',
-                    username: 'uuuserrr',
-                    displayname: 'mockeduser',
-                    text: 'This is my post @qweqweq @ntynt',
-                    createdTime: 1000000000n,
-                },
-                {
-                    id: '2222222',
-                    username: 'uuuserrr',
-                    displayname: 'mockeduser',
-                    text: 'This is my SECOND post @ntynt',
-                    createdTime: 1000000000n,
-                },
-            ]];
-        },
-        getUserByUsername: async (username) => {
-            switch (username) {
-                case 'qweqwe':
-                    await delay(800);
-                    break;
-                case 'ntynt':
-                    await delay(200);
-                    break;
-                default:
-                    await delay(2000);
-            }
-            return [{
-                id: '123123',
-                username: username,
-                displayname: 'USER:' + username,
-                createdTime: 1000000000n,
-                // nftAvatar: null,
-                // nftAvatar: [{
-                //     standard: 'EXT',
-                //     canisterId: 'sr4qi-vaaaa-aaaah-qcaaq-cai',
-                //     index: '1',
-                // }],
-            }]; 
-        },
-        getUserPosts: async () => {
-            await delay(500);
-            return [[
-                {
-                    id: '1111111',
-                    username: 'uuuserrr',
-                    displayname: 'mockeduser',
-                    text: 'This is my post @qweqweq @ntynt',
-                    createdTime: 1000000000n,
-                },
-                {
-                    id: '2222222',
-                    username: 'uuuserrr',
-                    displayname: 'mockeduser',
-                    text: 'This is my SECOND post @ntynt',
-                    createdTime: 1000000000n,
-                },
-            ]];
-        },
-        updateUser: async () => {
-            await delay(2000);
-            return [{
-                id: '123123',
-                username: 'uuuserrr',
-                displayname: 'Mock User',
-                createdTime: 1000000000n,
-                // nftAvatar: null,
-                nftAvatar: [{
-                    canisterId: "3db6u-aiaaa-aaaah-qbjbq-cai",
-                    index: "1295",
-                    standard: "EXT",
-                }],
-            }]; 
-        },
-    };
-}
 
 export default class AuthService {
     static async getAuthInfoByPlug() {
         const plug = window?.ic?.plug;
         if (!plug) {
-            return {};
+            return null;
         }
 
         const plugIsConnected = await plug.isConnected();
         if (!plugIsConnected) {
-            return {};
+            return null;
         }
 
         if (!plug.agent) {
-            await plug.createAgent({ whitelist: plugWhitelist, host: AuthService.getPlugHost() });
+            await plug.createAgent({ 
+                whitelist: plugWhitelist, 
+                host: AuthService.getPlugHost(),
+            });
         }
 
         // Ошибка при запуске локально "Fail to verify certificate" решается запросом rootKey().
@@ -148,41 +37,15 @@ export default class AuthService {
         });
         const principal = await window.ic.plug.agent.getPrincipal();
 
-        return { dwitterActor, principal };
+        return {dwitterActor, principal};
     }
 
-    static async getCurrentUser(dwitterActor) {
-        if (!dwitterActor) {
-            return null;
-        }
-
-        const userResponse = await dwitterActor.getCurrentUser();
-        if (!userResponse) {
-            return null;
-        }
-
-        const currentUser = userResponse[0];
-        if (!currentUser) {
-            return null;
-        }
-
-        return currentUser;
-    }
-
-    static async getAuthCtx() {
-        if (process.env.USE_MOCKS) {
-            return {dwitterActor: mockDwitterActor(), principal: ''};
-        }
-
+    static async getDwitterActorFromPlug() {
         const authedBy = localStorage.getItem(keyLocalStorageAuth);
-        let authCtx = {};
-        switch (authedBy) {
-            case keyLocalStorageAuth_plug:
-                authCtx = await AuthService.getAuthInfoByPlug();
-                break;
+        if (!authedBy) {
+            return null;
         }
-
-        return authCtx;
+        return await AuthService.getAuthInfoByPlug();
     }
 
     static getPlugHost() {
@@ -196,13 +59,22 @@ export default class AuthService {
     }
 
     static async loginByPlug() {
-        const { dwitterActor, principal } = await AuthService.getAuthInfoByPlug();
-        const currentUser = await AuthService.getCurrentUser(dwitterActor);
-        localStorage.setItem(keyLocalStorageAuth, keyLocalStorageAuth_plug);
-        return { dwitterActor, currentUser, principal };
+        localStorage.setItem(keyLocalStorageAuth, true);
+        return await AuthService.getAuthInfoByPlug();
     }
 
     static async logout() {
         localStorage.removeItem(keyLocalStorageAuth);
+    }
+
+    static getAppState(dwitterActor, currentUser) {
+        if (!dwitterActor && !currentUser) {
+            return appState_notLoggedIn;
+        } else if (dwitterActor && !currentUser) {
+            return appState_registrationPage;
+        } else if (dwitterActor && currentUser) {
+            return appState_loggedIn;
+        }
+        return appState_notLoggedIn;
     }
 }

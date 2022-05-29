@@ -5,4 +5,4 @@ import {createContext} from 'react'
 // - currentUser
 // - dwitterActor
 // - accountIdentifier (wallet, in simple words)
-export const AuthContext = createContext({});
+export const AppContext = createContext({});

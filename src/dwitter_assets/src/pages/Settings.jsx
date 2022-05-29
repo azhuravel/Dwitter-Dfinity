@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useForm, Controller } from 'react-hook-form';
-import { AuthContext } from '../context/index.js';
+import { AppContext } from '../context/index.js';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -17,7 +17,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 const Settings = () => {
     const {handleSubmit, setError, control} = useForm();
-    const {ctx, setCtx} = useContext(AuthContext);
+    const {ctx, setCtx} = useContext(AppContext);
     const [submitting, setSubmitting] = useState(false);
     const [nfts, setNfts] = useState([]);
     const [nftsLoading, setNftsLoading] = useState(true); 

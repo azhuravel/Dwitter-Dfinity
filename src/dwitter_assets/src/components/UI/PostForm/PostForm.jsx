@@ -1,6 +1,6 @@
 import React, {useState, useContext} from 'react';
 import Box from '@mui/material/Box';
-import { AuthContext } from '../../../context/index.js';
+import { AppContext } from '../../../context/index.js';
 import {TextField} from '@mui/material';
 import DwitterAvatar from "../DwitterAvatar/DwitterAvatar";
 import { useForm, Controller } from 'react-hook-form';
@@ -10,7 +10,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 const POST_MAX_LENGTH = 140;
 
 const PostForm = (props) => {
-    const {ctx} = useContext(AuthContext); 
+    const {ctx} = useContext(AppContext); 
     const {handleSubmit, control, reset} = useForm();
     const [submitting, setSubmitting] = useState(false);
 
