@@ -45,6 +45,10 @@ shared ({ caller = dwitterOwner }) actor class Dwitter() = this {
         await userService.get(msg.caller)
     };
 
+    public shared query (msg) func getCanisterPrincipalByUsername(username : Text) : async ?Text {
+        return userService.getCanisterPrincipalByUsername(username);
+    };
+
     public shared(msg) func getUserByUsername(username : Text): async ?UserInfo  {
         await userService.getByUsername(username)
     };

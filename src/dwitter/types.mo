@@ -45,7 +45,7 @@ module {
   };
 
   public type UserInfo = {
-    id : Text;
+    canisterPrincipal : Text; // plug transfer TO (for celebrity)
     nftAvatar : ?NftId;
     createdTime : Int;
     username : Text;
@@ -56,13 +56,14 @@ module {
 
   public type UserTokenInfo = {
     // info for all users
-    nextPrice : Nat64; // price to buy next token
-    lastPrice : Nat64; // last bought price, 0 if no transactions
-    totalCount : Nat; // count of tokens in circulation
+    buyPrice : Nat64; // price to buy next token
+    sellPrice : Nat64; // last bought price, 0 if no transactions
+    cap : Nat64; // last bought price, 0 if no transactions
+    totalCount : Nat64; // count of tokens in circulation
     totalLocked : Nat64; // value locked (sum price of totalCount tokens)
 
     // info specific for the caller user
-    ownedCount : Nat; // count of owned tokens
+    ownedCount : Nat64; // count of owned tokens
   };
 
   public type TokenResponse = {

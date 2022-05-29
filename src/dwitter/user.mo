@@ -9,7 +9,7 @@ import Option "mo:base/Option";
 
 import Cycles "mo:base/ExperimentalCycles";
 
-shared(msg) actor class UserCanister(_user : Types.User) {
+shared(msg) actor class UserCanister(_user : Types.User) = this {
     type User = Types.User;
     type UserId = Types.UserId;
     type UserInfo = Types.UserInfo;
@@ -27,8 +27,8 @@ shared(msg) actor class UserCanister(_user : Types.User) {
     let postById = Map.HashMap<Nat, Nat>(1, Nat.equal, Hash.hash);
 
     // tokens
-    let tokensOwners = Map.HashMap<UserId, Nat>(1, Principal.equal, Principal.hash);
-    stable var tokensCount : Nat = 0;
+    let tokensOwners = Map.HashMap<UserId, Nat64>(1, Principal.equal, Principal.hash);
+    stable var tokensCount : Nat64 = 0;
     var totalLocked : Nat64 = 0;
 
     var lastTokenPrice : Nat64 = 0;
@@ -65,15 +65,19 @@ shared(msg) actor class UserCanister(_user : Types.User) {
         let ownedTotalCount = nullToZero(tokensOwners.get(msg.caller));
 
         let tokenInfo : UserTokenInfo = {
-            nextPrice = nextTokenPrice;
-            lastPrice = lastTokenPrice;
+            buyPrice = nextTokenPrice;
+            sellPrice = lastTokenPrice;
+            cap = tokensCount * lastTokenPrice;
             totalCount = tokensCount;
             ownedCount = ownedTotalCount;
             totalLocked = totalLocked;
         };
 
+        // cannot be top level field as "this" is not accessable on that level 
+        let thisPrincipal = Principal.toText( Principal.fromActor(this) );
+
         let userInfo : UserInfo = {
-            id = Principal.toText(user.id);
+            canisterPrincipal = thisPrincipal;
             nftAvatar = user.nftAvatar;
             createdTime = user.createdTime;
             username = user.username;
@@ -128,14 +132,14 @@ shared(msg) actor class UserCanister(_user : Types.User) {
         //transactions.put(blockIndex, price);
 
         totalLocked := totalLocked + price;
-        nextTokenPrice := Nat64.fromNat(tokensCount);
+        nextTokenPrice := tokensCount;
 
         // 4. return the payment
         return #ok;
     };
 
-    private func nullToZero(n : ?Nat) : Nat {
-        return Option.get(n, 0);
+    private func nullToZero(n : ?Nat64) : Nat64 {
+        return Option.get(n, Nat64.fromNat(0));
     };
 
     /* Method to allow topup canister */
