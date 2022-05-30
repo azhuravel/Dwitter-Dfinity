@@ -7,7 +7,6 @@ class ApiService {
         this.dwitterActor = dwitterActor;
     }
 
-    // 1
     async getCurrentUser() {
         if (!this.dwitterActor) {
             return null;
@@ -88,6 +87,17 @@ class ApiService {
         const posts = resp?.[0] ?? [];
         console.log('apiService.getUserPosts()', username, posts);
         return posts;
+    }
+
+    async createPost(text, nft, kind) {
+        if (!this.dwitterActor) {
+            return [];
+        }
+
+        const resp = await this.dwitterActor.createPost({text, nft, kind});
+        const post = resp?.[0] ?? null;
+        console.log('apiService.createPost()', text, nft, kind, post);
+        return post;
     }
     
     async createUser(username, displayname) {

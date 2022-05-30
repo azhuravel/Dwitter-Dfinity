@@ -53,13 +53,13 @@ const Settings = () => {
         setSubmitting(true);
 
         const nftId = nftAvatar.nftId;
-        await ctx.dwitterActor
-            .updateUser({
-                displayname: ctx.currentUser.displayname,
-                bio: ctx.currentUser.bio,
-                nftAvatar: [nftId],
-            })
-            .then(resp => ((resp && resp[0]) || null))
+        await ctx.apiService
+            .updateUser(
+                ctx.currentUser?.username,
+                ctx.currentUser?.displayname,
+                ctx.currentUser?.bio?.[0],
+                [nftId],
+            )
             .then(user => setCtx({...ctx, currentUser: user}));
 
         setSubmitting(false);
@@ -72,13 +72,13 @@ const Settings = () => {
 
         setSubmitting(true);
 
-        await ctx.dwitterActor
-            .updateUser({
-                displayname: ctx.currentUser.displayname,
-                bio: ctx.currentUser.bio,
-                nftAvatar: [],
-            })
-            .then((resp) => ((resp && resp[0]) || null))
+        await ctx.apiService
+            .updateUser(
+                ctx.currentUser?.username,
+                ctx.currentUser?.displayname,
+                ctx.currentUser?.bio?.[0],
+                [],
+            )
             .then(user => setCtx({...ctx, currentUser: user}));
         
         setSubmitting(false);

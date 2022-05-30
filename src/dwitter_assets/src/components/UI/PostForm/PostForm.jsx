@@ -5,6 +5,7 @@ import {TextField} from '@mui/material';
 import DwitterAvatar from "../DwitterAvatar/DwitterAvatar";
 import { useForm, Controller } from 'react-hook-form';
 import LoadingButton from '@mui/lab/LoadingButton';
+import {postKind_text} from '../../../constants';
 
 
 const POST_MAX_LENGTH = 140;
@@ -21,9 +22,8 @@ const PostForm = (props) => {
         }
         
         setSubmitting(true);
-        const post = {text: preparedText, nft: [], kind: "TEXT"};
-        const resp = await ctx.dwitterActor.createPost(post);
-        props.postCreatedCallback(resp[0]);
+        const post = await ctx.apiService.createPost(preparedText, [], postKind_text);
+        props.postCreatedCallback(post);
         reset({text:''});
         setSubmitting(false);
     }

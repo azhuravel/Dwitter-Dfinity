@@ -23,15 +23,14 @@ const User = () => {
     // Load user profile info.
     useEffect(() => {
         setUserLoading(true);
-        const cancelable = makeCancelable(ctx.dwitterActor.getUserByUsername(username));
+        const cancelable = makeCancelable(ctx.apiService.getUserByUsername(username));
 
         cancelable.promise
-            .then((resp) => ((resp && resp[0]) || null))
             .then((user) => {
                 setUser(user);
+                setNftAvatar(user?.nftAvatar);
                 return user;
             })
-            .then(user => setNftAvatar(user?.nftAvatar))
             .then(() => setUserLoading(false))
             .catch((err) => {});
 
