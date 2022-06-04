@@ -1,3 +1,4 @@
+import Nat64 "mo:base/Nat64";
 import Principal "mo:base/Principal";
 
 module {
@@ -68,7 +69,9 @@ module {
   };
 
   public type TokenResponse = {
-    #ok;
+    #ok : {
+      price : Nat64
+    };
 
     #err : { 
       text : Text 

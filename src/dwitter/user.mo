@@ -168,7 +168,7 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
         lastTokenPrice := price;
 
         // 4. return the success
-        return #ok;
+        return #ok { price = price; };
     };
 
     public shared(msg) func sellToken() : async TokenResponse {
@@ -193,7 +193,7 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
                 lastTokenPrice := nullToZero(tokensPrices.peek());
                 nextTokenPrice := await buyPrice();
 
-                return #ok;
+                return #ok { price = sellPrice; };
             };
         }
     };
@@ -209,7 +209,7 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
 
         // formula for buy price
         //let k = (balance.e8s + 1) * 10_000_000;
-        return tokensCount * balance.e8s;
+        return (tokensCount+1) * balance.e8s;
     };
 
     /* Operation by block */
