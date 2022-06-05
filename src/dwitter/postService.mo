@@ -39,7 +39,7 @@ module {
             let post = createRequestToPost(userId, request);
 
             let userCanister = userCanisterService.getByPrincipal(request.targetUserPrincipal);
-            await userCanister.storePostAndSpendToken(post); 
+            await userCanister.storePostAndSpendToken(userId, post); 
 
             return ?fetchPostInfo(await userCanister.getUser(), post);
         };
