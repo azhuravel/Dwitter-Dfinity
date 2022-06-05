@@ -56,6 +56,11 @@ module {
             return userCanister;
         };
 
+        public func getByPrincipal(principal : Text) : UserCanister {
+            let userCanister : UserCanister = actor(principal);
+            return userCanister;
+        };
+
         public func getByUserId(userId : UserId) : ?UserCanister {
             let principal = userCanisters.get(userId);
             switch(principal) {

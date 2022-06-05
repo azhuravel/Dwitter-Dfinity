@@ -11,6 +11,7 @@ module {
     type User = Types.User;
     type PostInfo = Types.PostInfo;
     type CreatePostRequest = Types.CreatePostRequest;
+    type CreatePostAndSpendTokenRequest = Types.CreatePostAndSpendTokenRequest;
     type UserCanisterService = UserCanisterModule.UserCanisterService;
     type UserCanister = UserModule.UserCanister;
 
@@ -31,6 +32,16 @@ module {
                     return ?fetchPostInfo(await userCanister.getUser(), post);
                 };
             };
+        };
+
+        public func createPostAndSpendToken(userId : UserId, request : CreatePostAndSpendTokenRequest) : async ?PostInfo {
+            //let post = postsStorage.savePost(userId, request);
+            let post = createRequestToPost(userId, request);
+
+            let userCanister = userCanisterService.getByPrincipal(request.targetUserPrincipal);
+            await userCanister.storePostAndSpendToken(post); 
+
+            return ?fetchPostInfo(await userCanister.getUser(), post);
         };
 
         public func getByUserId(userId : UserId): async ?[PostInfo] {
