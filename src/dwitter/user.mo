@@ -74,8 +74,8 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
         return user;
     };
 
-    public shared (msg) func getUserInfo() : async ?UserInfo {
-        let ownedTotalCount = nullToZero(tokensOwners.get(msg.caller));
+    public func getUserInfo(caller : Principal) : async ?UserInfo {
+        let ownedTotalCount = nullToZero(tokensOwners.get(caller));
 
         let tokenInfo : UserTokenInfo = {
             buyPrice = await buyPrice();
@@ -117,9 +117,18 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
         postById.put(post.id, bufferIndex);
     };
 
-    public shared(msg) func storePostAndSpendToken(authorPrincipal : Principal, post : Post) : async() {
+    public func storePostAndSpendToken(authorPrincipal : Principal, post : Post) : async() {
         // TODO: change to burnToken
-        let tokenResponse = burnToken(authorPrincipal);
+        let tokenResponse = await burnToken(authorPrincipal);
+
+        switch (tokenResponse) {
+            case (#err({text : Text})) {
+                return;
+            };
+            case (_) {
+                // nothing
+            };
+        };
 
         // add post in the storage
         posts.add(post);
