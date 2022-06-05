@@ -1,21 +1,20 @@
 import {idlFactory} from '../../../declarations/dwitter/dwitter.did.js';
 import {appState_notLoggedIn, appState_registrationPage, appState_loggedIn} from '../constants';
+import {plugWhitelist} from '../constants';
 
 
-const keyLocalStorageAuth = 'authed';
-
-const plugWhitelist = [process.env.DWITTER_CANISTER_ID, process.env.DWITTER_ASSETS_CANISTER_ID];
+const keyLocalStorageAuth = 'authed_v2';
 
 export default class AuthService {
     static async _getDwitterActorFromPlug() {
         const plug = window?.ic?.plug;
         if (!plug) {
-            return null;
+            return {};
         }
 
         const plugIsConnected = await plug.isConnected();
         if (!plugIsConnected) {
-            return null;
+            return {};
         }
 
         if (!plug.agent) {
@@ -35,7 +34,7 @@ export default class AuthService {
             canisterId: process.env.DWITTER_CANISTER_ID,
             interfaceFactory: idlFactory,
         });
-        const principal = await window.ic.plug.agent.getPrincipal();
+        const principal = await plug.agent.getPrincipal();
 
         return {dwitterActor, principal};
     }

@@ -11,6 +11,8 @@ import { Box, Grid } from '@mui/material';
 import wealthService from '../services/wealthService';
 import nftService from '../services/nftService.js';
 import { makeCancelable, icpAgent, getUserNftAvatars } from '../utils/utils.js';
+import {postKind_text} from '../constants';
+import Button from '@mui/material/Button';
 
 
 const User = () => {
@@ -20,7 +22,6 @@ const User = () => {
     const [nftAvatar, setNftAvatar] = useState(null);
     const {username} = useParams();
 
-    // Load user profile info.
     useEffect(() => {
         setUserLoading(true);
         const cancelable = makeCancelable(ctx.apiService.getUserByUsername(username));
@@ -36,6 +37,38 @@ const User = () => {
 
         return () => cancelable.cancel();
     }, [username]);
+
+    const buyCallback = async (canisterPrincipal) => {
+        const blockIndex = (+new Date() % 10000);
+        await ctx.apiService.buyToken(canisterPrincipal, blockIndex);
+        ctx.apiService.getUserByUsername(username)
+            .then((user) => {
+                setUser(user);
+                setNftAvatar(user?.nftAvatar);
+                return user;
+            });
+    }
+
+    const sellCallback = async (canisterPrincipal) => {
+        await ctx.apiService.sellToken(canisterPrincipal);
+        ctx.apiService.getUserByUsername(username)
+            .then((user) => {
+                setUser(user);
+                setNftAvatar(user?.nftAvatar);
+                return user;
+            });
+    }
+
+    const writePost = async () => {
+        const targetUserCanisterPrincipal = user?.canisterPrincipal;
+        await ctx.apiService.createPostOnWall(targetUserCanisterPrincipal, 'qwe', [], postKind_text);
+        ctx.apiService.getUserByUsername(username)
+            .then((user) => {
+                setUser(user);
+                setNftAvatar(user?.nftAvatar);
+                return user;
+            });
+    }
   
     return (
         <Grid container spacing={3} sx={{mt: 0}}>
@@ -47,7 +80,8 @@ const User = () => {
 
             <Grid item lg={2} md={2} sm={0}/>
             <Grid item lg={8} md={8} sm={12}>
-                <TokensPanel />
+                <TokensPanel user={user} buyCallback={buyCallback} sellCallback={sellCallback} />
+                <Button variant="contained" onClick={writePost}>Write post</Button>
             </Grid>
             <Grid item lg={2} md={2} sm={0}/>
         </Grid>

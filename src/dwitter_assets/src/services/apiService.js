@@ -1,5 +1,6 @@
 import { Actor } from "@dfinity/agent";
 import {idlFactory} from '../../../declarations/user/user.did.js';
+import {plugWhitelist} from '../constants';
 
 
 class ApiService {
@@ -66,13 +67,8 @@ class ApiService {
         canisterPrincipal = await this.dwitterActor.createUserCanister({username, displayname});
         
         // Get user info.        
-        const plug = window?.ic?.plug;
-        const userActor = await plug.createActor({
-            canisterId: canisterPrincipal,
-            interfaceFactory: idlFactory,
-        });
-        resp = await userActor.getUserInfo();
-        user = resp?.[0] ?? null;
+        resp = await this.dwitterActor.getUserByUsername(username);
+        const user = resp?.[0] ?? null;
 
         console.log('apiService.signUpUser()', username, displayname, canisterPrincipal, user);
         return user;
@@ -105,6 +101,38 @@ class ApiService {
         console.log('apiService.createUser()', username, displayname, resp);
     }
 
+    async buyToken(canisterPrincipal, blockIndex) {      
+        const plug = window?.ic?.plug;
+
+        // https://github.com/Psychedelic/plug/issues/384
+        const whitelist = [
+            ...plugWhitelist,
+            canisterPrincipal,
+        ];
+        await plug.requestConnect({whitelist});
+
+        const userActor = await plug.createActor({
+            canisterId: canisterPrincipal,
+            interfaceFactory: idlFactory,
+        });
+        
+        const resp = await userActor.recieveToken(blockIndex);
+        console.log('apiService.buyToken()', blockIndex, resp);
+        return resp;
+    }
+
+    async sellToken(canisterPrincipal) {      
+        const plug = window?.ic?.plug;
+        const userActor = await plug.createActor({
+            canisterId: canisterPrincipal,
+            interfaceFactory: idlFactory,
+        });
+        
+        const resp = await userActor.sellToken();
+        console.log('apiService.sellToken()', resp);
+        return resp;
+    }
+
     async updateUser(username, displayname, bio, nftAvatar) {
         if (!this.dwitterActor) {
             return null;
@@ -121,6 +149,17 @@ class ApiService {
         const user = resp?.[0] ?? null;
         console.log('apiService.updateUser()', username, displayname, bio, nftAvatar, resp);
         return user;
+    }
+
+    async createPostOnWall(targetUserPrincipal, text, nft, kind) {
+        if (!this.dwitterActor) {
+            return [];
+        }
+
+        const resp = await this.dwitterActor.createPostAndSpendToken({targetUserPrincipal, text, nft, kind});
+        const post = resp?.[0] ?? null;
+        console.log('apiService.createPostOnWall()', text, nft, kind, post);
+        return post;
     }
 }
 

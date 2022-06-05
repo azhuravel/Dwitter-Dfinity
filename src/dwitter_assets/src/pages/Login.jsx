@@ -6,12 +6,12 @@ import ApiService from "../services/apiService";
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import {appState_notLoggedIn, appState_loading, appState_registrationPage, appState_loggedIn} from "../constants";
+import {appState_notLoggedIn, appState_loading, appState_registrationPage, appState_loggedIn} from '../constants';
+import {plugWhitelist} from '../constants';
 
 
 const Login = () => {
     const {setCtx, ctx} = useContext(AppContext);
-    const plugWhitelist = [process.env.DWITTER_CANISTER_ID, process.env.DWITTER_ASSETS_CANISTER_ID];
     
     const plugBtnCallback = async () => {
         setCtx({...ctx, appState: appState_loading});

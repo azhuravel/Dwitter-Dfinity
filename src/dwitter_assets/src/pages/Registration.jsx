@@ -17,7 +17,7 @@ const Registration = () => {
     const onSubmit = async (data) => {
         setSubmitting(true);
         const {username, displayname} = data;
-        const user = ctx.apiService.signUpUser(username, displayname);
+        const user = await ctx.apiService.signUpUser(username, displayname);
         setCtx({...ctx, currentUser: user, appState: appState_loggedIn});
         setSubmitting(false);
     }

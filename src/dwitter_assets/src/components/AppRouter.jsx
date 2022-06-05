@@ -38,7 +38,7 @@ const AppRouter = () => {
             );
 
         case appState_loggedIn:
-            const currentUserProfilePath = `/user/${ctx.currentUser.username}`;
+            const currentUserProfilePath = `/wall/${ctx.currentUser.username}`;
             return (
                 <Routes>
                     <Route path="/user/:username" element={<User />} />
