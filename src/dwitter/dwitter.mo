@@ -73,7 +73,12 @@ shared ({ caller = dwitterOwner }) actor class Dwitter() = this {
      * Posts methods
      */
 
+    // Deprecated
     public shared(msg) func createPost(request : CreatePostRequest): async ?PostInfo {
+        await postService.createPost(msg.caller, request)
+    };
+
+    public shared(msg) func createPostAndSpendToken(request : CreatePostRequest): async ?PostInfo {
         await postService.createPost(msg.caller, request)
     };
 
