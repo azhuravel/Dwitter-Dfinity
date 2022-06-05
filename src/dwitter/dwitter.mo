@@ -43,7 +43,7 @@ shared ({ caller = dwitterOwner }) actor class Dwitter() = this {
      */
 
     public shared(msg) func getCurrentUser(): async ?UserInfo {
-        await userService.get(msg.caller)
+        await userService.get(msg.caller, msg.caller)
     };
 
     public shared query (msg) func getCanisterPrincipalByUsername(username : Text) : async ?Text {
@@ -51,7 +51,7 @@ shared ({ caller = dwitterOwner }) actor class Dwitter() = this {
     };
 
     public shared(msg) func getUserByUsername(username : Text): async ?UserInfo  {
-        await userService.getByUsername(username)
+        await userService.getByUsername(msg.caller, username)
     };
 
     public shared(msg) func createUser(request : CreateUserRequest): async User {

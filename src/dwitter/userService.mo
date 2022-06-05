@@ -16,19 +16,19 @@ module {
     type UserCanister = UserModule.UserCanister;
 
     public class UserService(userCanisterService : UserCanisterService) {
-        public func get(userId : UserId) : async ?UserInfo {
+        public func get(caller : Principal, userId : UserId) : async ?UserInfo {
             let userCanister = userCanisterService.getByUserId(userId);
             switch (userCanister) {
                 case (null) { return null };
-                case (?userCanister) { return await userCanister.getUserInfo() };
+                case (?userCanister) { return await userCanister.getUserInfo(caller) };
             }
         };
 
-        public func getByUsername(username : Text) : async ?UserInfo {
+        public func getByUsername(caller : Principal, username : Text) : async ?UserInfo {
             let userCanister = userCanisterService.getByUsername(username);
             switch (userCanister) {
                 case (null) { return null };
-                case (?userCanister) { return await userCanister.getUserInfo() };
+                case (?userCanister) { return await userCanister.getUserInfo(caller) };
             }
         };
 
