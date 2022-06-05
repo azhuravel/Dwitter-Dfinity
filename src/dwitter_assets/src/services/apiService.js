@@ -1,6 +1,26 @@
 import { Actor } from "@dfinity/agent";
 import {idlFactory} from '../../../declarations/user/user.did.js';
 import {plugWhitelist} from '../constants';
+import AuthService from "../services/authService.js";
+
+
+const makeUserActor = async (canisterPrincipal) => {
+    const plug = window?.ic?.plug;
+
+    // https://github.com/Psychedelic/plug/issues/384
+    const whitelist = [
+        ...plugWhitelist,
+        canisterPrincipal,
+    ];
+    const host = AuthService.getPlugHost();
+    await plug.createAgent({whitelist, host});
+
+    const userActor = await plug.createActor({
+        canisterId: canisterPrincipal,
+        interfaceFactory: idlFactory,
+    });
+    return userActor;
+}
 
 
 class ApiService {
@@ -16,27 +36,6 @@ class ApiService {
         const resp = await this.dwitterActor.getCurrentUser();
         const user = resp?.[0] ?? null;
         console.log('apiService.getCurrentUser()', user);
-        return user;
-    }
-
-    async getUserByUsername2(username) {
-        // Get user canisterId.
-        let resp = await this.dwitterActor.getCanisterPrincipalByUsername(username);
-        let canisterPrincipal = resp?.[0] ?? null;
-        if (!canisterPrincipal) {
-            return null;
-        }
-        
-        // Get user info.        
-        const plug = window?.ic?.plug;
-        const userActor = await plug.createActor({
-            canisterId: canisterPrincipal,
-            interfaceFactory: idlFactory,
-        });
-        resp = await userActor.getUserInfo();
-        user = resp?.[0] ?? null;
-
-        console.log('apiService.getUserByUsername2()', username, user);
         return user;
     }
 
@@ -102,32 +101,14 @@ class ApiService {
     }
 
     async buyToken(canisterPrincipal, blockIndex) {      
-        const plug = window?.ic?.plug;
-
-        // https://github.com/Psychedelic/plug/issues/384
-        const whitelist = [
-            ...plugWhitelist,
-            canisterPrincipal,
-        ];
-        await plug.requestConnect({whitelist});
-
-        const userActor = await plug.createActor({
-            canisterId: canisterPrincipal,
-            interfaceFactory: idlFactory,
-        });
-        
+        const userActor = await makeUserActor(canisterPrincipal);
         const resp = await userActor.recieveToken(blockIndex);
         console.log('apiService.buyToken()', blockIndex, resp);
         return resp;
     }
 
     async sellToken(canisterPrincipal) {      
-        const plug = window?.ic?.plug;
-        const userActor = await plug.createActor({
-            canisterId: canisterPrincipal,
-            interfaceFactory: idlFactory,
-        });
-        
+        const userActor = await makeUserActor(canisterPrincipal);
         const resp = await userActor.sellToken();
         console.log('apiService.sellToken()', resp);
         return resp;

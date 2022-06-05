@@ -29,7 +29,7 @@ const User = () => {
     // Load user profile info.
     useEffect(() => {
         setUserLoading(true);
-        const cancelable = makeCancelable(ctx.apiService.getUserByUsername2(username));
+        const cancelable = makeCancelable(ctx.apiService.getUserByUsername(username));
 
         cancelable.promise
             .then((user) => {
