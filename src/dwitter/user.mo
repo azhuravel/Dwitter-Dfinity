@@ -117,9 +117,9 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
         postById.put(post.id, bufferIndex);
     };
 
-    public shared(msg) func storePostAndSpendToken(post : Post) : async() {
+    public shared(msg) func storePostAndSpendToken(authorPrincipal : Principal, post : Post) : async() {
         // TODO: change to burnToken
-        let tokenResponse = burnToken(msg.caller);
+        let tokenResponse = burnToken(authorPrincipal);
 
         // add post in the storage
         posts.add(post);
