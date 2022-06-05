@@ -117,6 +117,18 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
         postById.put(post.id, bufferIndex);
     };
 
+    public shared(msg) func storePostAndSpendToken(post : Post) : async() {
+        // TODO: change to burnToken
+        let tokenResponse = burnToken(msg.caller);
+
+        // add post in the storage
+        posts.add(post);
+
+        // add post to index
+        let bufferIndex : Nat = posts.size() - 1;
+        postById.put(post.id, bufferIndex);
+    };
+
     public shared(msg) func recieveToken(blockIndex : Nat64) : async TokenResponse {
         let callerId = msg.caller;
 
@@ -172,7 +184,12 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
     };
 
     public shared(msg) func sellToken() : async TokenResponse {
-        let tokensOwned = nullToZero( tokensOwners.get(msg.caller) );
+        let tokenResponse = await burnToken(msg.caller);
+        return tokenResponse;
+    };
+
+    private func burnToken(owner : Principal) : async TokenResponse {
+        let tokensOwned = nullToZero( tokensOwners.get(owner) );
 
         if (tokensOwned < 1) {
             return #err { text = "Not enough tokens to sell"; };
@@ -186,7 +203,7 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
             };
 
             case (?sellPrice) {
-                tokensOwners.put(msg.caller, tokensOwned - 1);
+                tokensOwners.put(owner, tokensOwned - 1);
                 tokensCount := tokensCount - 1;
                 totalLocked := totalLocked - sellPrice;
 
@@ -197,6 +214,23 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
             };
         }
     };
+
+    // private func burnToken(principal : Principal) : TokenResponse {
+    //     let tokensOwned = nullToZero( tokensOwners.get(principal) );
+
+    //     if (tokensOwned < 1) {
+    //         return #err { text = "Not enough tokens to sell"; };
+    //     };
+
+    //     tokensOwners.put(msg.caller, tokensOwned - 1);
+    //     tokensCount := tokensCount - 1;
+    //     totalLocked := totalLocked - sellPrice;
+
+    //     lastTokenPrice := nullToZero(tokensPrices.peek());
+    //     nextTokenPrice := await buyPrice();
+
+    //     return #ok { price = Nat64.fromNat(0); };
+    // };
 
     private func buyPrice() : async Nat64 {
         // let balance = await ledger.account_balance({

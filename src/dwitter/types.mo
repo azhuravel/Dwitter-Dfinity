@@ -37,6 +37,13 @@ module {
     nft : ?NftId;
   };
 
+  public type CreatePostAndSpendTokenRequest = {
+    targetUserPrincipal : Text;
+    kind : Text;
+    text : Text;
+    nft : ?NftId;
+  };
+
   public type User = {
     id : UserId;
     nftAvatar : ?NftId;

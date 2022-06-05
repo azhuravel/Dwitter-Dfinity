@@ -34,6 +34,7 @@ shared ({ caller = dwitterOwner }) actor class Dwitter() = this {
     type Post = Types.Post;
     type PostInfo = Types.PostInfo;
     type CreatePostRequest = Types.CreatePostRequest;
+    type CreatePostAndSpendTokenRequest = Types.CreatePostAndSpendTokenRequest;
 
     type UsersCanistersInfo = UserCanisterModule.UsersCanistersInfo;
 
@@ -78,8 +79,8 @@ shared ({ caller = dwitterOwner }) actor class Dwitter() = this {
         await postService.createPost(msg.caller, request)
     };
 
-    public shared(msg) func createPostAndSpendToken(request : CreatePostRequest): async ?PostInfo {
-        await postService.createPost(msg.caller, request)
+    public shared(msg) func createPostAndSpendToken(request : CreatePostAndSpendTokenRequest): async ?PostInfo {
+        await postService.createPostAndSpendToken(msg.caller, request)
     };
 
     public shared(msg) func getMyPosts(): async ?[PostInfo] {
