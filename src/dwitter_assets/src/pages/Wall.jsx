@@ -21,7 +21,9 @@ const User = () => {
     const [user, setUser] = useState(null);
     const [nftAvatar, setNftAvatar] = useState(null);
     const {username} = useParams();
+    const [posts, setPosts] = useState([]);
 
+    // Load user profile info.
     useEffect(() => {
         setUserLoading(true);
         const cancelable = makeCancelable(ctx.apiService.getUserByUsername(username));
@@ -33,6 +35,17 @@ const User = () => {
                 return user;
             })
             .then(() => setUserLoading(false))
+            .catch((err) => {});
+
+        return () => cancelable.cancel();
+    }, [username]);
+
+    // Load posts of user.
+    useEffect(() => {
+        const cancelable = makeCancelable(ctx.apiService.getUserPosts(username));
+                
+        cancelable.promise
+            .then((posts) => setPosts(posts))
             .catch((err) => {});
 
         return () => cancelable.cancel();
@@ -82,6 +95,14 @@ const User = () => {
             <Grid item lg={8} md={8} sm={12}>
                 <TokensPanel user={user} buyCallback={buyCallback} sellCallback={sellCallback} />
                 <Button variant="contained" onClick={writePost}>Write post</Button>
+            </Grid>
+            <Grid item lg={2} md={2} sm={0}/>
+
+            <Grid item lg={2} md={2} sm={0}/>
+            <Grid item lg={8} md={8} sm={12}>
+                <Box sx={{ display: 'flex' }}>
+                    <PostsList posts={posts}/>
+                </Box>
             </Grid>
             <Grid item lg={2} md={2} sm={0}/>
         </Grid>
