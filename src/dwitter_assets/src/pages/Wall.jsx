@@ -53,6 +53,7 @@ const User = () => {
 
     const buyCallback = async (canisterPrincipal) => {
         const blockIndex = (+new Date() % 10000);
+        
         await ctx.apiService.buyToken(canisterPrincipal, blockIndex);
         ctx.apiService.getUserByUsername(username)
             .then((user) => {
@@ -72,10 +73,13 @@ const User = () => {
             });
     }
 
-    const writePost = async () => {
+
+    const submitPostCallback = async (preparedText) => {
         const targetUserCanisterPrincipal = user?.canisterPrincipal;
-        await ctx.apiService.createPostOnWall(targetUserCanisterPrincipal, 'qwe', [], postKind_text);
-        ctx.apiService.getUserByUsername(username)
+        const post = await ctx.apiService.createPostOnWall(targetUserCanisterPrincipal, preparedText, [], postKind_text);
+        setPosts(currentPosts => ([post, ...currentPosts]));
+
+        await ctx.apiService.getUserByUsername(username)
             .then((user) => {
                 setUser(user);
                 setNftAvatar(user?.nftAvatar);
@@ -94,14 +98,19 @@ const User = () => {
             <Grid item lg={2} md={2} sm={0}/>
             <Grid item lg={8} md={8} sm={12}>
                 <TokensPanel user={user} buyCallback={buyCallback} sellCallback={sellCallback} />
-                <Button variant="contained" onClick={writePost}>Write post</Button>
+            </Grid>
+            <Grid item lg={2} md={2} sm={0}/>
+
+            <Grid item lg={2} md={2} sm={0}/>
+            <Grid item lg={8} md={8} sm={12}>
+                <PostForm submitPostCallback={submitPostCallback} />
             </Grid>
             <Grid item lg={2} md={2} sm={0}/>
 
             <Grid item lg={2} md={2} sm={0}/>
             <Grid item lg={8} md={8} sm={12}>
                 <Box sx={{ display: 'flex' }}>
-                    <PostsList posts={posts}/>
+                    <PostsList posts={posts} redirectOnWall />
                 </Box>
             </Grid>
             <Grid item lg={2} md={2} sm={0}/>

@@ -10,6 +10,7 @@ import { Box, Grid } from '@mui/material';
 import wealthService from '../services/wealthService';
 import nftService from '../services/nftService.js';
 import { makeCancelable, icpAgent, getUserNftAvatars } from '../utils/utils.js';
+import {postKind_text} from '../constants';
 
 
 const User = () => {
@@ -90,7 +91,8 @@ const User = () => {
         return () => cancelable.cancel();
     }, [username]);
 
-    const postCreatedCallback = (post) => {
+    const submitPostCallback = async (preparedText) => {
+        const post = await ctx.apiService.createPost(preparedText, [], postKind_text);
         setPosts(currentPosts => ([post, ...currentPosts]));
     }
 
@@ -127,7 +129,7 @@ const User = () => {
                 <React.Fragment>
                     <Grid item lg={2} md={2} sm={0}/>
                     <Grid item lg={8} md={8} sm={12}>
-                        <PostForm postCreatedCallback={postCreatedCallback} />
+                        <PostForm submitPostCallback={submitPostCallback} />
                     </Grid>
                     <Grid item lg={2} md={2} sm={0}/>
                 </React.Fragment>
