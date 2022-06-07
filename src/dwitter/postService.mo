@@ -1,6 +1,8 @@
 import Types "./types";
 import UserCanisterModule "./userCanisterModule";
 import UserModule "./user";
+import Principal "mo:base/Principal";
+import Map "mo:base/HashMap";
 
 import Array "mo:base/Array";
 import Time "mo:base/Time";
@@ -18,6 +20,17 @@ module {
     public class PostService(userCanisterService : UserCanisterService) {
         var idGenerator : Nat = 1;
 
+        private let ANONYM_PRINCIPAL = Principal.fromText("2vxsx-fae");
+
+        let DELETED_USER : User = {
+            id = ANONYM_PRINCIPAL;
+            nftAvatar = null;
+            createdTime = 0;
+            username = "DELETED";
+            displayname = "DELETED";
+            bio = null;
+        };
+
         public func createPost(userId : UserId, request : CreatePostRequest) : async ?PostInfo {
             //let post = postsStorage.savePost(userId, request);
             let post = createRequestToPost(userId, request);
@@ -29,7 +42,7 @@ module {
                  }; // nothing, throw an exception
                 case (?userCanister) { 
                     await userCanister.savePost(post); 
-                    return ?fetchPostInfo(await userCanister.getUser(), post);
+                    return ?getPostInfo(await userCanister.getUser(), post);
                 };
             };
         };
@@ -41,7 +54,7 @@ module {
             let userCanister = userCanisterService.getByPrincipal(request.targetUserPrincipal);
             await userCanister.storePostAndSpendToken(userId, post); 
 
-            return ?fetchPostInfo(await userCanister.getUser(), post);
+            return ?getPostInfo(await userCanister.getUser(), post);
         };
 
         public func getByUserId(userId : UserId): async ?[PostInfo] {
@@ -61,18 +74,44 @@ module {
                 };
                 case (?userCanister) {
                     let posts = await userCanister.getPosts();
-                    return reverseAndFetchPostInfos(await userCanister.getUser(), posts);
+                    let postInfos = await reverseAndFetchPostInfos(await userCanister.getUser(), posts);
+                    return postInfos;
                 };
             }
         };
 
-        private func reverseAndFetchPostInfos(user : User, posts: [Post]) : ?[PostInfo]  {
+        private func reverseAndFetchPostInfos(author : User, posts: [Post]) : async ?[PostInfo]  {
             do ? {
+                let authors = Map.HashMap<UserId, User>(1, Principal.equal, Principal.hash);
+                for (post in posts.vals()) {
+                    let authorId = post.userId;
+                    let canister = userCanisterService.getByUserId(authorId);
+                    switch (canister) {
+                        case (null) {
+                            // nothing
+                        };
+                        case (?canister) {
+                            let user = await canister.getUser();
+                            authors.put(authorId, user);
+                        };
+                    }
+                };
+
+
                 let N = posts.size(); // total amount of posts
                 Array.tabulate<PostInfo>(N, func(i:Nat) : PostInfo {
                     // posts[] stores posts orders by created time ASCending
                     // the last created post is post[N-1]
-                    fetchPostInfo(user, posts[N - i - 1])
+                    let post = posts[N - i - 1];
+                    let author = authors.get(post.userId);
+                    switch (author) {
+                        case (null) {
+                            return getPostInfo(DELETED_USER, post);
+                        };
+                        case (?author) {
+                            return getPostInfo(author, post);
+                        };
+                    }
                 })
             }
         };
@@ -85,16 +124,16 @@ module {
         //     postsStorage.fromArray(array)
         // };
 
-        private func fetchPostInfo(user : User, post : Post) : PostInfo {
+        private func getPostInfo(author : User, post : Post) : PostInfo {
             let postInfo : PostInfo = {
                 id = post.id;
                 kind = post.kind;
                 createdTime = post.createdTime;
                 text = post.text;
                 nft = post.nft;
-                username = user.username;
-                displayname = user.displayname;
-                nftAvatar = user.nftAvatar;
+                username = author.username;
+                displayname = author.displayname;
+                nftAvatar = author.nftAvatar;
             };
             return postInfo;
         };
