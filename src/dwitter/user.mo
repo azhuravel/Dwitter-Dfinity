@@ -155,24 +155,25 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
         let price = await buyPrice();
 
         // 2. get payment amount
-        let operation = await getOperationByBlock(blockIndex);
-        switch (operation) {
-            case (null) {
-                return #err { text = "Transaction not found"};
-            };
-            case (?operation) {
-                switch(operation) {
-                    case (#Transfer({from : AccountIdentifier; amount : ICP})) {
-                        // TODO check 'from'
-                        assert price <= amount.e8s;
-                    };
+        // TURNED OFF ON DEV
+        // let operation = await getOperationByBlock(blockIndex);
+        // switch (operation) {
+        //     case (null) {
+        //         return #err { text = "Transaction not found"};
+        //     };
+        //     case (?operation) {
+        //         switch(operation) {
+        //             case (#Transfer({from : AccountIdentifier; amount : ICP})) {
+        //                 // TODO check 'from'
+        //                 assert price <= amount.e8s;
+        //             };
 
-                    case (_) {
-                        return #err { text = "Not transfer transaction"};
-                    };
-                }
-            };
-        };
+        //             case (_) {
+        //                 return #err { text = "Not transfer transaction"};
+        //             };
+        //         }
+        //     };
+        // };
 
         // 3. mint token and give it to the caller
 
@@ -205,8 +206,8 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
 
             case (#ok({ price : Nat64 })) {
                 // send transfer to user
-                let response = await sendICP(msg.caller, price);
-                return response;
+                // TURNED OFF ON DEV
+                // let response = await sendICP(msg.caller, price);
             };
         };
         return tokenResponse;
