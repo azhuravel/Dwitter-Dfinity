@@ -52,8 +52,21 @@ const User = () => {
     }, [username]);
 
     const buyCallback = async (canisterPrincipal) => {
-        const blockIndex = (+new Date() % 10000);
-        
+        let blockIndex = (+new Date() % 10000);
+
+        if (process.env.NODE_ENV !== 'development') {
+            const params = {
+                to: targetUserCanisterPrincipal,
+                amount: 1,
+                memo: '1',
+            };
+            const plug = window?.ic?.plug;
+            const result = await plug.requestTransfer(params);
+            console.log('result =', result);
+
+            blockIndex = result.height;
+        }
+
         await ctx.apiService.buyToken(canisterPrincipal, blockIndex);
         ctx.apiService.getUserByUsername(username)
             .then((user) => {
