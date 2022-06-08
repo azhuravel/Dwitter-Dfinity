@@ -87,10 +87,10 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
         };
 
         // cannot be top level field as "this" is not accessable on that level 
-        let thisPrincipal = Principal.toText( Principal.fromActor(this) );
+        let thisCanisterPrincipal = Principal.toText( Principal.fromActor(this) );
 
         let userInfo : UserInfo = {
-            canisterPrincipal = thisPrincipal;
+            canisterPrincipal = thisCanisterPrincipal;
             nftAvatar = user.nftAvatar;
             createdTime = user.createdTime;
             username = user.username;
@@ -118,15 +118,19 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
     };
 
     public func storePostAndSpendToken(authorPrincipal : Principal, post : Post) : async() {
-        // TODO: change to burnToken
-        let tokenResponse = await burnToken(authorPrincipal);
+        let selfPost = authorPrincipal == user.id;
 
-        switch (tokenResponse) {
-            case (#err({text : Text})) {
-                return;
-            };
-            case (_) {
-                // nothing
+        if (not selfPost) {
+            let tokenResponse = await burnToken(authorPrincipal);
+
+            switch (tokenResponse) {
+                case (#err({text : Text})) {
+                    // TODO : return error
+                    return; // no post :(
+                };
+                case (_) {
+                    // nothing, it's ok.. go to post
+                };
             };
         };
 
@@ -151,24 +155,24 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
         let price = await buyPrice();
 
         // 2. get payment amount
-        // let operation = await getOperationByBlock(blockIndex);
-        // switch (operation) {
-        //     case (null) {
-        //         return #err { text = "Transaction not found"};
-        //     };
-        //     case (?operation) {
-        //         switch(operation) {
-        //             case (#Transfer({from : AccountIdentifier; amount : ICP})) {
-        //                 // TODO check 'from'
-        //                 assert price <= amount.e8s;
-        //             };
+        let operation = await getOperationByBlock(blockIndex);
+        switch (operation) {
+            case (null) {
+                return #err { text = "Transaction not found"};
+            };
+            case (?operation) {
+                switch(operation) {
+                    case (#Transfer({from : AccountIdentifier; amount : ICP})) {
+                        // TODO check 'from'
+                        assert price <= amount.e8s;
+                    };
 
-        //             case (_) {
-        //                 return #err { text = "Not transfer transaction"};
-        //             };
-        //         }
-        //     };
-        // };
+                    case (_) {
+                        return #err { text = "Not transfer transaction"};
+                    };
+                }
+            };
+        };
 
         // 3. mint token and give it to the caller
 
@@ -194,7 +198,43 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
 
     public shared(msg) func sellToken() : async TokenResponse {
         let tokenResponse = await burnToken(msg.caller);
+        switch (tokenResponse) {
+            case (#err({ text : Text })) {
+                // no need to transfer ICP
+            };
+
+            case (#ok({ price : Nat64 })) {
+                // send transfer to user
+                let response = await sendICP(msg.caller, price);
+                return response;
+            };
+        };
         return tokenResponse;
+    };
+
+    public func getAccountIdentifier() : async Text {
+        let thisCanisterPrincipal = Principal.fromActor(this);
+        let identifier = Utils.principalToAccount(thisCanisterPrincipal);
+        return Utils.accountToText(identifier);
+    };
+
+    private func sendICP(destinationPrincipal : Principal, amount : Nat64) : async TokenResponse {
+        let fee = Nat64.fromNat(10_000);
+        let price = amount - fee;
+        let wallet = Utils.principalToAccount(user.id);
+        ignore await ledger.transfer({
+            memo = Nat64.fromNat(0);
+            amount = {
+                e8s = price
+            };
+            fee = {
+                e8s = Nat64.fromNat(10_000);
+            };
+            to = wallet;
+            from_subaccount = null;
+            created_at_time = null;
+        });
+        return #ok { price = price; };
     };
 
     private func burnToken(owner : Principal) : async TokenResponse {
@@ -223,23 +263,6 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
             };
         }
     };
-
-    // private func burnToken(principal : Principal) : TokenResponse {
-    //     let tokensOwned = nullToZero( tokensOwners.get(principal) );
-
-    //     if (tokensOwned < 1) {
-    //         return #err { text = "Not enough tokens to sell"; };
-    //     };
-
-    //     tokensOwners.put(msg.caller, tokensOwned - 1);
-    //     tokensCount := tokensCount - 1;
-    //     totalLocked := totalLocked - sellPrice;
-
-    //     lastTokenPrice := nullToZero(tokensPrices.peek());
-    //     nextTokenPrice := await buyPrice();
-
-    //     return #ok { price = Nat64.fromNat(0); };
-    // };
 
     private func buyPrice() : async Nat64 {
         // let balance = await ledger.account_balance({
