@@ -61,6 +61,7 @@ const User = () => {
                 opts: {
                     memo: '123451231231',
                 },
+                memo: '123451231231',
             };
             const plug = window?.ic?.plug;
             const result = await plug.requestTransfer(params);
