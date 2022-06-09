@@ -29,7 +29,7 @@ const TokensPanel = (props) => {
             <p>totalCount: {totalCount}</p>
             <p>ownedCount: {ownedCount}</p>
             
-            <Button variant="contained" onClick={buy(canisterPrincipal)}>Buy 1 token</Button>
+            <Button variant="contained" onClick={buy(canisterPrincipal, accountIdentifier)}>Buy 1 token</Button>
             <Button variant="contained" onClick={sell(canisterPrincipal)}>Sell 1 token</Button>
         </React.Fragment>
     )
