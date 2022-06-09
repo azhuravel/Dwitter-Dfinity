@@ -54,10 +54,14 @@ const User = () => {
     const buyCallback = async (canisterPrincipal, accountIdentifier) => {
         let blockIndex = (+new Date() % 10000);
 
+        // Request plug permissions.
+        await ctx.apiService.makeUserActor(canisterPrincipal);
+
+        // Request transfer of ICP.
         if (process.env.NODE_ENV !== 'development') {
             const params = {
                 to: accountIdentifier,
-                amount: 1,
+                amount: 10001,
             };
             const plug = window?.ic?.plug;
             const result = await plug.requestTransfer(params);
@@ -66,6 +70,7 @@ const User = () => {
             blockIndex = result.height;
         }
 
+        // Request token.
         await ctx.apiService.buyToken(canisterPrincipal, blockIndex);
         ctx.apiService.getUserByUsername(username)
             .then((user) => {

@@ -4,7 +4,14 @@ import {plugWhitelist} from '../constants';
 import AuthService from "../services/authService.js";
 
 
+const userActorsCache = {};
+
 const makeUserActor = async (canisterPrincipal) => {
+    const cachedUserActor = userActorsCache[canisterPrincipal];
+    if (cachedUserActor) {
+        return cachedUserActor;
+    }
+
     const plug = window?.ic?.plug;
 
     // https://github.com/Psychedelic/plug/issues/384
@@ -19,6 +26,11 @@ const makeUserActor = async (canisterPrincipal) => {
         canisterId: canisterPrincipal,
         interfaceFactory: idlFactory,
     });
+    if (!userActor) {
+        return null;
+    }
+
+    userActorsCache[canisterPrincipal] = userActor;
     return userActor;
 }
 
@@ -106,6 +118,11 @@ class ApiService {
         const resp = await userActor.recieveToken(blockIndex);
         console.log('apiService.buyToken()', blockIndex, resp);
         return resp;
+    }
+
+    async makeUserActor(canisterPrincipal) {
+        const userActor = await makeUserActor(canisterPrincipal);
+        return userActor;
     }
 
     async sellToken(canisterPrincipal) {      
