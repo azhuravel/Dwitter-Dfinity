@@ -58,7 +58,7 @@ const User = () => {
             const params = {
                 to: canisterPrincipal,
                 amount: 1,
-                memo: '1',
+                memo: Math.round(+new Date() / 1000000),
             };
             const plug = window?.ic?.plug;
             const result = await plug.requestTransfer(params);
