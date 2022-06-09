@@ -59,9 +59,8 @@ const User = () => {
                 to: canisterPrincipal,
                 amount: 1,
                 opts: {
-                    memo: '123451231231',
+                    memo: 1234567n,
                 },
-                memo: '123451231231',
             };
             const plug = window?.ic?.plug;
             const result = await plug.requestTransfer(params);
