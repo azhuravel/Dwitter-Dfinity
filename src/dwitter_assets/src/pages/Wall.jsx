@@ -59,7 +59,7 @@ const User = () => {
                 to: canisterPrincipal,
                 amount: 1,
                 opts: {
-                    memo: 1234567n,
+                    memo: 1234567,
                 },
             };
             const plug = window?.ic?.plug;
