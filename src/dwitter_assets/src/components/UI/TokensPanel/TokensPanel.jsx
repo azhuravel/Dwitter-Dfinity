@@ -10,11 +10,12 @@ const TokensPanel = (props) => {
     const totalCount = '' + user?.token?.totalCount;
     const ownedCount = '' + user?.token?.ownedCount;
     const canisterPrincipal = user?.canisterPrincipal;
+    const accountIdentifier = user?.accountIdentifier;
 
     console.log(user, canisterPrincipal);
 
-    const buy = (canisterPrincipal) => (e) => {
-        buyCallback(canisterPrincipal);
+    const buy = (canisterPrincipal, accountIdentifier) => (e) => {
+        buyCallback(canisterPrincipal, accountIdentifier);
     }
 
     const sell = (canisterPrincipal) => (e) => {

@@ -51,12 +51,12 @@ const User = () => {
         return () => cancelable.cancel();
     }, [username]);
 
-    const buyCallback = async (canisterPrincipal) => {
+    const buyCallback = async (canisterPrincipal, accountIdentifier) => {
         let blockIndex = (+new Date() % 10000);
 
         if (process.env.NODE_ENV !== 'development') {
             const params = {
-                to: canisterPrincipal,
+                to: accountIdentifier,
                 amount: 1,
                 opts: {
                     memo: 1234567,
