@@ -4,13 +4,13 @@ import {plugWhitelist} from '../constants';
 import AuthService from "../services/authService.js";
 
 
-// const userActorsCache = {};
+const userActorsCache = {};
 
 const makeUserActor = async (canisterPrincipal) => {
-    // const cachedUserActor = userActorsCache[canisterPrincipal];
-    // if (cachedUserActor) {
-    //     return cachedUserActor;
-    // }
+    const cachedUserActor = userActorsCache[canisterPrincipal];
+    if (cachedUserActor) {
+        return cachedUserActor;
+    }
 
     const plug = window?.ic?.plug;
 
@@ -30,7 +30,8 @@ const makeUserActor = async (canisterPrincipal) => {
         return null;
     }
 
-    // userActorsCache[canisterPrincipal] = userActor;
+    userActorsCache[canisterPrincipal] = userActor;
+
     return userActor;
 }
 

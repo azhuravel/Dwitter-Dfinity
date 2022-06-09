@@ -52,7 +52,7 @@ const User = () => {
     }, [username]);
 
     const buyCallback = async (canisterPrincipal, accountIdentifier) => {
-        const buyPrice = user?.token?.buyPrice;
+        const buyPrice = Number(user?.token?.buyPrice);
         let blockIndex = (+new Date() % 10000);
 
         // Request plug permissions.
