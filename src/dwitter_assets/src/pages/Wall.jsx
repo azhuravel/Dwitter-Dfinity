@@ -56,7 +56,7 @@ const User = () => {
 
         if (process.env.NODE_ENV !== 'development') {
             const params = {
-                to: targetUserCanisterPrincipal,
+                to: canisterPrincipal,
                 amount: 1,
                 memo: '1',
             };
