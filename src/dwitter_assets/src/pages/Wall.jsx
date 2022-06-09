@@ -58,9 +58,6 @@ const User = () => {
             const params = {
                 to: accountIdentifier,
                 amount: 1,
-                opts: {
-                    memo: 1234567,
-                },
             };
             const plug = window?.ic?.plug;
             const result = await plug.requestTransfer(params);
