@@ -52,6 +52,7 @@ const User = () => {
     }, [username]);
 
     const buyCallback = async (canisterPrincipal, accountIdentifier) => {
+        const buyPrice = user?.token?.buyPrice;
         let blockIndex = (+new Date() % 10000);
 
         // Request plug permissions.
@@ -61,7 +62,7 @@ const User = () => {
         if (process.env.NODE_ENV !== 'development') {
             const params = {
                 to: accountIdentifier,
-                amount: 10001,
+                amount: buyPrice,
             };
             const plug = window?.ic?.plug;
             const result = await plug.requestTransfer(params);
