@@ -4,7 +4,7 @@ class MockedApiService {
     setDwitterActor(dwitterActor) {}
 
     async getCurrentUser() {
-        await delay(200);
+        await delay(2);
         return {
             bio: [],
             canisterPrincipal: "rno2w-sqaaa-aaaaa-aaacq-cai",
@@ -12,7 +12,7 @@ class MockedApiService {
             displayname: "qweqwe",
             nftAvatar: [],
             token: {
-                buyPrice: 10000000n,
+                buyPrice: 100000000n,
                 cap: 0n,
                 ownedCount: 0n,
                 sellPrice: 0n,
@@ -24,7 +24,7 @@ class MockedApiService {
     }
 
     async getUserByUsername(username) {
-        await delay(200);
+        await delay(2);
         return {
             bio: [],
             canisterPrincipal: "rno2w-sqaaa-aaaaa-aaacq-cai",
@@ -32,7 +32,7 @@ class MockedApiService {
             displayname: "qweqwe",
             nftAvatar: [],
             token: {
-                buyPrice: 10000000n,
+                buyPrice: 100000n,
                 cap: 0n,
                 ownedCount: 0n,
                 sellPrice: 0n,
@@ -94,7 +94,8 @@ class MockedApiService {
     async createUser(username, displayname) {
     }
 
-    async buyToken(canisterPrincipal, blockIndex) {      
+    async buyToken(canisterPrincipal, blockIndex) {
+        await delay(2000);
         // const userActor = await makeUserActor(canisterPrincipal);
         // const resp = await userActor.recieveToken(blockIndex);
         // console.log('apiService.buyToken()', blockIndex, resp);

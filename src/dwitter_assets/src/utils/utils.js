@@ -71,10 +71,15 @@ const makeCancelable = (promise) => {
 
 const icpAgent = new HttpAgent({ fetch, host: 'https://ic0.app/' });
 
+const e8sToICP = (e8s) => (Number(e8s ? e8s : 0) / 10000000).toFixed(2);
+const e8sToICPstr = (e8s) => '' + e8sToICP(e8s);
+
 export {
     principalToAccountIdentifier,
     delay,
     makeCancelable,
     icpAgent,
+    e8sToICP,
+    e8sToICPstr,
 }
 

@@ -1,7 +1,7 @@
 import React, {useEffect, useState, useContext} from 'react';
 import { AppContext } from '../context/index.js';
 import PostsList from '../components/UI/PostsList/PostsList.jsx';
-import PostForm from '../components/UI/PostForm/PostForm.jsx';
+import WallPostForm from '../components/UI/WallPostForm/WallPostForm.jsx';
 import UserCard from '../components/UI/UserCard/UserCard.jsx';
 import TokensPanel from '../components/UI/TokensPanel/TokensPanel.jsx';
 import NftsSlider from '../components/UI/NftsSlider/NftsSlider.jsx';
@@ -22,6 +22,7 @@ const User = () => {
     const [nftAvatar, setNftAvatar] = useState(null);
     const {username} = useParams();
     const [posts, setPosts] = useState([]);
+    const userHasTokens = (user?.token?.ownedCount ?? 0) > 0;
 
     // Load user profile info.
     useEffect(() => {
@@ -115,13 +116,13 @@ const User = () => {
 
             <Grid item lg={2} md={2} sm={0}/>
             <Grid item lg={8} md={8} sm={12}>
-                <TokensPanel user={user} buyCallback={buyCallback} sellCallback={sellCallback} />
+                <TokensPanel user={user} buyCallback={buyCallback} sellCallback={sellCallback} isLoading={userLoading} />
             </Grid>
             <Grid item lg={2} md={2} sm={0}/>
 
             <Grid item lg={2} md={2} sm={0}/>
             <Grid item lg={8} md={8} sm={12}>
-                <PostForm submitPostCallback={submitPostCallback} />
+                <WallPostForm submitPostCallback={submitPostCallback} hasTokens={userHasTokens} />
             </Grid>
             <Grid item lg={2} md={2} sm={0}/>
 

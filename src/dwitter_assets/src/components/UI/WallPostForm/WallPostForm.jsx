@@ -5,12 +5,13 @@ import {TextField} from '@mui/material';
 import DwitterAvatar from "../DwitterAvatar/DwitterAvatar";
 import { useForm, Controller } from 'react-hook-form';
 import LoadingButton from '@mui/lab/LoadingButton';
+import Tooltip from '@mui/material/Tooltip';
 
 
 const POST_MAX_LENGTH = 140;
 
-const PostForm = (props) => {
-    const {submitPostCallback} = props;
+const WallPostForm = (props) => {
+    const {submitPostCallback, hasTokens} = props;
     const {ctx} = useContext(AppContext); 
     const {handleSubmit, control, reset} = useForm();
     const [submitting, setSubmitting] = useState(false);
@@ -27,6 +28,13 @@ const PostForm = (props) => {
         setSubmitting(false);
     }
 
+    const getTextFieldMessage = () => {
+        if (hasTokens) {
+            return 'Your message...';
+        }
+        return 'You have no tokens to write';
+    }
+
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <Box sx={{ display: 'flex', alignItems: 'flex-start', mt: 3, mb: 1 }}>
@@ -36,7 +44,7 @@ const PostForm = (props) => {
                     control={control}
                     render={({field: {onChange, value}, fieldState: {error}}) => (
                         <TextField
-                            label="What's happening?" 
+                            label={getTextFieldMessage()} 
                             value={value}
                             size="small"
                             multiline
@@ -44,7 +52,7 @@ const PostForm = (props) => {
                             error={!!error}
                             fullWidth
                             helperText={error ? error.message : null}
-                            disabled={submitting}
+                            disabled={submitting || !hasTokens}
                         />
                     )}
                     rules={{
@@ -55,10 +63,14 @@ const PostForm = (props) => {
             </Box>
 
             <Box sx={{ display: 'flex', flexDirection: 'row-reverse' }}>
-                <LoadingButton type="submit" variant="contained" loading={submitting}>Send</LoadingButton>
+                <Tooltip title="You have no tokens" placement="top" disableFocusListener={hasTokens} disableHoverListener={hasTokens} disableInteractive={hasTokens} disableTouchListener={hasTokens}>
+                    <span>
+                        <LoadingButton type="submit" variant="contained" loading={submitting} disabled={!hasTokens}>Spend 1 token and send message</LoadingButton>
+                    </span>
+                </Tooltip>
             </Box>
         </form>
     );
 }
 
-export default PostForm
+export default WallPostForm
