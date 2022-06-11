@@ -6,6 +6,7 @@ import Footer from "./components/UI/Footer/Footer.jsx";
 import {AppContext} from "./context";
 import AuthService from "./services/authService.js";
 import ApiService from "./services/apiService.js";
+import MockedApiService from "./mocks/mockedApiService.js";
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -50,7 +51,11 @@ const theme = createTheme({
 });
 
 const App = () => {
-    const apiService = new ApiService();
+    let apiService = new ApiService();
+    if (process.env.USE_MOCKS) {
+        apiService = new MockedApiService();
+    }
+
     const [ctx, setCtx] = useState({
         appState: appState_loading,
     });

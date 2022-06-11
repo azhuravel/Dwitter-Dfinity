@@ -12,8 +12,6 @@ const TokensPanel = (props) => {
     const canisterPrincipal = user?.canisterPrincipal;
     const accountIdentifier = user?.accountIdentifier;
 
-    console.log(user, accountIdentifier, canisterPrincipal);
-
     const buy = (canisterPrincipal, accountIdentifier) => (e) => {
         buyCallback(canisterPrincipal, accountIdentifier);
     }

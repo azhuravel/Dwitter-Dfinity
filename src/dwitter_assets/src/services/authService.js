@@ -3,7 +3,7 @@ import {appState_notLoggedIn, appState_registrationPage, appState_loggedIn} from
 import {plugWhitelist} from '../constants';
 
 
-const keyLocalStorageAuth = 'authed_v2';
+const keyLocalStorageAuth = 'authed_v3';
 
 export default class AuthService {
     static async _getDwitterActorFromPlug() {
