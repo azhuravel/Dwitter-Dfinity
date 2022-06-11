@@ -2,15 +2,16 @@ import React from 'react';
 import DwitterAvatar from "../DwitterAvatar/DwitterAvatar";
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
+import CardContent from '@mui/material/CardContent';
 import moment from "moment";
 import Skeleton from '@mui/material/Skeleton';
 
 
 const UserCard = (props) => {
     const {username, nftAvatar, userLoading} = props;
-    let displayname = props?.user?.displayname;
-    let balance = props?.balance ?? 0;
-    let nftWealth = props?.nftWealth ?? 0;
+    const displayname = props?.user?.displayname;
+    const balance = props?.balance ?? 0;
+    const nftWealth = props?.nftWealth ?? 0;
     const createdTime = (props?.user?.createdTime || 0n ) / 1000000000n;
     const bio = props?.user?.bio?.[0] ?? '';
 
@@ -25,7 +26,9 @@ const UserCard = (props) => {
         if (userLoading) {
             return <Skeleton animation="wave" />
         } 
-        return <span>{`@${username} ${bio} - joined ${moment.unix(Number(createdTime)).fromNow()} - balance ${balance} ICP - NFT wealth ${nftWealth} ICP`}</span>
+        return (
+            <span>{`@${username} - joined ${moment.unix(Number(createdTime)).fromNow()} - balance ${balance} ICP - NFT wealth ${nftWealth} ICP`}</span>
+        );
     }
 
     return (
@@ -36,6 +39,9 @@ const UserCard = (props) => {
                 title={getCardTitle()}
                 subheader={getCardSubheader()}
             />
+            {bio &&
+                <CardContent>{bio}</CardContent>
+            }
         </Card>
     )
 }
