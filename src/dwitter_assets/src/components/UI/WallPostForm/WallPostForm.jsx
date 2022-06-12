@@ -11,7 +11,7 @@ import Divider from '@mui/material/Divider';
 
 
 const WallPostForm = (props) => {
-    const {submitPostCallback, hasTokens} = props;
+    const {submitPostCallback, hasTokens, currentUserIsWallOwner} = props;
     const {ctx} = useContext(AppContext); 
     const {handleSubmit, control, reset} = useForm();
     const [submitting, setSubmitting] = useState(false);
@@ -65,7 +65,10 @@ const WallPostForm = (props) => {
             <Box sx={{ display: 'flex', flexDirection: 'row-reverse', mb: '10px' }}>
                 <Tooltip title="You have no tokens" placement="top" disableFocusListener={hasTokens} disableHoverListener={hasTokens} disableInteractive={hasTokens} disableTouchListener={hasTokens}>
                     <span>
-                        <LoadingButton type="submit" variant="contained" loading={submitting} disabled={!hasTokens}>Send for 1 token</LoadingButton>
+                        <LoadingButton type="submit" variant="contained" loading={submitting} disabled={!hasTokens && !currentUserIsWallOwner}>
+                            {currentUserIsWallOwner && 'Send'}
+                            {!currentUserIsWallOwner && 'Send for 1 token'}
+                        </LoadingButton>
                     </span>
                 </Tooltip>
             </Box>

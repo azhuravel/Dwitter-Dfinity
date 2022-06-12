@@ -33,13 +33,14 @@ const User = () => {
     const [nftAvatar, setNftAvatar] = useState(null);
     const {username} = useParams();
     const [posts, setPosts] = useState([]);
-    const userHasTokens = (user?.token?.ownedCount ?? 0) >= 0;
+    const isCurrentUserProfile = (username === ctx.currentUser.username);
+    const userHasTokens = (user?.token?.ownedCount ?? 0) > 0;
     const [notifyText, setNotifyText] = React.useState('');
     const [nftsLoading, setNftsLoading] = useState(true); 
     const [nfts, setNfts] = useState([]);
-    const isCurrentUserProfile = (username === ctx.currentUser.username);
     const [balance, setBalance] = useState(null);
     const [nftWealth, setNftWealth] = useState(null);
+    const renderNft = localStorage.getItem(`load_nfts.${username}`);
 
     // Load user profile info.
     useEffect(() => {
@@ -74,11 +75,6 @@ const User = () => {
         if (!user) {
             return;
         }
-
-        // const needToLoadNFTs = localStorage.getItem(`load_nfts.${user.username}`);
-        // if (!needToLoadNFTs) {
-        //     return;
-        // }
 
         setNftsLoading(true);
 
@@ -179,7 +175,11 @@ const User = () => {
             });
         
         // Notify user.
-        setNotifyText(`1 token is transfered to "${user?.username}"`);
+        if (isCurrentUserProfile) {
+            setNotifyText(`Sent to your wall`);
+        } else {
+            setNotifyText(`1 token is transfered to "${user?.username}"`);
+        }
     }
 
     const handleClose = (event, reason) => {
@@ -205,11 +205,15 @@ const User = () => {
                 </Grid>
                 <Grid item lg={2} md={2} sm={0}/>
 
-                <Grid item lg={2} md={2} sm={0}/>
-                <Grid item lg={8} md={8} sm={12}>
-                    <NftsSlider nftsOfCurrentUser={isCurrentUserProfile} nfts={nfts} isLoading={nftsLoading} />
-                </Grid>
-                <Grid item lg={2} md={2} sm={0}/>
+                {renderNft &&
+                    <React.Fragment>
+                        <Grid item lg={2} md={2} sm={0}/>
+                        <Grid item lg={8} md={8} sm={12}>
+                            <NftsSlider nftsOfCurrentUser={isCurrentUserProfile} nfts={nfts} isLoading={nftsLoading} />
+                        </Grid>
+                        <Grid item lg={2} md={2} sm={0}/>
+                    </React.Fragment>
+                }
 
                 <Grid item lg={2} md={2} sm={0}/>
                 <Grid item lg={8} md={8} sm={12}>
@@ -219,7 +223,7 @@ const User = () => {
 
                 <Grid item lg={2} md={2} sm={0}/>
                 <Grid item lg={8} md={8} sm={12}>
-                    <WallPostForm submitPostCallback={submitPostCallback} hasTokens={userHasTokens} />
+                    <WallPostForm submitPostCallback={submitPostCallback} hasTokens={userHasTokens} currentUserIsWallOwner={isCurrentUserProfile} />
                 </Grid>
                 <Grid item lg={2} md={2} sm={0}/>
 

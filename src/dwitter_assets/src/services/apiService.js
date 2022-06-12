@@ -138,10 +138,16 @@ class ApiService {
             return null;
         }
 
+        if (!bio) {
+            bio = [];
+        } else {
+            bio = [bio];
+        }
+
         await this.dwitterActor.updateUser({
             username, 
             displayname, 
-            bio: [bio],
+            bio: bio,
             nftAvatar: nftAvatar,
         });
         
