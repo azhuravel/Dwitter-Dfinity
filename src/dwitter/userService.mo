@@ -42,6 +42,16 @@ module {
             return userCanisterService.getCanisterPrincipalByUsername(username);
         };
 
+        public func topUp(username : Text) : async () {
+            let userCanister = userCanisterService.getByUsername(username);
+            switch (userCanister) {
+                case (null) { };
+                case (?userCanister) { 
+                    await userCanisterService.upgradeAndTopUp(userCanister);
+                };
+            }
+        };
+
         public func create(userId : UserId, request : CreateUserRequest) : async User {
             // assert await get(userId) == null;
 

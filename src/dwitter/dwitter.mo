@@ -99,6 +99,10 @@ shared ({ caller = dwitterOwner }) actor class Dwitter() = this {
         await postService.getByUsername(username)
     };
 
+    public func topUp(username : Text): async () {
+        await userService.topUp(username);
+    };
+
     /**
      * Upgrade user canisters
      */

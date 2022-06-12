@@ -51,6 +51,9 @@ shared(msg) actor class UserCanister() = this {
     // ledger
     let ledger : Ledger.Interface = actor(Ledger.CANISTER_ID);
 
+    // topups, just for info
+    let topups = Buffer.Buffer<Nat>(0);
+
     // canister upgrade storage
     stable var serializedPosts : [Post] = [];
     stable var serializedTransactions : [(Nat64, UserId)] = [];
@@ -357,7 +360,12 @@ shared(msg) actor class UserCanister() = this {
     public func wallet_receive() : async { accepted: Nat64 } {
         let amount = Cycles.available();
         let deposit = Cycles.accept(amount);
+        topups.add(deposit);
         { accepted = Nat64.fromNat(deposit) };
+    };
+
+    public shared query (msg) func getTopUps() : async [Nat] {
+        return topups.toArray();
     };
 
     /* Canister update logic */
