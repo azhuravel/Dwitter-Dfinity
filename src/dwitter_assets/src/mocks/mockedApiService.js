@@ -12,7 +12,7 @@ class MockedApiService {
             displayname: "qweqwe",
             nftAvatar: [],
             token: {
-                buyPrice: 100000000n,
+                buyPrice: 1_000_000n,
                 cap: 0n,
                 ownedCount: 0n,
                 sellPrice: 0n,
@@ -32,7 +32,7 @@ class MockedApiService {
             displayname: "qweqwe",
             nftAvatar: [],
             token: {
-                buyPrice: 100000n,
+                buyPrice: 1_000_000n,
                 cap: 0n,
                 ownedCount: 0n,
                 sellPrice: 0n,
@@ -52,7 +52,7 @@ class MockedApiService {
             displayname: displayname,
             nftAvatar: [],
             token: {
-                buyPrice: 10000000n,
+                buyPrice: 1_000_000n,
                 cap: 0n,
                 ownedCount: 0n,
                 sellPrice: 0n,
@@ -95,11 +95,12 @@ class MockedApiService {
     }
 
     async buyToken(canisterPrincipal, blockIndex) {
-        await delay(2000);
-        // const userActor = await makeUserActor(canisterPrincipal);
-        // const resp = await userActor.recieveToken(blockIndex);
-        // console.log('apiService.buyToken()', blockIndex, resp);
-        // return resp;
+        await delay(200);
+        return {
+            ok: {
+                price: 1_000_000n,
+            },
+        };
     }
 
     async makeUserActor(canisterPrincipal) {
@@ -108,10 +109,12 @@ class MockedApiService {
     }
 
     async sellToken(canisterPrincipal) {      
-        // const userActor = await makeUserActor(canisterPrincipal);
-        // const resp = await userActor.sellToken();
-        // console.log('apiService.sellToken()', resp);
-        // return resp;
+        await delay(200);
+        return {
+            ok: {
+                price: 1_000_000n,
+            },
+        };
     }
 
     async updateUser(username, displayname, bio, nftAvatar) {

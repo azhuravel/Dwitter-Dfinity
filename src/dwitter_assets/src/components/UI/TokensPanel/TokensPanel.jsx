@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 
 
 const TokensPanel = (props) => {
-    const {user, buyCallback, sellCallback, isLoading} = props;
+    const {user, buyCallback, sellCallback, isLoading, hasTokens} = props;
     const [isDisabled, setIsDisabled] = useState(false);
 
     const buyPrice = e8sToICPstr(user?.token?.buyPrice);
@@ -20,7 +20,6 @@ const TokensPanel = (props) => {
     const ownedCount = Number(user?.token?.ownedCount ?? 0);
     const canisterPrincipal = user?.canisterPrincipal;
     const accountIdentifier = user?.accountIdentifier;
-    const hasTokens = ownedCount > 0;
 
     const buy = (canisterPrincipal, accountIdentifier) => async (e) => {
         setIsDisabled(true);
@@ -47,7 +46,7 @@ const TokensPanel = (props) => {
             <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', mb: '40px' }}>
                 <Box sx={{ textAlign: 'center', fontSize: '0.875rem', fontWeight: '700'}}>
                     <Typography variant="p" component="p">{ownedCount}</Typography>
-                    <Typography variant="p" component="p" sx={{color: '#aaa'}}>Your Author's Tokens</Typography>
+                    <Typography variant="p" component="p" sx={{color: '#aaa'}}>Your Tokens</Typography>
                 </Box>
                 <Box sx={{ textAlign: 'center', fontSize: '0.875rem', fontWeight: '700'}}>
                     <Typography variant="p" component="p">{totalCount}</Typography>

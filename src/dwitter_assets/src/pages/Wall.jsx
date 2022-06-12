@@ -13,6 +13,16 @@ import nftService from '../services/nftService.js';
 import { makeCancelable, icpAgent, getUserNftAvatars } from '../utils/utils.js';
 import {postKind_text} from '../constants';
 import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import MuiAlert from '@mui/material/Alert';
+import { e8sToICPstr } from '../utils/utils.js';
+
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 
 const User = () => {
@@ -22,7 +32,8 @@ const User = () => {
     const [nftAvatar, setNftAvatar] = useState(null);
     const {username} = useParams();
     const [posts, setPosts] = useState([]);
-    const userHasTokens = (user?.token?.ownedCount ?? 0) > 0;
+    const userHasTokens = (user?.token?.ownedCount ?? 0) >= 0;
+    const [notifyText, setNotifyText] = React.useState('');
 
     // Load user profile info.
     useEffect(() => {
@@ -73,23 +84,29 @@ const User = () => {
         }
 
         // Request token.
-        await ctx.apiService.buyToken(canisterPrincipal, blockIndex);
-        ctx.apiService.getUserByUsername(username)
+        const buyTokenResp = await ctx.apiService.buyToken(canisterPrincipal, blockIndex);
+        await ctx.apiService.getUserByUsername(username)
             .then((user) => {
                 setUser(user);
                 setNftAvatar(user?.nftAvatar);
                 return user;
             });
+        
+        // Notify user.
+        setNotifyText(`Success! Price: ${e8sToICPstr(buyTokenResp?.ok?.price)} ICP`);
     }
 
     const sellCallback = async (canisterPrincipal) => {
-        await ctx.apiService.sellToken(canisterPrincipal);
-        ctx.apiService.getUserByUsername(username)
+        const sellTokenResp = await ctx.apiService.sellToken(canisterPrincipal);
+        await ctx.apiService.getUserByUsername(username)
             .then((user) => {
                 setUser(user);
                 setNftAvatar(user?.nftAvatar);
                 return user;
             });
+        
+        // Notify user.
+        setNotifyText(`Success! Price: ${e8sToICPstr(sellTokenResp?.ok?.price)} ICP`);
     }
 
 
@@ -104,36 +121,55 @@ const User = () => {
                 setNftAvatar(user?.nftAvatar);
                 return user;
             });
+        
+        // Notify user.
+        setNotifyText(`1 token is transfered to "${user?.username}"`);
     }
+
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+    
+        setNotifyText('');
+    };
   
     return (
-        <Grid container spacing={3} sx={{mt: 0}}>
-            <Grid item lg={2} md={2} sm={0}/>
-            <Grid item lg={8} md={8} sm={12}>
-                <UserCard userLoading={userLoading} username={username} user={user} nftAvatar={nftAvatar} />
-            </Grid>
-            <Grid item lg={2} md={2} sm={0}/>
+        <React.Fragment>
+            <Snackbar open={!!notifyText} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{vertical: 'top', horizontal: 'right'}}>
+                <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+                    {notifyText}
+                </Alert>
+            </Snackbar>
 
-            <Grid item lg={2} md={2} sm={0}/>
-            <Grid item lg={8} md={8} sm={12}>
-                <TokensPanel user={user} buyCallback={buyCallback} sellCallback={sellCallback} isLoading={userLoading} />
-            </Grid>
-            <Grid item lg={2} md={2} sm={0}/>
+            <Grid container spacing={3} sx={{mt: 0}}>
+                <Grid item lg={2} md={2} sm={0}/>
+                <Grid item lg={8} md={8} sm={12}>
+                    <UserCard userLoading={userLoading} username={username} user={user} nftAvatar={nftAvatar} />
+                </Grid>
+                <Grid item lg={2} md={2} sm={0}/>
 
-            <Grid item lg={2} md={2} sm={0}/>
-            <Grid item lg={8} md={8} sm={12}>
-                <WallPostForm submitPostCallback={submitPostCallback} hasTokens={userHasTokens} />
-            </Grid>
-            <Grid item lg={2} md={2} sm={0}/>
+                <Grid item lg={2} md={2} sm={0}/>
+                <Grid item lg={8} md={8} sm={12}>
+                    <TokensPanel user={user} buyCallback={buyCallback} sellCallback={sellCallback} isLoading={userLoading} hasTokens={userHasTokens} />
+                </Grid>
+                <Grid item lg={2} md={2} sm={0}/>
 
-            <Grid item lg={2} md={2} sm={0}/>
-            <Grid item lg={8} md={8} sm={12}>
-                <Box sx={{ display: 'flex' }}>
-                    <PostsList posts={posts} redirectOnWall />
-                </Box>
+                <Grid item lg={2} md={2} sm={0}/>
+                <Grid item lg={8} md={8} sm={12}>
+                    <WallPostForm submitPostCallback={submitPostCallback} hasTokens={userHasTokens} />
+                </Grid>
+                <Grid item lg={2} md={2} sm={0}/>
+
+                <Grid item lg={2} md={2} sm={0}/>
+                <Grid item lg={8} md={8} sm={12}>
+                    <Box sx={{ display: 'flex' }}>
+                        <PostsList posts={posts} redirectOnWall />
+                    </Box>
+                </Grid>
+                <Grid item lg={2} md={2} sm={0}/>
             </Grid>
-            <Grid item lg={2} md={2} sm={0}/>
-        </Grid>
+        </React.Fragment>
     )
 };
 
