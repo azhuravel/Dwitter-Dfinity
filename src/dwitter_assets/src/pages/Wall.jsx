@@ -201,7 +201,7 @@ const User = () => {
             <Grid container spacing={3} sx={{mt: 0}}>
                 <Grid item lg={2} md={2} sm={0}/>
                 <Grid item lg={8} md={8} sm={12}>
-                    <UserCard userLoading={userLoading} username={username} user={user} nftAvatar={nftAvatar} />
+                    <UserCard userLoading={userLoading} username={username} user={user} nftAvatar={nftAvatar} balance={balance} nftWealth={nftWealth} />
                 </Grid>
                 <Grid item lg={2} md={2} sm={0}/>
 
