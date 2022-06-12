@@ -7,6 +7,7 @@ import {POST_MAX_LENGTH} from "../../../constants";
 import { useForm, Controller } from 'react-hook-form';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Tooltip from '@mui/material/Tooltip';
+import Divider from '@mui/material/Divider';
 
 
 const WallPostForm = (props) => {
@@ -61,10 +62,10 @@ const WallPostForm = (props) => {
                 />
             </Box>
 
-            <Box sx={{ display: 'flex', flexDirection: 'row-reverse' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'row-reverse', mb: '10px' }}>
                 <Tooltip title="You have no tokens" placement="top" disableFocusListener={hasTokens} disableHoverListener={hasTokens} disableInteractive={hasTokens} disableTouchListener={hasTokens}>
                     <span>
-                        <LoadingButton type="submit" variant="contained" loading={submitting} disabled={!hasTokens}>Spend 1 token and send message</LoadingButton>
+                        <LoadingButton type="submit" variant="contained" loading={submitting} disabled={!hasTokens}>Send for 1 token</LoadingButton>
                     </span>
                 </Tooltip>
             </Box>

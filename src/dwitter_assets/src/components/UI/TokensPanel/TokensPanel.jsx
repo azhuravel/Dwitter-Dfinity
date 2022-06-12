@@ -43,35 +43,37 @@ const TokensPanel = (props) => {
 
     return (
         <React.Fragment>
-            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', mb: '40px' }}>
-                <Box sx={{ textAlign: 'center', fontSize: '0.875rem', fontWeight: '700'}}>
-                    <Typography variant="p" component="p">{ownedCount}</Typography>
-                    <Typography variant="p" component="p" sx={{color: '#aaa'}}>Your Tokens</Typography>
+            <Box sx={{ border: '2px solid #2196f3', borderRadius: '20px', padding: '20px' }}>
+                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', mb: '40px' }}>
+                    <Box sx={{ textAlign: 'center', fontSize: '0.875rem', fontWeight: '700'}}>
+                        <Typography variant="p" component="p">{ownedCount}</Typography>
+                        <Typography variant="p" component="p" sx={{color: '#aaa'}}>Your Tokens</Typography>
+                    </Box>
+                    <Box sx={{ textAlign: 'center', fontSize: '0.875rem', fontWeight: '700'}}>
+                        <Typography variant="p" component="p">{totalCount}</Typography>
+                        <Typography variant="p" component="p" sx={{color: '#aaa'}}>Tokens In Circulation</Typography>
+                    </Box>
+                    <Box sx={{ textAlign: 'center', fontSize: '0.875rem', fontWeight: '700'}}>
+                        <Typography variant="p" component="p">{totalLocked}</Typography>
+                        <Typography variant="p" component="p" sx={{color: '#aaa'}}>Total ICP Locked</Typography>
+                    </Box>
+                    <Box sx={{ textAlign: 'center', fontSize: '0.875rem', fontWeight: '700'}}>
+                        <Typography variant="p" component="p">{cap}</Typography>
+                        <Typography variant="p" component="p" sx={{color: '#aaa'}}>ICP Market Cap</Typography>
+                    </Box>
                 </Box>
-                <Box sx={{ textAlign: 'center', fontSize: '0.875rem', fontWeight: '700'}}>
-                    <Typography variant="p" component="p">{totalCount}</Typography>
-                    <Typography variant="p" component="p" sx={{color: '#aaa'}}>Tokens In Circulation</Typography>
-                </Box>
-                <Box sx={{ textAlign: 'center', fontSize: '0.875rem', fontWeight: '700'}}>
-                    <Typography variant="p" component="p">{totalLocked}</Typography>
-                    <Typography variant="p" component="p" sx={{color: '#aaa'}}>Total ICP Locked</Typography>
-                </Box>
-                <Box sx={{ textAlign: 'center', fontSize: '0.875rem', fontWeight: '700'}}>
-                    <Typography variant="p" component="p">{cap}</Typography>
-                    <Typography variant="p" component="p" sx={{color: '#aaa'}}>ICP Market Cap</Typography>
-                </Box>
-            </Box>
 
-            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', textAlign: 'center'}}>
-                <Box>
-                    <LoadingButton variant="contained" loading={isDisabled} onClick={buy(canisterPrincipal, accountIdentifier)} disabled={isDisabled}>Buy 1 token for {buyPrice} ICP</LoadingButton>
-                </Box>
-                <Box>
-                    <Tooltip title="You have no tokens" placement="top" disableFocusListener={hasTokens || isDisabled} disableHoverListener={hasTokens || isDisabled} disableInteractive={hasTokens || isDisabled} disableTouchListener={hasTokens || isDisabled}>
-                        <span>
-                            <LoadingButton variant="contained" loading={isDisabled} onClick={sell(canisterPrincipal)} disabled={!hasTokens || isDisabled}>Sell 1 token for {sellPrice} ICP</LoadingButton>
-                        </span>
-                    </Tooltip>
+                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', textAlign: 'center'}}>
+                    <Box>
+                        <LoadingButton variant="contained" loading={isDisabled} onClick={buy(canisterPrincipal, accountIdentifier)} disabled={isDisabled}>Buy 1 token for {buyPrice} ICP</LoadingButton>
+                    </Box>
+                    <Box>
+                        <Tooltip title="You have no tokens" placement="top" disableFocusListener={hasTokens || isDisabled} disableHoverListener={hasTokens || isDisabled} disableInteractive={hasTokens || isDisabled} disableTouchListener={hasTokens || isDisabled}>
+                            <span>
+                                <LoadingButton variant="contained" loading={isDisabled} onClick={sell(canisterPrincipal)} disabled={!hasTokens || isDisabled}>Sell 1 token for {sellPrice} ICP</LoadingButton>
+                            </span>
+                        </Tooltip>
+                    </Box>
                 </Box>
             </Box>
         </React.Fragment>

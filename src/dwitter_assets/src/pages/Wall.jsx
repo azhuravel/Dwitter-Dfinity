@@ -18,6 +18,7 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import MuiAlert from '@mui/material/Alert';
 import { e8sToICPstr } from '../utils/utils.js';
+import Divider from '@mui/material/Divider';
 
 
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -34,6 +35,11 @@ const User = () => {
     const [posts, setPosts] = useState([]);
     const userHasTokens = (user?.token?.ownedCount ?? 0) >= 0;
     const [notifyText, setNotifyText] = React.useState('');
+    const [nftsLoading, setNftsLoading] = useState(true); 
+    const [nfts, setNfts] = useState([]);
+    const isCurrentUserProfile = (username === ctx.currentUser.username);
+    const [balance, setBalance] = useState(null);
+    const [nftWealth, setNftWealth] = useState(null);
 
     // Load user profile info.
     useEffect(() => {
@@ -62,6 +68,56 @@ const User = () => {
 
         return () => cancelable.cancel();
     }, [username]);
+
+    // Load nfts of user.
+    useEffect(() => {
+        if (!user) {
+            return;
+        }
+
+        // const needToLoadNFTs = localStorage.getItem(`load_nfts.${user.username}`);
+        // if (!needToLoadNFTs) {
+        //     return;
+        // }
+
+        setNftsLoading(true);
+
+        const cancelable = makeCancelable(nftService.getDigestedNfts('a3lk7-mb2cz-b7akx-5ponv-b64xw-dkag4-zrt3g-rml4r-6wr7g-kg5ue-2ae'));
+        cancelable.promise
+            .then((nfts) => setNfts(nfts))
+            .then(() => setNftsLoading(false))
+            .catch((err) => {});
+
+        return () => cancelable.cancel();
+    }, [user]);
+
+    // Load balance of user.
+    useEffect(() => {
+        if (!user) {
+            return;
+        }
+
+        const cancelable = makeCancelable(wealthService.getBalance(user?.userPrincipal));
+        cancelable.promise
+            .then((balance) => setBalance(balance))
+            .catch((err) => {});
+
+        return () => cancelable.cancel();
+     }, [user]);
+ 
+     // Load NFT wealth of user.
+     useEffect(() => {
+        if (!user) {
+            return;
+        }
+
+        const cancelable = makeCancelable(wealthService.getNftWealth(user?.userPrincipal));
+        cancelable.promise
+            .then((nftWealth) => setNftWealth(nftWealth))
+            .catch((err) => {});
+
+        return () => cancelable.cancel();
+     }, [user]);
 
     const buyCallback = async (canisterPrincipal, accountIdentifier) => {
         const buyPrice = Number(user?.token?.buyPrice);
@@ -151,6 +207,12 @@ const User = () => {
 
                 <Grid item lg={2} md={2} sm={0}/>
                 <Grid item lg={8} md={8} sm={12}>
+                    <NftsSlider nftsOfCurrentUser={isCurrentUserProfile} nfts={nfts} isLoading={nftsLoading} />
+                </Grid>
+                <Grid item lg={2} md={2} sm={0}/>
+
+                <Grid item lg={2} md={2} sm={0}/>
+                <Grid item lg={8} md={8} sm={12}>
                     <TokensPanel user={user} buyCallback={buyCallback} sellCallback={sellCallback} isLoading={userLoading} hasTokens={userHasTokens} />
                 </Grid>
                 <Grid item lg={2} md={2} sm={0}/>
@@ -163,6 +225,8 @@ const User = () => {
 
                 <Grid item lg={2} md={2} sm={0}/>
                 <Grid item lg={8} md={8} sm={12}>
+                    <Divider />
+                    
                     <Box sx={{ display: 'flex' }}>
                         <PostsList posts={posts} redirectOnWall />
                     </Box>

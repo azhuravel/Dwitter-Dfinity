@@ -4,7 +4,7 @@ class MockedApiService {
     setDwitterActor(dwitterActor) {}
 
     async getCurrentUser() {
-        await delay(2);
+        await delay(200);
         return {
             bio: [],
             canisterPrincipal: "rno2w-sqaaa-aaaaa-aaacq-cai",
@@ -24,7 +24,7 @@ class MockedApiService {
     }
 
     async getUserByUsername(username) {
-        await delay(2);
+        await delay(2000);
         return {
             bio: [],
             canisterPrincipal: "rno2w-sqaaa-aaaaa-aaacq-cai",
