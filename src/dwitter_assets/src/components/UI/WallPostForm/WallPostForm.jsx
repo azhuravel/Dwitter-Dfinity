@@ -3,12 +3,11 @@ import Box from '@mui/material/Box';
 import { AppContext } from '../../../context/index.js';
 import {TextField} from '@mui/material';
 import DwitterAvatar from "../DwitterAvatar/DwitterAvatar";
+import {POST_MAX_LENGTH} from "../../../constants";
 import { useForm, Controller } from 'react-hook-form';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Tooltip from '@mui/material/Tooltip';
 
-
-const POST_MAX_LENGTH = 140;
 
 const WallPostForm = (props) => {
     const {submitPostCallback, hasTokens} = props;

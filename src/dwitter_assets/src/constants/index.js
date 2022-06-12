@@ -9,3 +9,5 @@ export const plugWhitelist = [
     process.env.DWITTER_CANISTER_ID, 
     process.env.DWITTER_ASSETS_CANISTER_ID,
 ];
+
+export const POST_MAX_LENGTH = 140;
