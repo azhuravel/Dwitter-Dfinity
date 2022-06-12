@@ -55,6 +55,7 @@ module {
 
   public type UserInfo = {
     canisterPrincipal : Text; // plug transfer TO (for celebrity)
+    accountIdentifier : Text;
     nftAvatar : ?NftId;
     createdTime : Int;
     username : Text;
@@ -94,5 +95,10 @@ module {
     displayname : Text;
     nftAvatar : ?NftId;
     bio : ?Text;
+  };
+
+  public type CanisterInfo = {
+    version : Nat;
+    cyclesBalance : Nat;
   };
 };

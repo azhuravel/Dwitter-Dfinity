@@ -3,33 +3,59 @@ import Buffer "mo:base/Buffer";
 import Map "mo:base/HashMap";
 import Nat "mo:base/Nat";
 import Nat64 "mo:base/Nat64";
+import Nat8 "mo:base/Nat8";
 import Hash "mo:base/Hash";
 import Principal "mo:base/Principal";
 import Option "mo:base/Option";
 import Stack "mo:base/Stack";
+import Blob "mo:base/Blob";
+import Iter "mo:base/Iter";
 
 import Cycles "mo:base/ExperimentalCycles";
 import Ledger "ledger";
 import Utils "utils";
 
-shared(msg) actor class UserCanister(_user : Types.User) = this {
+shared(msg) actor class UserCanister() = this {
     type User = Types.User;
     type UserId = Types.UserId;
     type UserInfo = Types.UserInfo;
     type Post = Types.Post;
     type TokenResponse = Types.TokenResponse;
     type UserTokenInfo = Types.UserTokenInfo;
+    type CanisterInfo = Types.CanisterInfo;
 
     type Operation = Ledger.Operation;
     type AccountIdentifier = Ledger.AccountIdentifier;
     type ICP = Ledger.ICP;
 
+    let ANONYM_PRINCIPAL = Principal.fromText("2vxsx-fae");
+
+    let EMPTY_USER : User = {
+        id = ANONYM_PRINCIPAL;
+        nftAvatar = null;
+        createdTime = 0;
+        username = "DELETED";
+        displayname = "DELETED";
+        bio = null;
+    };
+
+    // equal to initial count of cycles
+    let MAX_CYCLES = 100_000_000_000;
+
     // init by constructor
-    stable var user = _user;
     stable let owner = msg.caller;
+
+    stable var user = EMPTY_USER;
+    stable var version = 1;
 
     // ledger
     let ledger : Ledger.Interface = actor(Ledger.CANISTER_ID);
+
+    // canister upgrade storage
+    stable var serializedPosts : [Post] = [];
+    stable var serializedTransactions : [(Nat64, UserId)] = [];
+    stable var serializedTokensOwners : [(UserId, Nat64)] = [];
+    stable var serializedTokensPrices : [Nat64] = [];
 
     // extendable list of user posts
     let posts = Buffer.Buffer<Post>(0);
@@ -38,9 +64,14 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
     let postById = Map.HashMap<Nat, Nat>(1, Nat.equal, Hash.hash);
 
     // tokens
-    let transactions = Map.HashMap<Nat64, UserId>(1, Nat64.equal, Utils.hashNat64);
-    let tokensOwners = Map.HashMap<UserId, Nat64>(1, Principal.equal, Principal.hash);
-    let tokensPrices = Stack.Stack<Nat64>();
+    //let transactions = Map.HashMap<Nat64, UserId>(1, Nat64.equal, Utils.hashNat64);
+    //let tokensOwners = Map.HashMap<UserId, Nat64>(1, Principal.equal, Principal.hash);
+
+    let transactions = Map.fromIter<Nat64, UserId>(serializedTransactions.vals(), 10, Nat64.equal, Utils.hashNat64);
+    let tokensOwners = Map.fromIter<UserId, Nat64>(serializedTokensOwners.vals(), 10, Principal.equal, Principal.hash);
+
+    let tokensPrices = Buffer.Buffer<Nat64>(0);
+
     stable var tokensCount : Nat64 = 0; // tokensPrice.size in nutshell
     stable var totalLocked : Nat64 = 0; // sum of tokensPrices
 
@@ -74,6 +105,10 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
         return user;
     };
 
+    public shared(msg) func setUser(_user : User) : async () {
+        user := _user
+    };
+
     public func getUserInfo(caller : Principal) : async ?UserInfo {
         let ownedTotalCount = nullToZero(tokensOwners.get(caller));
 
@@ -90,7 +125,9 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
         let thisCanisterPrincipal = Principal.toText( Principal.fromActor(this) );
 
         let userInfo : UserInfo = {
+            userPrincipal = user.id;
             canisterPrincipal = thisCanisterPrincipal;
+            accountIdentifier = getAccountIdentifier();
             nftAvatar = user.nftAvatar;
             createdTime = user.createdTime;
             username = user.username;
@@ -117,21 +154,23 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
         postById.put(post.id, bufferIndex);
     };
 
-    public func storePostAndSpendToken(authorPrincipal : Principal, post : Post) : async() {
-        let selfPost = authorPrincipal == user.id;
+    public func storePostAndSpendToken(author : Principal, post : Post) : async() {
+        let wallOwner = user.id;
+        let selfPost = author == wallOwner;
 
         if (not selfPost) {
-            let tokenResponse = await burnToken(authorPrincipal);
-
-            switch (tokenResponse) {
-                case (#err({text : Text})) {
-                    // TODO : return error
-                    return; // no post :(
-                };
-                case (_) {
-                    // nothing, it's ok.. go to post
-                };
-            };
+            // let tokenResponse = await burnToken(author);
+            
+            // switch (tokenResponse) {
+            //     case (#err({text : Text})) {
+            //         // TODO : return error
+            //         return; // no post :(
+            //     };
+            //     case (_) {
+            //         // nothing, it's ok.. go to post
+            //     };
+            // };
+            transferToken(author, wallOwner, 1); // transfer from post author to wall owner
         };
 
         // add post in the storage
@@ -186,7 +225,7 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
         // 3.3 tokens count & price
         tokensCount := tokensCount + 1;
         totalLocked := totalLocked + price;
-        tokensPrices.push(price);
+        tokensPrices.add(price);
 
         // 3.4 next tokens price
         nextTokenPrice := await buyPrice();
@@ -212,7 +251,15 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
         return tokenResponse;
     };
 
-    public func getAccountIdentifier() : async Text {
+    public shared query (msg) func getCanisterInfo() : async CanisterInfo {
+        let info : CanisterInfo = {
+            version = version;
+            cyclesBalance = Cycles.balance();
+        };
+        return info;
+    };
+
+    private func getAccountIdentifier() : Text {
         let thisCanisterPrincipal = Principal.fromActor(this);
         let identifier = Utils.principalToAccount(thisCanisterPrincipal);
         return Utils.accountToText(identifier);
@@ -221,16 +268,16 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
     private func sendICP(destinationPrincipal : Principal, amount : Nat64) : async TokenResponse {
         let fee = Nat64.fromNat(10_000);
         let price = amount - fee;
-        let wallet = Utils.principalToAccount(user.id);
-        ignore await ledger.transfer({
-            memo = Nat64.fromNat(0);
+        let wallet = Utils.principalToAccount(destinationPrincipal);
+        let block = await ledger.send_dfx({
+            memo = 1;
             amount = {
                 e8s = price
             };
             fee = {
-                e8s = Nat64.fromNat(10_000);
+                e8s = 10_000;
             };
-            to = wallet;
+            to = Utils.accountToText(wallet);
             from_subaccount = null;
             created_at_time = null;
         });
@@ -244,7 +291,7 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
             return #err { text = "Not enough tokens to sell"; };
         };
 
-        let sellPrice = tokensPrices.pop();
+        let sellPrice = tokensPrices.removeLast();
 
         switch (sellPrice) {
             case (null) {
@@ -256,12 +303,22 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
                 tokensCount := tokensCount - 1;
                 totalLocked := totalLocked - sellPrice;
 
-                lastTokenPrice := nullToZero(tokensPrices.peek());
+                lastTokenPrice := tokensPrices.get(tokensPrices.size() - 1);
                 nextTokenPrice := await buyPrice();
 
                 return #ok { price = sellPrice; };
             };
         }
+    };
+
+    private func transferToken(from : UserId, to : UserId, count : Nat64) {
+        let tokensFrom = nullToZero( tokensOwners.get(from) );
+        let tokensTo = nullToZero( tokensOwners.get(to) );
+
+        assert tokensFrom >= count;
+
+        tokensOwners.put(from, tokensFrom - count);
+        tokensOwners.put(to, tokensTo + count);
     };
 
     private func buyPrice() : async Nat64 {
@@ -270,7 +327,7 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
         // });
 
         let balance = {
-            e8s = Nat64.fromNat(10_000_000);
+            e8s = Nat64.fromNat(10_001);
         };
 
         // formula for buy price
@@ -304,11 +361,12 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
     };
 
     /* Canister update logic */
-
-    stable var serializedPosts : [Post] = [];
-
+    
     system func preupgrade() {
         serializedPosts := posts.toArray();
+        serializedTransactions := Iter.toArray(transactions.entries());
+        serializedTokensPrices := tokensPrices.toArray();
+        serializedTokensOwners := Iter.toArray(tokensOwners.entries());
     };
 
     system func postupgrade() {
@@ -316,7 +374,14 @@ shared(msg) actor class UserCanister(_user : Types.User) = this {
             storePost(post);
         };
 
+        for (price in serializedTokensPrices.vals()) {
+            tokensPrices.add(price);
+        }; 
+
         serializedPosts := [];
+        serializedTransactions := [];
+        serializedTokensOwners := [];
+        serializedTokensPrices := [];
     };
 
     /* Utility func */

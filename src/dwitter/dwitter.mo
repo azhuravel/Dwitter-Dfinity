@@ -16,7 +16,7 @@ shared ({ caller = dwitterOwner }) actor class Dwitter() = this {
      * Services
      */
 
-    let userCanisterService: UserCanisterModule.UserCanisterService  = UserCanisterModule.UserCanisterService(dwitterOwner);
+    let userCanisterService: UserCanisterModule.UserCanisterService = UserCanisterModule.UserCanisterService(dwitterOwner);
 
     let postService: PostModule.PostService = PostModule.PostService(userCanisterService);
     let userService: UserModule.UserService = UserModule.UserService(userCanisterService);
@@ -55,10 +55,18 @@ shared ({ caller = dwitterOwner }) actor class Dwitter() = this {
     };
 
     public shared(msg) func createUser(request : CreateUserRequest): async User {
+        // unkown while initialization
+        // more here: https://forum.dfinity.org/t/motoko-cannot-access-this-anymore/9427
+        userCanisterService.setDwitterCanister(Principal.fromActor(this));
+
         await userService.create(msg.caller, request);
     };
 
     public shared(msg) func createUserCanister(request : CreateUserRequest): async Text {
+        // unkown while initialization
+        // more here: https://forum.dfinity.org/t/motoko-cannot-access-this-anymore/9427
+        userCanisterService.setDwitterCanister(Principal.fromActor(this));
+
         await userService.createCanister(msg.caller, request);
     };
 
@@ -89,6 +97,19 @@ shared ({ caller = dwitterOwner }) actor class Dwitter() = this {
 
     public func getUserPosts(username : Text): async ?[PostInfo] {
         await postService.getByUsername(username)
+    };
+
+    /**
+     * Upgrade user canisters
+     */
+    public shared(msg) func upgradeCanister(version : Nat, wasm : Blob) {
+        assert (msg.caller == dwitterOwner);
+        userCanisterService.setUpgradeWASM(
+            {
+                version = version;
+                wasm = wasm;
+            }
+        );
     };
 
     /*

@@ -20,7 +20,10 @@ module {
             let userCanister = userCanisterService.getByUserId(userId);
             switch (userCanister) {
                 case (null) { return null };
-                case (?userCanister) { return await userCanister.getUserInfo(caller) };
+                case (?userCanister) { 
+                    await userCanisterService.upgradeAndTopUp(userCanister);
+                    return await userCanister.getUserInfo(caller);
+                };
             }
         };
 
@@ -28,7 +31,10 @@ module {
             let userCanister = userCanisterService.getByUsername(username);
             switch (userCanister) {
                 case (null) { return null };
-                case (?userCanister) { return await userCanister.getUserInfo(caller) };
+                case (?userCanister) { 
+                    await userCanisterService.upgradeAndTopUp(userCanister);
+                    return await userCanister.getUserInfo(caller);
+                };
             }
         };
 

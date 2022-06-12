@@ -33,18 +33,25 @@ module {
 
         public func createPost(userId : UserId, request : CreatePostRequest) : async ?PostInfo {
             //let post = postsStorage.savePost(userId, request);
-            let post = createRequestToPost(userId, request);
+            do ? {
+                let post = createRequestToPost(userId, request);
 
-            let userCanister = userCanisterService.getByUserId(userId);
-            switch (userCanister) {
-                case (null) {
-                    return null;
-                 }; // nothing, throw an exception
-                case (?userCanister) { 
-                    await userCanister.savePost(post); 
-                    return ?getPostInfo(await userCanister.getUser(), post);
-                };
-            };
+                let authorCanister = userCanisterService.getByUserId(userId);
+                let wallUserCanister = userCanisterService.getByUserId(userId);
+
+                await wallUserCanister!.savePost(post);
+
+                return ?getPostInfo(await authorCanister!.getUser(), post);
+                // switch (userCanister) {
+                //     case (null) {
+                //         return null;
+                //     }; // nothing, throw an exception
+                //     case (?userCanister) { 
+                //         await userCanister.savePost(post); 
+                //         return ?getPostInfo(await userCanister.getUser(), post);
+                //     };
+                // };
+            }
         };
 
         public func createPostAndSpendToken(userId : UserId, request : CreatePostAndSpendTokenRequest) : async ?PostInfo {
@@ -115,14 +122,6 @@ module {
                 })
             }
         };
-
-        // public func toArray() : [Post] {
-        //     postsStorage.toArray()
-        // };
-
-        // public func fromArray(array : [Post]) {
-        //     postsStorage.fromArray(array)
-        // };
 
         private func getPostInfo(author : User, post : Post) : PostInfo {
             let postInfo : PostInfo = {
