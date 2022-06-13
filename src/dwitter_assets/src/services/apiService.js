@@ -157,8 +157,7 @@ class ApiService {
             bio = [bio];
         }
 
-        await this.dwitterActor.updateUser({
-            username, 
+        await this.dwitterActor.updateUser({ 
             displayname, 
             bio: bio,
             nftAvatar: nftAvatar,

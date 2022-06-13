@@ -59,7 +59,7 @@ class NftService {
                             nftId : {
                                 standard : collection.standard,
                                 canisterId : collection.canisterId,
-                                index: Number(token.index),
+                                index: token.index.toString(),
                             }
                         });
                     });
