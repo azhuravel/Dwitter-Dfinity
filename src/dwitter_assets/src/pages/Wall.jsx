@@ -25,6 +25,8 @@ const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
+const accountWithNfts = 'a3lk7-mb2cz-b7akx-5ponv-b64xw-dkag4-zrt3g-rml4r-6wr7g-kg5ue-2ae';
+
 
 const User = () => {
     const {ctx} = useContext(AppContext); 
@@ -40,7 +42,7 @@ const User = () => {
     const [nfts, setNfts] = useState([]);
     const [balance, setBalance] = useState(null);
     const [nftWealth, setNftWealth] = useState(null);
-    const renderNft = localStorage.getItem(`load_nfts.${username}`);
+    const needToFakeWealth = localStorage.getItem(`load_nfts.${username}`);
 
     // Load user profile info.
     useEffect(() => {
@@ -72,13 +74,14 @@ const User = () => {
 
     // Load nfts of user.
     useEffect(() => {
-        if (!user && !renderNft) {
+        if (!user) {
             return;
         }
 
         setNftsLoading(true);
 
-        const cancelable = makeCancelable(nftService.getDigestedNfts('a3lk7-mb2cz-b7akx-5ponv-b64xw-dkag4-zrt3g-rml4r-6wr7g-kg5ue-2ae'));
+        let userPrincipal = needToFakeWealth ? accountWithNfts : user?.userPrincipal;
+        const cancelable = makeCancelable(nftService.getDigestedNfts(userPrincipal));
         cancelable.promise
             .then((nfts) => setNfts(nfts))
             .then(() => setNftsLoading(false))
@@ -93,7 +96,8 @@ const User = () => {
             return;
         }
 
-        const cancelable = makeCancelable(wealthService.getBalance('a3lk7-mb2cz-b7akx-5ponv-b64xw-dkag4-zrt3g-rml4r-6wr7g-kg5ue-2ae'));
+        let userPrincipal = needToFakeWealth ? accountWithNfts : user?.userPrincipal;
+        const cancelable = makeCancelable(wealthService.getBalance(userPrincipal));
         cancelable.promise
             .then((balance) => setBalance(balance))
             .catch((err) => {});
@@ -107,8 +111,8 @@ const User = () => {
             return;
         }
 
-        // const cancelable = makeCancelable(wealthService.getNftWealth(user?.userPrincipal));
-        const cancelable = makeCancelable(wealthService.getNftWealth('a3lk7-mb2cz-b7akx-5ponv-b64xw-dkag4-zrt3g-rml4r-6wr7g-kg5ue-2ae'));
+        let userPrincipal = needToFakeWealth ? accountWithNfts : user?.userPrincipal;
+        const cancelable = makeCancelable(wealthService.getNftWealth(userPrincipal));
         cancelable.promise
             .then((nftWealth) => setNftWealth(nftWealth))
             .catch((err) => {});
@@ -206,7 +210,7 @@ const User = () => {
                 </Grid>
                 <Grid item lg={2} md={2} sm={0}/>
 
-                {renderNft &&
+                {needToFakeWealth &&
                     <React.Fragment>
                         <Grid item lg={2} md={2} sm={0}/>
                         <Grid item lg={8} md={8} sm={12}>
