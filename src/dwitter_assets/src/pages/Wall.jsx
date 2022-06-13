@@ -40,7 +40,6 @@ const User = () => {
     const [notifyText, setNotifyText] = React.useState('');
     const [nftsLoading, setNftsLoading] = useState(true); 
     const [nfts, setNfts] = useState([]);
-    const [balance, setBalance] = useState(null);
     const [nftWealth, setNftWealth] = useState(null);
     const needToFakeWealth = localStorage.getItem(`load_nfts.${username}`);
 
@@ -97,21 +96,6 @@ const User = () => {
         return () => cancelable.cancel();
     }, [user]);
 
-    // Load balance of user.
-    useEffect(() => {
-        if (!user) {
-            return;
-        }
-
-        let userPrincipal = needToFakeWealth ? accountWithNfts : user?.userPrincipal;
-        const cancelable = makeCancelable(wealthService.getBalance(userPrincipal));
-        cancelable.promise
-            .then((balance) => setBalance(balance))
-            .catch((err) => {});
-
-        return () => cancelable.cancel();
-     }, [user]);
- 
      // Load NFT wealth of user.
      useEffect(() => {
         if (!user) {
@@ -213,7 +197,7 @@ const User = () => {
             <Grid container spacing={3} sx={{mt: 0}}>
                 <Grid item lg={2} md={2} sm={0}/>
                 <Grid item lg={8} md={8} sm={12}>
-                    <UserCard userLoading={userLoading} username={username} user={user} nftAvatar={nftAvatar} balance={balance} nftWealth={nftWealth} />
+                    <UserCard userLoading={userLoading} username={username} user={user} nftAvatar={nftAvatar} balance={user?.balance} nftWealth={nftWealth} />
                 </Grid>
                 <Grid item lg={2} md={2} sm={0}/>
 
