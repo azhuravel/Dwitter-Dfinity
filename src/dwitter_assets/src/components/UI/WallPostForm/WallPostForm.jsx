@@ -52,7 +52,7 @@ const WallPostForm = (props) => {
                             error={!!error}
                             fullWidth
                             helperText={error ? error.message : null}
-                            disabled={submitting || !hasTokens}
+                            disabled={submitting || (!hasTokens && !currentUserIsWallOwner)}
                         />
                     )}
                     rules={{
