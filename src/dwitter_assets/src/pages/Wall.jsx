@@ -72,7 +72,7 @@ const User = () => {
 
     // Load nfts of user.
     useEffect(() => {
-        if (!user) {
+        if (!user && !renderNft) {
             return;
         }
 
@@ -107,7 +107,7 @@ const User = () => {
             return;
         }
 
-        const cancelable = makeCancelable(wealthService.getNftWealth(user?.userPrincipal));
+        // const cancelable = makeCancelable(wealthService.getNftWealth(user?.userPrincipal));
         const cancelable = makeCancelable(wealthService.getNftWealth('a3lk7-mb2cz-b7akx-5ponv-b64xw-dkag4-zrt3g-rml4r-6wr7g-kg5ue-2ae'));
         cancelable.promise
             .then((nftWealth) => setNftWealth(nftWealth))
