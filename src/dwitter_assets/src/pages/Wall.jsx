@@ -46,6 +46,13 @@ const User = () => {
 
     // Load user profile info.
     useEffect(() => {
+        if (isCurrentUserProfile) {
+            const user = ctx.currentUser;
+            setUser(user);
+            setNftAvatar(user?.nftAvatar);
+            return;
+        }
+
         setUserLoading(true);
         const cancelable = makeCancelable(ctx.apiService.getUserByUsername(username));
 

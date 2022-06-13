@@ -35,6 +35,10 @@ const makeUserActor = async (canisterPrincipal) => {
     return userActor;
 }
 
+const logger = (str, ...args) => {
+    console.log(+(new Date()) + ': ' + str, ...args);
+}
+
 
 class ApiService {
     setDwitterActor(dwitterActor) {
@@ -42,29 +46,32 @@ class ApiService {
     }
 
     async getCurrentUser() {
+        logger('START apiService.getCurrentUser()');
         if (!this.dwitterActor) {
             return null;
         }
 
         const resp = await this.dwitterActor.getCurrentUser();
         const user = resp?.[0] ?? null;
-        console.log('apiService.getCurrentUser()', user);
+        console.log(+new Date() + 'END apiService.getCurrentUser()', user);
         return user;
     }
 
     async getUserByUsername(username) {
+        logger('START apiService.getUserByUsername()', username);
         if (!this.dwitterActor) {
             return null;
         }
         
         const resp = await this.dwitterActor.getUserByUsername(username);
         const user = resp?.[0] ?? null;
-        console.log('apiService.getUserByUsername()', username, user);
+        logger('END apiService.getUserByUsername()', username, user);
 
         return user;
     }
 
     async signUpUser(username, displayname) {
+        logger('START apiService.signUpUser()', username, displayname);
         if (!this.dwitterActor) {
             return null;
         }
@@ -83,41 +90,45 @@ class ApiService {
         resp = await this.dwitterActor.getUserByUsername(username);
         const user = resp?.[0] ?? null;
 
-        console.log('apiService.signUpUser()', username, displayname, canisterPrincipal, user);
+        logger('END apiService.signUpUser()', username, displayname, canisterPrincipal, user);
         return user;
     }
 
     async getUserPosts(username) {
+        logger('START apiService.getUserPosts()', username);
         if (!this.dwitterActor) {
             return [];
         }
 
         const resp = await this.dwitterActor.getUserPosts(username);
         const posts = resp?.[0] ?? [];
-        console.log('apiService.getUserPosts()', username, posts);
+        logger('END apiService.getUserPosts()', username, posts);
         return posts;
     }
 
     async createPost(text, nft, kind) {
+        logger('START apiService.createPost()', text, nft, kind);
         if (!this.dwitterActor) {
             return [];
         }
 
         const resp = await this.dwitterActor.createPost({text, nft, kind});
         const post = resp?.[0] ?? null;
-        console.log('apiService.createPost()', text, nft, kind, post);
+        logger('END apiService.createPost()', text, nft, kind, post);
         return post;
     }
     
     async createUser(username, displayname) {
+        logger('START apiService.createUser()', username, displayname);
         const resp = await this.dwitterActor.createUser({username, displayname});
-        console.log('apiService.createUser()', username, displayname, resp);
+        logger('END apiService.createUser()', username, displayname, resp);
     }
 
     async buyToken(canisterPrincipal, blockIndex) {      
+        logger('START apiService.buyToken()', blockIndex);
         const userActor = await makeUserActor(canisterPrincipal);
         const resp = await userActor.recieveToken(blockIndex);
-        console.log('apiService.buyToken()', blockIndex, resp);
+        logger('END apiService.buyToken()', blockIndex, resp);
         return resp;
     }
 
@@ -127,13 +138,15 @@ class ApiService {
     }
 
     async sellToken(canisterPrincipal) {      
+        logger('START apiService.sellToken()');
         const userActor = await makeUserActor(canisterPrincipal);
         const resp = await userActor.sellToken();
-        console.log('apiService.sellToken()', resp);
+        logger('END apiService.sellToken()', resp);
         return resp;
     }
 
     async updateUser(username, displayname, bio, nftAvatar) {
+        logger('START apiService.updateUser()', username, displayname, bio, nftAvatar);
         if (!this.dwitterActor) {
             return null;
         }
@@ -153,18 +166,19 @@ class ApiService {
         
         const resp = await this.dwitterActor.getUserByUsername(username);
         const user = resp?.[0] ?? null;
-        console.log('apiService.updateUser()', username, displayname, bio, nftAvatar, resp);
+        logger('END apiService.updateUser()', username, displayname, bio, nftAvatar, resp);
         return user;
     }
 
     async createPostOnWall(targetUserPrincipal, text, nft, kind) {
+        logger('START apiService.createPostOnWall()', text, nft, kind);
         if (!this.dwitterActor) {
             return [];
         }
 
         const resp = await this.dwitterActor.createPostAndSpendToken({targetUserPrincipal, text, nft, kind});
         const post = resp?.[0] ?? null;
-        console.log('apiService.createPostOnWall()', text, nft, kind, post);
+        logger('END apiService.createPostOnWall()', text, nft, kind, post);
         return post;
     }
 }
