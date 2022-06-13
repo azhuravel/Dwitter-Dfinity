@@ -128,7 +128,7 @@ class WealthService {
                 console.error(e, e.stack);
             }
         }
-        return wealth;
+        return (Number(wealth)).toFixed(2);
     }
 
     getStats(nftActor) { // copy paste from Enterpot
