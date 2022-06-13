@@ -30,7 +30,7 @@ const accountWithNfts = 'a3lk7-mb2cz-b7akx-5ponv-b64xw-dkag4-zrt3g-rml4r-6wr7g-k
 
 const User = () => {
     const {ctx} = useContext(AppContext); 
-    const [userLoading, setUserLoading] = useState(true); 
+    const [userLoading, setUserLoading] = useState(false); 
     const [user, setUser] = useState(null);
     const [nftAvatar, setNftAvatar] = useState(null);
     const {username} = useParams();

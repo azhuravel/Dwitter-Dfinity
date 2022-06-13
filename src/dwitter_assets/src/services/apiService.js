@@ -53,7 +53,7 @@ class ApiService {
 
         const resp = await this.dwitterActor.getCurrentUser();
         const user = resp?.[0] ?? null;
-        console.log(+new Date() + 'END apiService.getCurrentUser()', user);
+        logger('END apiService.getCurrentUser()', user);
         return user;
     }
 
