@@ -62,6 +62,7 @@ module {
     displayname : Text;
     bio : ?Text;
     token : UserTokenInfo;
+    balance : Nat64;
   };
 
   public type UserTokenInfo = {

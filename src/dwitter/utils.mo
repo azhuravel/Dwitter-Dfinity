@@ -40,17 +40,20 @@ module {
         return Char.toText(c1) # Char.toText(c2);
     };
 
-    /// Return the account identifier of the Principal.
-    public func principalToAccount(p : Principal) : AccountIdentifier {
+    public func principalToArray(p : Principal) : [Nat8] {
         let digest = SHA224.Digest();
         digest.write([10, 97, 99, 99, 111, 117, 110, 116, 45, 105, 100]:[Nat8]); // b"\x0Aaccount-id"
         let blob = Principal.toBlob(p);
         digest.write(Blob.toArray(blob));
         digest.write(Array.freeze<Nat8>(Array.init<Nat8>(32, 0 : Nat8))); // sub account
         let hash_bytes = digest.sum();
-        let accountIdentifier = Blob.fromArray(hash_bytes);
+        return hash_bytes;
+    };
 
-        return accountIdentifier;
+    /// Return the account identifier of the Principal.
+    public func principalToAccount(p : Principal) : AccountIdentifier {
+        let array = principalToArray(p);
+        return Blob.fromArray(array);
     };
 
      /// Return the Text of the account identifier.

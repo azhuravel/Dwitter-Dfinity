@@ -70,11 +70,6 @@ module {
         first_block_index : BlockIndex;
     };
 
-    // Arguments for the `account_balance` call.
-    public type AccountBalanceArgs = {
-        account : AccountIdentifier;
-    };
-
     public type AccountBalanceDfxArgs = {
         account : Text;
     };

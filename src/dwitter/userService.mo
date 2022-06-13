@@ -21,7 +21,7 @@ module {
             switch (userCanister) {
                 case (null) { return null };
                 case (?userCanister) { 
-                    await userCanisterService.upgradeAndTopUp(userCanister);
+                    //ignore await userCanisterService.upgradeAndTopUp(userCanister);
                     return await userCanister.getUserInfo(caller);
                 };
             }
@@ -32,7 +32,7 @@ module {
             switch (userCanister) {
                 case (null) { return null };
                 case (?userCanister) { 
-                    await userCanisterService.upgradeAndTopUp(userCanister);
+                    //ignore await userCanisterService.upgradeAndTopUp(userCanister);
                     return await userCanister.getUserInfo(caller);
                 };
             }

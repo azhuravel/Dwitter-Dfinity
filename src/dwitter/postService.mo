@@ -81,13 +81,13 @@ module {
                 };
                 case (?userCanister) {
                     let posts = await userCanister.getPosts();
-                    let postInfos = await reverseAndFetchPostInfos(await userCanister.getUser(), posts);
+                    let postInfos = await reverseAndFetchPostInfos(posts);
                     return postInfos;
                 };
             }
         };
 
-        private func reverseAndFetchPostInfos(author : User, posts: [Post]) : async ?[PostInfo]  {
+        private func reverseAndFetchPostInfos(posts: [Post]) : async ?[PostInfo]  {
             do ? {
                 let authors = Map.HashMap<UserId, User>(1, Principal.equal, Principal.hash);
                 for (post in posts.vals()) {

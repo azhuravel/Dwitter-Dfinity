@@ -42,6 +42,9 @@ shared(msg) actor class UserCanister() = this {
     // equal to initial count of cycles
     let MAX_CYCLES = 100_000_000_000;
 
+    let ICP_CENT : Nat64 = 1_000_000;
+    let ICP : Nat64 = ICP_CENT * 100;
+
     // init by constructor
     stable let owner = msg.caller;
 
@@ -81,6 +84,8 @@ shared(msg) actor class UserCanister() = this {
     stable var lastTokenPrice : Nat64 = 0;
     stable var nextTokenPrice : Nat64 = 1;
 
+    stable var userBalance : Nat64 = 0;
+
     // tokens transactions
     // blockIndex -> pay amount for the token
     //let transactions = Map.HashMap<BlockIndex, int64>();
@@ -109,14 +114,17 @@ shared(msg) actor class UserCanister() = this {
     };
 
     public shared(msg) func setUser(_user : User) : async () {
-        user := _user
+        user := _user;
+
+        // TODO: optimization for page load speed, need to refresh later
+        await _updateBalance();
     };
 
-    public func getUserInfo(caller : Principal) : async ?UserInfo {
+    public query func getUserInfo(caller : Principal) : async ?UserInfo {
         let ownedTotalCount = nullToZero(tokensOwners.get(caller));
 
         let tokenInfo : UserTokenInfo = {
-            buyPrice = await buyPrice();
+            buyPrice = buyPrice();
             sellPrice = lastTokenPrice;
             cap = tokensCount * lastTokenPrice;
             totalCount = tokensCount;
@@ -136,6 +144,7 @@ shared(msg) actor class UserCanister() = this {
             username = user.username;
             displayname = user.displayname;
             bio = user.bio;
+            balance = userBalance;
             
             token = tokenInfo;
         };
@@ -194,7 +203,7 @@ shared(msg) actor class UserCanister() = this {
         };
 
         // 2. calculate current buy price
-        let price = await buyPrice();
+        let price = buyPrice();
 
         // 2. get payment amount
         let operation = await getOperationByBlock(blockIndex);
@@ -231,7 +240,7 @@ shared(msg) actor class UserCanister() = this {
         tokensPrices.add(price);
 
         // 3.4 next tokens price
-        nextTokenPrice := await buyPrice();
+        nextTokenPrice := buyPrice();
         lastTokenPrice := price;
 
         // 4. return the success
@@ -260,6 +269,18 @@ shared(msg) actor class UserCanister() = this {
             cyclesBalance = Cycles.balance();
         };
         return info;
+    };
+
+    public shared (msg) func updateBalance() : async() {
+        await _updateBalance();
+    };
+
+    private func _updateBalance() : async() {
+        // TODO: optimization for page load speed, need to refresh later
+        let balance = await ledger.account_balance_dfx({
+            account = Utils.accountToText(Utils.principalToAccount(user.id));
+        });
+        userBalance := balance.e8s;
     };
 
     private func getAccountIdentifier() : Text {
@@ -307,7 +328,7 @@ shared(msg) actor class UserCanister() = this {
                 totalLocked := totalLocked - sellPrice;
 
                 lastTokenPrice := tokensPrices.get(tokensPrices.size() - 1);
-                nextTokenPrice := await buyPrice();
+                nextTokenPrice := buyPrice();
 
                 return #ok { price = sellPrice; };
             };
@@ -324,18 +345,31 @@ shared(msg) actor class UserCanister() = this {
         tokensOwners.put(to, tokensTo + count);
     };
 
-    private func buyPrice() : async Nat64 {
-        // let balance = await ledger.account_balance({
-        //     account = Utils.principalToAccount(user.id);
-        // });
+    private func buyPrice() : Nat64 {
+        var tokensSquared = (tokensCount+1)**(2);
 
-        let balance = {
-            e8s = Nat64.fromNat(10_001);
+        if (userBalance < 20 * ICP) {
+            return ICP_CENT * tokensSquared;
         };
 
-        // formula for buy price
-        //let k = (balance.e8s + 1) * 10_000_000;
-        return (tokensCount+1) * balance.e8s;
+        return ICP_CENT * tokensSquared * log10(userBalance); 
+    };
+
+    private func log10(x : Nat64) : Nat64 {
+        let _log2 = log2(x);
+        return _log2 / 3;
+    };
+
+    private func log2(x : Nat64) : Nat64 {
+        var _x : Nat64 = x;
+        var n : Nat64 = 0;
+        if (_x >= 2**32) { _x >>= 32; n += 32; };
+        if (_x >= 2**16) { _x >>= 16; n += 16; };
+        if (_x >= 2**8) { _x >>= 8; n += 8; };
+        if (_x >= 2**4) { _x >>= 4; n += 4; };
+        if (_x >= 2**2) { _x >>= 2; n += 2; };
+        if (_x >= 2**1) { /* x >>= 1; */ n += 1; };
+        return n;
     };
 
     /* Operation by block */
