@@ -30,7 +30,7 @@ const UserCard = (props) => {
             <span>{`@${username} - joined ${moment.unix(Number(createdTime)).fromNow()} - balance ${balance} ICP - NFT wealth ${nftWealth} ICP`}</span>
         );
     }
-
+    
     return (
         <Card elevation={0} variant='body1'>
             <CardHeader

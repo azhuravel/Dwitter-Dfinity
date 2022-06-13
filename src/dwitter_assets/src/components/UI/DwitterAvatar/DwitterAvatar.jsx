@@ -65,11 +65,11 @@ const DwitterAvatar = (props) => {
     }, [displayname]);
 
     useEffect(() => {
-        setState({...state, isLoading: true, avatarUrl: ''});
+        setState({...state, isLoading: true, avatarUrl: '', shortName: makeShortName(displayname)});
 
         const cancelable = makeCancelable(nftService.getUserNftAvatars(nftAvatarId));
         cancelable.promise
-            .then(userNftAvatar => setState({...state, isLoading: false, avatarUrl: userNftAvatar?.url}))
+            .then(userNftAvatar => setState({...state, isLoading: false, avatarUrl: userNftAvatar?.url, shortName: makeShortName(displayname)}))
             .catch((err) => {});
 
         return () => cancelable.cancel();
