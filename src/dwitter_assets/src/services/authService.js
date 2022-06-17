@@ -40,7 +40,7 @@ export default class AuthService {
     }
 
     static async getDwitterActorFromPlug() {
-        const authedBy = localStorage.getItem(keyLocalStorageAuth);
+        const authedBy = sessionStorage.getItem(keyLocalStorageAuth);
         if (!authedBy) {
             return {};
         }
@@ -58,12 +58,12 @@ export default class AuthService {
     }
 
     static async loginByPlug() {
-        localStorage.setItem(keyLocalStorageAuth, true);
+        sessionStorage.setItem(keyLocalStorageAuth, true);
         return await AuthService._getDwitterActorFromPlug();
     }
 
     static async logout() {
-        localStorage.removeItem(keyLocalStorageAuth);
+        sessionStorage.removeItem(keyLocalStorageAuth);
     }
 
     static getAppState(dwitterActor, currentUser) {
