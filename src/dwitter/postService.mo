@@ -32,7 +32,6 @@ module {
         };
 
         public func createPost(userId : UserId, request : CreatePostRequest) : async ?PostInfo {
-            //let post = postsStorage.savePost(userId, request);
             do ? {
                 let post = createRequestToPost(userId, request);
 
@@ -42,26 +41,25 @@ module {
                 await wallUserCanister!.savePost(post);
 
                 return ?getPostInfo(await authorCanister!.getUser(), post);
-                // switch (userCanister) {
-                //     case (null) {
-                //         return null;
-                //     }; // nothing, throw an exception
-                //     case (?userCanister) { 
-                //         await userCanister.savePost(post); 
-                //         return ?getPostInfo(await userCanister.getUser(), post);
-                //     };
-                // };
             }
         };
 
         public func createPostAndSpendToken(userId : UserId, request : CreatePostAndSpendTokenRequest) : async ?PostInfo {
-            //let post = postsStorage.savePost(userId, request);
             let post = createRequestToPost(userId, request);
 
             let userCanister = userCanisterService.getByPrincipal(request.targetUserPrincipal);
-            await userCanister.storePostAndSpendToken(userId, post); 
+            await userCanister.storePostAndSpendToken(userId, post);
 
-            return ?getPostInfo(await userCanister.getUser(), post);
+            let authorCanister = userCanisterService.getByUserId(userId);
+            switch(authorCanister) {
+                case (null) {
+                    return null;
+                };
+
+                case (?authorCanister) {
+                    return ?getPostInfo(await authorCanister.getUser(), post);
+                };
+            }
         };
 
         public func getByUserId(userId : UserId): async ?[PostInfo] {

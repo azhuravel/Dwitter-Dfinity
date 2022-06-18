@@ -12,7 +12,7 @@ import Blob "mo:base/Blob";
 import Iter "mo:base/Iter";
 
 import Cycles "mo:base/ExperimentalCycles";
-import Ledger "ledger";
+import Ledger "ic/ledger";
 import Utils "utils";
 
 shared(msg) actor class UserCanister() = this {
@@ -50,6 +50,8 @@ shared(msg) actor class UserCanister() = this {
 
     stable var user = EMPTY_USER;
     stable var version = 1;
+    stable var userAccountIdentifier = "";
+    stable var canisterAccountIdentifier = "";
 
     // ledger
     let ledger : Ledger.Interface = actor(Ledger.CANISTER_ID);
@@ -70,9 +72,6 @@ shared(msg) actor class UserCanister() = this {
     let postById = Map.HashMap<Nat, Nat>(1, Nat.equal, Hash.hash);
 
     // tokens
-    //let transactions = Map.HashMap<Nat64, UserId>(1, Nat64.equal, Utils.hashNat64);
-    //let tokensOwners = Map.HashMap<UserId, Nat64>(1, Principal.equal, Principal.hash);
-
     let transactions = Map.fromIter<Nat64, UserId>(serializedTransactions.vals(), 10, Nat64.equal, Utils.hashNat64);
     let tokensOwners = Map.fromIter<UserId, Nat64>(serializedTokensOwners.vals(), 10, Principal.equal, Principal.hash);
 
@@ -85,10 +84,6 @@ shared(msg) actor class UserCanister() = this {
     stable var nextTokenPrice : Nat64 = 1;
 
     stable var userBalance : Nat64 = 0;
-
-    // tokens transactions
-    // blockIndex -> pay amount for the token
-    //let transactions = Map.HashMap<BlockIndex, int64>();
 
     public func getPost(id : Nat) : async ?Post {
         let index = postById.get(id);
@@ -121,6 +116,8 @@ shared(msg) actor class UserCanister() = this {
     };
 
     public query func getUserInfo(caller : Principal) : async ?UserInfo {
+        calcAccountIdentifiers();
+
         let ownedTotalCount = nullToZero(tokensOwners.get(caller));
 
         let tokenInfo : UserTokenInfo = {
@@ -138,7 +135,7 @@ shared(msg) actor class UserCanister() = this {
         let userInfo : UserInfo = {
             userPrincipal = user.id;
             canisterPrincipal = thisCanisterPrincipal;
-            accountIdentifier = getAccountIdentifier();
+            accountIdentifier = canisterAccountIdentifier;
             nftAvatar = user.nftAvatar;
             createdTime = user.createdTime;
             username = user.username;
@@ -157,6 +154,16 @@ shared(msg) actor class UserCanister() = this {
         user := updatedUser;
     };
 
+    private func calcAccountIdentifiers() {
+        if (userAccountIdentifier == "") {
+            userAccountIdentifier := Utils.accountToText(Utils.principalToAccount(user.id));
+        };
+
+        if (canisterAccountIdentifier == "") {
+            canisterAccountIdentifier := getAccountIdentifier();
+        };
+    };
+ 
     private func storePost(post : Post) {
         // add post in the storage
         posts.add(post);
@@ -171,17 +178,6 @@ shared(msg) actor class UserCanister() = this {
         let selfPost = author == wallOwner;
 
         if (not selfPost) {
-            // let tokenResponse = await burnToken(author);
-            
-            // switch (tokenResponse) {
-            //     case (#err({text : Text})) {
-            //         // TODO : return error
-            //         return; // no post :(
-            //     };
-            //     case (_) {
-            //         // nothing, it's ok.. go to post
-            //     };
-            // };
             transferToken(author, wallOwner, 1); // transfer from post author to wall owner
         };
 
@@ -276,9 +272,10 @@ shared(msg) actor class UserCanister() = this {
     };
 
     private func _updateBalance() : async() {
-        // TODO: optimization for page load speed, need to refresh later
+        calcAccountIdentifiers();
+
         let balance = await ledger.account_balance_dfx({
-            account = Utils.accountToText(Utils.principalToAccount(user.id));
+            account = userAccountIdentifier;
         });
         userBalance := balance.e8s;
     };

@@ -127,6 +127,8 @@ module {
                 ignore await canister.wallet_receive();
             };
 
+            ignore canister.updateBalance();
+
             switch (upgradeWASM) {
                 case (null) {
                     // nothing

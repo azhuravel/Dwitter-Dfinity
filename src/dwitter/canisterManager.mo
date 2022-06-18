@@ -1,4 +1,4 @@
-import ICType "./IC";
+import ICType "ic/IC";
 import Principal "mo:base/Principal";
 import Blob "mo:base/Blob";
 
