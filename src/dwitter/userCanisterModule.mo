@@ -177,7 +177,22 @@ module {
         };
 
         public func getAllUsersIds() : [Text] {
-            return Iter.toArray(userCanisters.vals());
+            let usernames = Iter.toArray(byUsername.entries());
+            let result = Array.map(usernames, 
+                func (x : (Text, UserId)) : Text {
+                    let principal = userCanisters.get(x.1);
+                    switch(principal) {
+                        case (null) {
+                            return x.0;  
+                        };
+
+                        case (?principal) {
+                            return x.0 # " " # principal;
+                        };
+                    }
+                }
+            );
+            return result;
         };
 
         public func serialize() : UsersCanistersInfo {
