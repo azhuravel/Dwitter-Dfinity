@@ -324,7 +324,7 @@ shared(msg) actor class UserCanister() = this {
                 tokensCount := tokensCount - 1;
                 totalLocked := totalLocked - sellPrice;
 
-                lastTokenPrice := tokensPrices.get(tokensPrices.size() - 1);
+                lastTokenPrice := if (tokensPrices.size() >= 1) { tokensPrices.get(tokensPrices.size() - 1) } else { 0 }; 
                 nextTokenPrice := buyPrice();
 
                 return #ok { price = sellPrice; };
