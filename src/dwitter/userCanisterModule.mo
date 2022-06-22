@@ -20,20 +20,10 @@ module {
         byUsernameEntries : [(Text, UserId)];
     };
 
+    /* For lazy upgrades */
     public type UpgradeWASM = {
         version : Nat;
         wasm : Blob;
-    };
-
-    /* Canister managment types and methods */
-    type CanisterSettings = {
-        controller : ?Principal;
-        compute_allocation : ?Nat;
-        memory_allocation : ?Nat;
-        freezing_threshold : ?Nat;
-    };
-    let IC = actor ("aaaaa-aa") : actor {
-        update_settings : {canister_id  : Principal; settings : CanisterSettings} -> async ();
     };
 
     // for creation
@@ -127,7 +117,7 @@ module {
                 ignore await canister.wallet_receive();
             };
 
-            ignore canister.updateBalance();
+            await canister.updateBalance();
 
             switch (upgradeWASM) {
                 case (null) {
@@ -158,22 +148,6 @@ module {
                     // nothing
                 };
             };
-        };
-
-        func transferOwnership(canisterId : Principal, newOwner : Principal) : async() {
-            let settings : CanisterSettings = {
-                controller = ?newOwner;
-                compute_allocation = null;
-                memory_allocation = null;
-                freezing_threshold = null;
-            };
-
-            await IC.update_settings(
-                {
-                    canister_id = canisterId;
-                    settings = settings;
-                }
-            );
         };
 
         public func getAllUsersIds() : [Text] {
