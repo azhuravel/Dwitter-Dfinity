@@ -13,6 +13,7 @@ import DwitterAvatar from "../components/UI/DwitterAvatar/DwitterAvatar";
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
+import {postKind_nft} from '../constants';
 
 
 const Settings = () => {
@@ -60,7 +61,12 @@ const Settings = () => {
                 ctx.currentUser?.bio?.[0],
                 [nftId],
             )
-            .then(user => setCtx({...ctx, currentUser: user}));
+            .then(user => {
+                setCtx({...ctx, currentUser: user});
+
+                // Create post with selected NFT as new avatar.
+                ctx.apiService.createPost('', [nftId], postKind_nft);
+            });
 
         setSubmitting(false);
     }

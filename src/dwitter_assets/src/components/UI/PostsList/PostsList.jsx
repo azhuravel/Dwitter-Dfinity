@@ -6,12 +6,22 @@ import moment from "moment";
 import Typography from '@mui/material/Typography';
 import DwitterAvatar from "../DwitterAvatar/DwitterAvatar";
 import {renderPostText} from "../../../utils/ui-utils.jsx";
+import { postKind_nft, postKind_text } from '../../../constants/index';
 
 
 const PostsList = (props) => {
     const {redirectOnWall} = props;
 
     const linkPrefix = redirectOnWall ? 'wall' : 'user';
+
+    const buildPostBody = (post) => {
+        switch (post.kind) {
+            case postKind_text:
+                return (<Typography style={{whiteSpace: 'pre-line'}}>{renderPostText(post.text, linkPrefix)}</Typography>);
+            case postKind_nft:
+                return (<DwitterAvatar mr={1} displayname={''} nftAvatarId={post?.nft?.[0]}/>);
+        }
+    }
     
     return (
         <List>
@@ -31,9 +41,7 @@ const PostsList = (props) => {
                                     {moment.unix(Number(item.createdTime / 1000000000n)).fromNow()}
                                 </React.Fragment>
                             }
-                            secondary={
-                                <Typography style={{whiteSpace: 'pre-line'}}>{renderPostText(item.text, linkPrefix)}</Typography>
-                            }
+                            secondary={buildPostBody(item)}
                         />
                     </ListItem>
                 )

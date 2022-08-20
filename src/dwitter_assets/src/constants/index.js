@@ -4,6 +4,7 @@ export const appState_registrationPage = 2;
 export const appState_loggedIn = 3;
 
 export const postKind_text = 'TEXT';
+export const postKind_nft = 'NFT';
 
 export const plugWhitelist = [
     process.env.DWITTER_CANISTER_ID, 
