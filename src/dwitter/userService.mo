@@ -65,6 +65,8 @@ module {
                 displayname = request.displayname;
                 nftAvatar = null;
                 bio = null;
+                subscribedTo = [];
+                subscribers = [];
             };
 
             let userCanister = await userCanisterService.create(user);
@@ -85,6 +87,8 @@ module {
                 displayname = request.displayname;
                 nftAvatar = null;
                 bio = null;
+                subscribedTo = [];
+                subscribers = [];
             };
 
             let userCanister = await userCanisterService.create(user);
@@ -104,6 +108,9 @@ module {
                         id = user.id;
                         createdTime = user.createdTime;
                         username = user.username;
+                        subscribedTo = user.subscribedTo;
+                        subscribers = user.subscribers;
+
                         displayname = request.displayname;
                         nftAvatar = request.nftAvatar;
                         bio = request.bio;

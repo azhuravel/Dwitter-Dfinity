@@ -37,6 +37,8 @@ shared(msg) actor class UserCanister() = this {
         username = "DELETED";
         displayname = "DELETED";
         bio = null;
+        subscribedTo = [];
+        subscribers = [];
     };
 
     // equal to initial count of cycles
@@ -104,9 +106,10 @@ shared(msg) actor class UserCanister() = this {
     };
 
     // deprecated
-    public shared query (msg) func getUser() : async User {
+    public shared(msg) func getUser() : async User {
         return user;
     };
+
 
     public shared(msg) func setUser(_user : User) : async () {
         user := _user;
@@ -133,7 +136,7 @@ shared(msg) actor class UserCanister() = this {
         let thisCanisterPrincipal = Principal.toText( Principal.fromActor(this) );
 
         let userInfo : UserInfo = {
-            userPrincipal = user.id;
+            id = Principal.toText(user.id);
             canisterPrincipal = thisCanisterPrincipal;
             accountIdentifier = canisterAccountIdentifier;
             nftAvatar = user.nftAvatar;
@@ -141,6 +144,9 @@ shared(msg) actor class UserCanister() = this {
             username = user.username;
             displayname = user.displayname;
             bio = user.bio;
+            subscribers = user.subscribers;
+            subscribedTo = user.subscribedTo;
+
             balance = userBalance;
             
             token = tokenInfo;
@@ -274,10 +280,10 @@ shared(msg) actor class UserCanister() = this {
     private func _updateBalance() : async() {
         calcAccountIdentifiers();
 
-        let balance = await ledger.account_balance_dfx({
-            account = userAccountIdentifier;
-        });
-        userBalance := balance.e8s;
+        // let balance = await ledger.account_balance_dfx({
+        //     account = userAccountIdentifier;
+        // });
+        // userBalance := balance.e8s;
     };
 
     private func getAccountIdentifier() : Text {
