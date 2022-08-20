@@ -18,6 +18,12 @@ module {
     kind : Text;
     nft : ?NftId;
     text : Text;
+
+    resharePostId : ?Nat;
+    reshareUserId : ?UserId;
+    reshareCount : Nat;
+
+    likers : [UserId];
   };
 
   public type PostInfo = {
@@ -26,15 +32,26 @@ module {
     createdTime : Int;
     text : Text;
     nft : ?NftId;
+
+    resharePostId : ?Nat;
+    reshareUserId : ?UserId;
+    reshareCount : Nat;
+
+    // user's info
     username : Text;
     displayname: Text;
     nftAvatar : ?NftId;
+
+    likers : [UserId];
   };
 
   public type CreatePostRequest = {
     kind : Text;
     text : Text;
     nft : ?NftId;
+
+    reshareUserId : ?Text;
+    resharePostId : ?Nat;
   };
 
   public type CreatePostAndSpendTokenRequest = {
@@ -51,9 +68,13 @@ module {
     username : Text;
     displayname : Text;
     bio : ?Text;
+
+    subscribers : [UserId];
+    subscribedTo : [UserId];
   };
 
   public type UserInfo = {
+    id : Text;
     canisterPrincipal : Text; // plug transfer TO (for celebrity)
     accountIdentifier : Text;
     nftAvatar : ?NftId;
@@ -63,6 +84,9 @@ module {
     bio : ?Text;
     token : UserTokenInfo;
     balance : Nat64;
+
+    subscribers : [UserId];
+    subscribedTo : [UserId];
   };
 
   public type UserTokenInfo = {
