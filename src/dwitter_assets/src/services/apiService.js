@@ -1,7 +1,7 @@
 import { Actor } from "@dfinity/agent";
 import {idlFactory} from '../../../declarations/user/user.did.js';
 import {plugWhitelist} from '../constants';
-import AuthService from "../services/authService.js";
+import AuthService from "./authService.js";
 
 
 const userActorsCache = {};
