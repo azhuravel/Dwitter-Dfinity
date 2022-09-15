@@ -99,9 +99,10 @@ module {
         public func update(userId : UserId, request : UpdateUserRequest) : async ?User {
             let userCanister = userCanisterService.getByUserId(userId);
             switch(userCanister) {
-                case(null) { 
+                case(null) {
                     return null; // TODO: it should throw an exception
                 };
+
                 case(?userCanister) { 
                     let user = await userCanister.getUser();
                     let updatedUser : User = {
@@ -121,42 +122,46 @@ module {
             }
         };
 
-        public func subscribe(caller : UserId, subscribedTo : Text) {
-            UserId userId = Actor.fromText(text);
+        public func subscribe(caller : UserId, subscribedTo : Text) : async ?() {
+            let userId = Principal.fromText(subscribedTo);
 
             let subscriberUser = userCanisterService.getByUserId(caller);
             let subscribeToUser = userCanisterService.getByUserId(userId);
 
-            await subscriberUser.addSubscribedTo(caller);
-            await subscribeToUser.addSubscriber(userId);
+            do ? {
+                await subscriberUser!.addSubscribedTo(caller);
+                await subscribeToUser!.addSubscriber(userId);
+            }
         };
 
-        public func unsubscribe(caller : Prinicpal, subscribedTo : Text) {
-            UserId userId = Actor.fromText(text);
-
+        public func unsubscribe(caller : UserId, subscribedTo : Text) : async ?() {
+            let userId = Principal.fromText(subscribedTo);
+            
             let subscriberUser = userCanisterService.getByUserId(caller);
             let subscribeToUser = userCanisterService.getByUserId(userId);
 
-            await subscriberUser.removeSubscribedTo(caller);
-            await subscribeToUser.removeSubscriber(userId);
+            do ? {
+                await subscriberUser!.removeSubscribedTo(caller);
+                await subscribeToUser!.removeSubscriber(userId);
+            }
         };
 
-        private func fetchSubscribers(user : [UserInfo]) : [UserInfo] {
-            let users = user.subscribedTo;
-            let N = users.size();
-            Array.tabulate<UserInfo>(N, func(i:Nat) : UserInfo {
-                let user = users[i];
-                for (subscriber in user.subscribers) {
-                    let userCanister = userCanisterService.getByUserId(subscriber);
-                    switch (userCanister) {
-                        case (null) { };
-                        case (?userCanister) {
-                            userCanister.getShortUser();
-                        };
-                    }
-                };
-            });
-        };
+        // private func fetchSubscribers(user : [UserInfo]) : [UserInfo] {
+        //     let users = user.subscribedTo;
+        //     let N = users.size();
+        //     Array.tabulate<UserInfo>(N, func(i:Nat) : UserInfo {
+        //         let user = users[i];
+        //         for (subscriber in user.subscribers) {
+        //             let userCanister = userCanisterService.getByUserId(subscriber);
+        //             switch (userCanister) {
+        //                 case (null) { };
+        //                 case (?userCanister) {
+        //                     userCanister.getShortUser();
+        //                 };
+        //             }
+        //         };
+        //     });
+        // };
 
         public func getAllUsersPrincipals() : [Text] {
             return userCanisterService.getAllUsersIds();
