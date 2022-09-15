@@ -23,6 +23,7 @@ shared(msg) actor class UserCanister() = this {
     type TokenResponse = Types.TokenResponse;
     type UserTokenInfo = Types.UserTokenInfo;
     type CanisterInfo = Types.CanisterInfo;
+    type ShortUserInfo = Types.ShortUserInfo;
 
     type Operation = Ledger.Operation;
     type AccountIdentifier = Ledger.AccountIdentifier;
@@ -69,6 +70,9 @@ shared(msg) actor class UserCanister() = this {
 
     // extendable list of user posts
     let posts = Buffer.Buffer<Post>(0);
+
+    // extendable list of user posts
+    let feed = Buffer.Buffer<Post>(0);
 
     // posts indexed by post.id
     let postById = Map.HashMap<Nat, Nat>(1, Nat.equal, Hash.hash);
@@ -146,6 +150,7 @@ shared(msg) actor class UserCanister() = this {
             bio = user.bio;
             subscribers = user.subscribers;
             subscribedTo = user.subscribedTo;
+            subscribedToUsers = [];
 
             balance = userBalance;
             
@@ -153,6 +158,16 @@ shared(msg) actor class UserCanister() = this {
         };
 
         return ?userInfo;
+    };
+
+    public query shared (msg) func getShortUser() : async ShortUserInfo {
+        let shortUser : ShortUserInfo = {
+            id = user.id;
+            nftAvatar = user.nftAvatar;
+            username = user.username;
+            displayname = user.displayname;
+        };
+        return shortUser;
     };
 
     public shared(msg) func updateUser(updatedUser : User) : async() {
@@ -275,6 +290,82 @@ shared(msg) actor class UserCanister() = this {
 
     public shared (msg) func updateBalance() : async() {
         await _updateBalance();
+    };
+
+    public shared (msg) func likePost(id : Nat) : async() {
+        togglePostLiker(id, msg.caller, true);
+    };
+
+    public shared (msg) func dislikePost(id : Nat) : async() {
+        togglePostLiker(id, msg.caller, false);
+    };
+
+    /**
+     * Add subscriber 
+     */
+    public shared (msg) func addSubscriber(userId : UserId) : async() {
+        user.subscribers := Array.append(user.subscribers, [userId]);
+    };
+
+    public shared (msg) func removeSubscriber(userId : UserId) : async() {
+        user.subscribers := Array.filter(subscribers, func (_userId) {
+                                return userId == _userId;
+                            } 
+                        );
+    };
+
+    public shared (msg) func addSubscribedTo(userId : UserId) : async() {
+        user.subscribedTo := Array.append(user.subscribedTo, [userId]);
+    };
+
+    public shared (msg) func removeSubscribedTo(userId : UserId) : async() {
+        user.subscribedTo := Array.filter(user.ubscribedTo, func (_userId) {
+                                return userId == _userId;
+                            } 
+                        );
+    };
+
+    private func togglePostLiker(postId : Nat, userId : UserId, like : Bool) {
+        let index = postById.get(postId);
+        switch (index) {
+            case (null) { 
+                // nothing
+            };
+
+            case (?index) { 
+                let post = posts.get(index);
+                var likers = post.likers;
+
+                switch (like) {
+                    case (true) {
+                        likers = Array.append(likers, [userId]);
+                    };
+
+                    case (false) {
+                        likers = Array.filter(likers, func (userLike) {
+                                return userLike == userId;
+                            } 
+                        );
+                    };
+                };
+            
+                let updatedPost : Post = {
+                    id = post.id;
+                    createdTime = post.createdTime;
+                    userId = post.userId;
+                    kind = post.kind;
+                    text = post.text;
+                    nft = post.nft;
+                    userCanister = post.userCanister;
+
+                    reshareUserId = post.reshareUserId;
+                    resharePostId = post.resharePostId;
+                    reshareCount = post.reshareCount;
+
+                    likers = likers;
+                };
+            };
+        };
     };
 
     private func _updateBalance() : async() {

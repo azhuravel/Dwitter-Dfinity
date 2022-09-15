@@ -12,6 +12,7 @@ import Buffer "mo:base/Buffer";
 
 module {
     type Post = Types.Post;
+    type PostId = Types.PostId;
     type UserId = Types.UserId;
     type User = Types.User;
     type PostInfo = Types.PostInfo;
@@ -77,6 +78,16 @@ module {
             return await getPostInfos(userCanister);
         };
 
+        public func like(username : Text, postId : Nat) : async () {
+            let userCanister = userCanisterService.getByUsername(username);
+            await userCanister.likePost(postId);
+        };
+
+        public func dislike(username : Text, postId : Nat) : async () {
+            let userCanister = userCanisterService.getByUsername(username);
+            await userCanister.dislikePost(postId);
+        };
+
         private func getPostInfos(userCanister : ?UserCanister) : async ?[PostInfo] {
             switch(userCanister) {
                 case (null) {
@@ -89,6 +100,16 @@ module {
                 };
             }
         };
+
+        private func fetchFeed(feed : [PostId]) : async ?[PostInfo] {
+            let result = Buffer.Buffer<PostInfo>(0);
+
+            for (postId in feed.vals()) {
+                let userCanister = userCanisterService.getByUserId(postId.userId);
+                let post = userCanister.getPost(postId.id);
+                
+            };
+        }
 
         private func reverseAndFetchPostInfos(posts: [Post]) : async ?[PostInfo]  {
             let result = Buffer.Buffer<PostInfo>(0);

@@ -10,6 +10,16 @@ module {
     index: Text;
   };
 
+  public type FeedPost = {
+    // id
+    authorId : UserId;
+    postId : Nat;
+
+    // sort info
+    createdTime : Int;
+    balance : Nat64;
+  };
+
   public type Post = {
     id : Nat;
     userId : UserId;
@@ -87,6 +97,13 @@ module {
 
     subscribers : [UserId];
     subscribedTo : [UserId];
+  };
+
+  public type ShortUserInfo = {
+    id : Text;
+    nftAvatar : ?NftId;
+    username : Text;
+    displayname : Text;
   };
 
   public type UserTokenInfo = {
