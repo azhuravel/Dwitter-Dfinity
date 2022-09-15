@@ -209,9 +209,16 @@ module {
                 displayname = author.displayname;
                 nftAvatar = author.nftAvatar;
 
-                likers = post.likers;
+                likers = toTextArray(post.likers);
             };
             return postInfo;
+        };
+
+        private func toTextArray(users : [UserId]) : [Text] {
+            return Array.map(users, func (userId : Principal) : Text {
+                                    return Principal.toText(userId);
+                                }
+            );
         };
 
         private func createSpentTokenRequestToPost(uid : UserId, request : CreatePostAndSpendTokenRequest) : Post {

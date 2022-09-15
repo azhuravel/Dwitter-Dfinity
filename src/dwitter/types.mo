@@ -57,7 +57,7 @@ module {
     displayname: Text;
     nftAvatar : ?NftId;
 
-    likers : [UserId];
+    likers : [Text];
   };
 
   public type CreatePostRequest = {
