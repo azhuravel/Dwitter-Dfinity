@@ -3,6 +3,11 @@ import Principal "mo:base/Principal";
 
 module {
   public type UserId = Principal;
+  
+  public type UserPostId = {
+    postId : Nat;
+    userId : UserId;
+  };
 
   public type NftId = {
     standard: Text;
@@ -95,8 +100,8 @@ module {
     token : UserTokenInfo;
     balance : Nat64;
 
-    subscribers : [UserId];
-    subscribedTo : [UserId];
+    subscribers : [Text];
+    subscribedTo : [Text];
   };
 
   public type ShortUserInfo = {

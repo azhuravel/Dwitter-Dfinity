@@ -12,7 +12,7 @@ import Buffer "mo:base/Buffer";
 
 module {
     type Post = Types.Post;
-    type PostId = Types.PostId;
+    type UserPostId = Types.UserPostId;
     type UserId = Types.UserId;
     type User = Types.User;
     type PostInfo = Types.PostInfo;
@@ -78,14 +78,38 @@ module {
             return await getPostInfos(userCanister);
         };
 
+        public func getFeed(userId : UserId) : async ?[PostInfo] {
+            let userCanister = userCanisterService.getByUserId(userId);
+            do ? {
+                let posts = await userCanister!.getFeed();
+                await reverseAndFetchPostInfos(posts);
+            }
+        };
+
         public func like(username : Text, postId : Nat) : async () {
             let userCanister = userCanisterService.getByUsername(username);
-            await userCanister.likePost(postId);
+            switch(userCanister) {
+                case (null) {
+                    // nothing
+                };
+
+                case (?userCanister) {
+                    await userCanister.likePost(postId);
+                };
+            };
         };
 
         public func dislike(username : Text, postId : Nat) : async () {
             let userCanister = userCanisterService.getByUsername(username);
-            await userCanister.dislikePost(postId);
+            switch(userCanister) {
+                case (null) {
+                    // nothing
+                };
+
+                case (?userCanister) {
+                    await userCanister.dislikePost(postId);
+                };
+            };
         };
 
         private func getPostInfos(userCanister : ?UserCanister) : async ?[PostInfo] {
@@ -96,22 +120,38 @@ module {
                 case (?userCanister) {
                     let posts = await userCanister.getPosts();
                     let postInfos = await reverseAndFetchPostInfos(posts);
-                    return postInfos;
+                    return ?postInfos;
                 };
             }
         };
 
-        private func fetchFeed(feed : [PostId]) : async ?[PostInfo] {
+        private func fetchFeed(feed : [UserPostId]) : async [PostInfo] {
             let result = Buffer.Buffer<PostInfo>(0);
 
-            for (postId in feed.vals()) {
-                let userCanister = userCanisterService.getByUserId(postId.userId);
-                let post = userCanister.getPost(postId.id);
-                
-            };
-        }
+            for (userPostId in feed.vals()) {
+                let userCanister = userCanisterService.getByUserId(userPostId.userId);
+                switch (userCanister) {
+                    case (null) {
 
-        private func reverseAndFetchPostInfos(posts: [Post]) : async ?[PostInfo]  {
+                    };
+
+                    case (?userCanister) {
+                        let user = await userCanister.getUser();
+                        let post = await userCanister.getPost(userPostId.postId);
+                        switch(post) {
+                            case (null) { };
+                            case (?post) {
+                                let postInfo = getPostInfo(user, post);
+                                result.add(postInfo);
+                            };
+                        };
+                    };
+                };
+            };
+            return result.toArray(); 
+        };
+
+        private func reverseAndFetchPostInfos(posts: [Post]) : async [PostInfo]  {
             let result = Buffer.Buffer<PostInfo>(0);
 
             let reversedPosts = Array.reverse(posts);
@@ -150,7 +190,7 @@ module {
                 };
             };
 
-            return ?result.toArray();
+            return result.toArray();
         };
 
         private func getPostInfo(author : User, post : Post) : PostInfo {

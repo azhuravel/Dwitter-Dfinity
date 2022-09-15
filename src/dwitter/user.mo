@@ -10,6 +10,7 @@ import Option "mo:base/Option";
 import Stack "mo:base/Stack";
 import Blob "mo:base/Blob";
 import Iter "mo:base/Iter";
+import Array "mo:base/Array";
 
 import Cycles "mo:base/ExperimentalCycles";
 import Ledger "ic/ledger";
@@ -148,9 +149,8 @@ shared(msg) actor class UserCanister() = this {
             username = user.username;
             displayname = user.displayname;
             bio = user.bio;
-            subscribers = user.subscribers;
-            subscribedTo = user.subscribedTo;
-            subscribedToUsers = [];
+            subscribers = toTextArray(user.subscribers);
+            subscribedTo = toTextArray(user.subscribedTo);
 
             balance = userBalance;
             
@@ -160,9 +160,16 @@ shared(msg) actor class UserCanister() = this {
         return ?userInfo;
     };
 
-    public query shared (msg) func getShortUser() : async ShortUserInfo {
+    private func toTextArray(users : [UserId]) : [Text] {
+        return Array.map(users, func (userId : Principal) : Text {
+                                return Principal.toText(userId);
+                            }
+        );
+    };
+
+    public shared query (msg) func getShortUser() : async ShortUserInfo {
         let shortUser : ShortUserInfo = {
-            id = user.id;
+            id = Principal.toText(user.id);
             nftAvatar = user.nftAvatar;
             username = user.username;
             displayname = user.displayname;
@@ -304,25 +311,65 @@ shared(msg) actor class UserCanister() = this {
      * Add subscriber 
      */
     public shared (msg) func addSubscriber(userId : UserId) : async() {
-        user.subscribers := Array.append(user.subscribers, [userId]);
+        user := {
+            id = user.id;
+            nftAvatar = user.nftAvatar;
+            createdTime = user.createdTime;
+            username = user.username;
+            displayname = user.displayname;
+            bio = user.bio;
+            subscribedTo = user.subscribedTo;
+            subscribers = Array.append(user.subscribers, [userId]);
+        };
     };
 
     public shared (msg) func removeSubscriber(userId : UserId) : async() {
-        user.subscribers := Array.filter(subscribers, func (_userId) {
-                                return userId == _userId;
+        user := {
+            id = user.id;
+            nftAvatar = user.nftAvatar;
+            createdTime = user.createdTime;
+            username = user.username;
+            displayname = user.displayname;
+            bio = user.bio;
+            subscribedTo = user.subscribedTo;
+            subscribers = Array.filter(user.subscribers, func (_userId : UserId) : Bool {
+                                return Principal.notEqual(userId, _userId);
                             } 
                         );
+        };
     };
 
     public shared (msg) func addSubscribedTo(userId : UserId) : async() {
-        user.subscribedTo := Array.append(user.subscribedTo, [userId]);
+        user := {
+            id = user.id;
+            nftAvatar = user.nftAvatar;
+            createdTime = user.createdTime;
+            username = user.username;
+            displayname = user.displayname;
+            bio = user.bio;
+            subscribedTo = Array.append(user.subscribedTo, [userId]);
+            subscribers = user.subscribers;
+        };
     };
 
     public shared (msg) func removeSubscribedTo(userId : UserId) : async() {
-        user.subscribedTo := Array.filter(user.ubscribedTo, func (_userId) {
-                                return userId == _userId;
+        user := {
+            id = user.id;
+            nftAvatar = user.nftAvatar;
+            createdTime = user.createdTime;
+            username = user.username;
+            displayname = user.displayname;
+            bio = user.bio;
+            subscribedTo = Array.filter(user.subscribedTo, func (_userId : UserId) : Bool {
+                                return Principal.notEqual(userId, _userId);
                             } 
                         );
+            subscribers = user.subscribers;
+        };
+    };
+
+    public shared(msg) func getFeed() : async [Post] {
+        return [];
     };
 
     private func togglePostLiker(postId : Nat, userId : UserId, like : Bool) {
@@ -338,12 +385,12 @@ shared(msg) actor class UserCanister() = this {
 
                 switch (like) {
                     case (true) {
-                        likers = Array.append(likers, [userId]);
+                        likers := Array.append(likers, [userId]);
                     };
 
                     case (false) {
-                        likers = Array.filter(likers, func (userLike) {
-                                return userLike == userId;
+                        likers := Array.filter(likers, func (userLike : UserId) : Bool {
+                                return Principal.notEqual(userLike, userId);
                             } 
                         );
                     };

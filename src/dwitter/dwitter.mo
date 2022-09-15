@@ -95,7 +95,7 @@ shared ({ caller = dwitterOwner }) actor class Dwitter() = this {
     };
 
     public shared(msg) func getFeed() : async ?[PostInfo] {
-        await postService.getFeed(msg.caller));
+        await postService.getFeed(msg.caller);
     };
 
     public func getUserPosts(username : Text): async ?[PostInfo] {
@@ -114,12 +114,12 @@ shared ({ caller = dwitterOwner }) actor class Dwitter() = this {
         ignore await postService.dislike(username, postId);
     };
 
-    public func subscribe(username : Text) : async() {
-        ignore await userService.subscribe(username);
+    public shared(msg) func subscribe(username : Text) : async ?() {
+        await userService.subscribe(msg.caller, username);
     };
 
-    public func unsubscribe(username : Text) : async() {
-        ignore await userService.unsubscribe(username);
+    public shared(msg) func unsubscribe(username : Text) : async ?() {
+        await userService.unsubscribe(msg.caller, username);
     };
 
     /**
