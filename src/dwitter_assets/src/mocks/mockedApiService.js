@@ -74,6 +74,7 @@ class MockedApiService {
                 nftAvatar: [],
                 text: "greukghrekuhg",
                 username: "qweqwe",
+                likers: [],
             }
         ];
     }
@@ -92,6 +93,12 @@ class MockedApiService {
     }
     
     async createUser(username, displayname) {
+    }
+    
+    async likePost(username, postId) {
+    }
+
+    async dislikePost(username, postId) {
     }
 
     async buyToken(canisterPrincipal, blockIndex) {

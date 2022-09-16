@@ -219,7 +219,7 @@ const User = () => {
 
                 <Grid item lg={2} md={2} sm={0}/>
                 <Grid item lg={8} md={8} sm={12}>
-                    <WallPostForm submitPostCallback={submitPostCallback} hasTokens={userHasTokens} currentUserIsWallOwner={isCurrentUserProfile} />
+                    {/* <WallPostForm submitPostCallback={submitPostCallback} hasTokens={userHasTokens} currentUserIsWallOwner={isCurrentUserProfile} /> */}
                 </Grid>
                 <Grid item lg={2} md={2} sm={0}/>
 

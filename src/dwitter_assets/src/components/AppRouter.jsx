@@ -38,11 +38,13 @@ const AppRouter = () => {
             );
 
         case appState_loggedIn:
-            const currentUserProfilePath = `/wall/${ctx.currentUser.username}`;
+            // const currentUserProfilePath = `/wall/${ctx.currentUser.username}`;
+            const currentUserProfilePath = `/user/${ctx.currentUser.username}`;
             return (
                 <Routes>
                     <Route path="/user/:username" element={<User />} />
-                    <Route path="/wall/:username" element={<Wall />} />
+                    {/* <Route path="/wall/:username" element={<Wall />} /> */}
+                    <Route path="/user/:username" element={<Wall />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route path="*" element={<Navigate to={currentUserProfilePath} />}/>
                 </Routes>

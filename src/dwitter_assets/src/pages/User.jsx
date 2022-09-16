@@ -17,6 +17,7 @@ const User = () => {
     const {ctx} = useContext(AppContext); 
     const [postsLoading, setPostsLoading] = useState(true); 
     const [userLoading, setUserLoading] = useState(true); 
+    const [isCurrentUserAlreadySubscribed, setIsCurrentUserAlreadySubscribed] = useState(false); 
     const [posts, setPosts] = useState([]);
     const [user, setUser] = useState(null);
     const [balance, setBalance] = useState(null);
@@ -36,6 +37,7 @@ const User = () => {
             .then((user) => {
                 setUser(user);
                 setNftAvatar(user?.nftAvatar);
+                setIsCurrentUserAlreadySubscribed(user?.subscribers.includes(ctx.currentUser.id));
             })
             .then(() => setUserLoading(false))
             .catch((err) => {});
@@ -96,6 +98,16 @@ const User = () => {
         setPosts(currentPosts => ([post, ...currentPosts]));
     }
 
+    const subscribeToUser = async (username) => {
+        await ctx.apiService.subscribeToUser(username);
+        setIsCurrentUserAlreadySubscribed(true);
+    }
+
+    const unsubscribeToUser = async (username) => {
+        await ctx.apiService.unsubscribeToUser(username);
+        setIsCurrentUserAlreadySubscribed(false);
+    }
+
     if (!userLoading && user === null) {
         return (
             <Grid container spacing={2}>
@@ -115,6 +127,14 @@ const User = () => {
             <Grid item lg={2} md={2} sm={0}/>
             <Grid item lg={8} md={8} sm={12}>
                 <UserCard userLoading={userLoading} username={username} user={user} balance={balance} nftWealth={nftWealth} nftAvatar={nftAvatar} />
+                {!isCurrentUserProfile && isCurrentUserAlreadySubscribed
+                    &&
+                    <LoadingButton type="submit" variant="contained" loading={false} onClick={() => unsubscribeToUser(username)}>Unsubscribe</LoadingButton>
+                }
+                {!isCurrentUserProfile && !isCurrentUserAlreadySubscribed
+                    &&
+                    <LoadingButton type="submit" variant="contained" loading={false} onClick={() => subscribeToUser(username)}>Subscribe</LoadingButton>
+                }
             </Grid>
             <Grid item lg={2} md={2} sm={0}/>
 

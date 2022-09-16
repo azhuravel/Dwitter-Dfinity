@@ -71,7 +71,8 @@ const Navbar = () => {
                                     transformOrigin={{horizontal: 'right', vertical: 'top'}}
                                     anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
                                 >
-                                    <MenuItem component={Link} to={`/wall/${username}`} onClick={handleClose}>Profile</MenuItem>
+                                    {/* <MenuItem component={Link} to={`/wall/${username}`} onClick={handleClose}>Profile</MenuItem> */}
+                                    <MenuItem component={Link} to={`/user/${username}`} onClick={handleClose}>Profile</MenuItem>
                                     <MenuItem component={Link} to='/settings' onClick={handleClose}>Settings</MenuItem>
                                     <MenuItem onClick={logout}>Logout</MenuItem>
                                 </Menu>

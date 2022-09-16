@@ -124,6 +124,30 @@ class ApiService {
         logger('END apiService.createUser()', username, displayname, resp);
     }
 
+    async likePost(username, postId) {
+        logger('START apiService.likePost()', username, postId);
+        const resp = await this.dwitterActor.likePost({username, postId});
+        logger('END apiService.likePost()', username, postId, resp);
+    }
+
+    async dislikePost(username, postId) {
+        logger('START apiService.dislikePost()', username, postId);
+        const resp = await this.dwitterActor.dislikePost({username, postId});
+        logger('END apiService.dislikePost()', username, postId, resp);
+    }
+
+    async subscribeToUser(username) {
+        logger('START apiService.subscribeToUser()', username);
+        const resp = await this.dwitterActor.subscribe({username});
+        logger('END apiService.subscribeToUser()', username, resp);
+    }
+
+    async unsubscribeFromUser(username) {
+        logger('START apiService.unsubscribeFromUser()', username);
+        const resp = await this.dwitterActor.unsubscribe({username});
+        logger('END apiService.unsubscribeFromUser()', username, resp);
+    }
+
     async buyToken(canisterPrincipal, blockIndex) {      
         logger('START apiService.buyToken()', blockIndex);
         const userActor = await makeUserActor(canisterPrincipal);
