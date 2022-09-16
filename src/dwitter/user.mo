@@ -299,12 +299,12 @@ shared(msg) actor class UserCanister() = this {
         await _updateBalance();
     };
 
-    public shared (msg) func likePost(id : Nat) : async() {
-        togglePostLiker(id, msg.caller, true);
+    public func likePost(userId : UserId, id : Nat) : async() {
+        togglePostLiker(id, userId, true);
     };
 
-    public shared (msg) func dislikePost(id : Nat) : async() {
-        togglePostLiker(id, msg.caller, false);
+    public func dislikePost(userId : UserId, id : Nat) : async() {
+        togglePostLiker(id, userId, false);
     };
 
     /**

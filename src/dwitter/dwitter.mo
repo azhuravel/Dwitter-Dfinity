@@ -106,12 +106,12 @@ shared ({ caller = dwitterOwner }) actor class Dwitter() = this {
         await userService.topUp(username);
     };
 
-    public func likePost(username : Text, postId : Nat) : async () {
-        ignore await postService.like(username, postId);
+    public shared(msg) func likePost(username : Text, postId : Nat) : async () {
+        ignore await postService.like(msg.caller, username, postId);
     };
 
-    public func dislikePost(username : Text, postId : Nat) : async () {
-        ignore await postService.dislike(username, postId);
+    public shared(msg) func dislikePost(username : Text, postId : Nat) : async () {
+        ignore await postService.dislike(msg.caller, username, postId);
     };
 
     public shared(msg) func subscribe(username : Text) : async ?() {

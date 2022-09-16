@@ -86,7 +86,7 @@ module {
             }
         };
 
-        public func like(username : Text, postId : Nat) : async () {
+        public func like(likerId : UserId, username : Text, postId : Nat) : async () {
             let userCanister = userCanisterService.getByUsername(username);
             switch(userCanister) {
                 case (null) {
@@ -94,12 +94,12 @@ module {
                 };
 
                 case (?userCanister) {
-                    await userCanister.likePost(postId);
+                    await userCanister.likePost(likerId, postId);
                 };
             };
         };
 
-        public func dislike(username : Text, postId : Nat) : async () {
+        public func dislike(likerId : UserId, username : Text, postId : Nat) : async () {
             let userCanister = userCanisterService.getByUsername(username);
             switch(userCanister) {
                 case (null) {
@@ -107,7 +107,7 @@ module {
                 };
 
                 case (?userCanister) {
-                    await userCanister.dislikePost(postId);
+                    await userCanister.dislikePost(likerId, postId);
                 };
             };
         };
