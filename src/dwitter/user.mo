@@ -411,6 +411,8 @@ shared(msg) actor class UserCanister() = this {
 
                     likers = likers;
                 };
+
+                posts.put(index, updatedPost);
             };
         };
     };
