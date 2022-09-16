@@ -123,26 +123,26 @@ module {
         };
 
         public func subscribe(caller : UserId, subscribedTo : Text) : async ?() {
-            let userId = Principal.fromText(subscribedTo);
-
             let subscriberUser = userCanisterService.getByUserId(caller);
-            let subscribeToUser = userCanisterService.getByUserId(userId);
+            let subscribeToUser = userCanisterService.getByUsername(subscribedTo);
 
             do ? {
-                await subscriberUser!.addSubscribedTo(caller);
-                await subscribeToUser!.addSubscriber(userId);
+                let userId = (await subscribeToUser!.getUser()).id;
+                await subscriberUser!.addSubscribedTo(userId);
+
+                await subscribeToUser!.addSubscriber(caller);
             }
         };
 
         public func unsubscribe(caller : UserId, subscribedTo : Text) : async ?() {
-            let userId = Principal.fromText(subscribedTo);
-            
             let subscriberUser = userCanisterService.getByUserId(caller);
-            let subscribeToUser = userCanisterService.getByUserId(userId);
+            let subscribeToUser = userCanisterService.getByUsername(subscribedTo);
 
             do ? {
-                await subscriberUser!.removeSubscribedTo(caller);
-                await subscribeToUser!.removeSubscriber(userId);
+                let userId = (await subscribeToUser!.getUser()).id;
+                await subscriberUser!.removeSubscribedTo(userId);
+
+                await subscribeToUser!.removeSubscriber(caller);
             }
         };
 
