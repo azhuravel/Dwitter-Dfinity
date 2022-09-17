@@ -41,10 +41,15 @@ module {
             do ? {
                 let post = createRequestToPost(userId, request);
 
-                let authorCanister = userCanisterService.getByUserId(userId);
+                let authorId = getAuthorId(post);
+                let authorCanister = userCanisterService.getByUserId(authorId);
                 let wallUserCanister = userCanisterService.getByUserId(userId);
 
                 await wallUserCanister!.savePost(post);
+
+                if (isReshare(post)) {
+                    ignore await authorCanister!.incReshareCount(post.resharePostId!);
+                };
 
                 return ?getPostInfo(await authorCanister!.getUser(), post);
             }
@@ -289,6 +294,18 @@ module {
 
                 case (?reshareUserId) {
                     return reshareUserId;
+                };
+            };
+        };
+
+        private func isReshare(post : Post) : Bool {
+            switch (post.reshareUserId) {
+                case (null) {
+                    return false;
+                };
+
+                case (?reshareUserId) {
+                    return true;
                 };
             };
         };

@@ -372,6 +372,37 @@ shared(msg) actor class UserCanister() = this {
         return [];
     };
 
+    public shared(msg) func incReshareCount(postId : Nat) : async() {
+        let index = postById.get(postId);
+        switch (index) {
+            case (null) { 
+                // nothing
+            };
+
+            case (?index) { 
+                let post = posts.get(index);
+
+                let updatedPost : Post = {
+                    id = post.id;
+                    createdTime = post.createdTime;
+                    userId = post.userId;
+                    kind = post.kind;
+                    text = post.text;
+                    nft = post.nft;
+                    userCanister = post.userCanister;
+
+                    reshareUserId = post.reshareUserId;
+                    resharePostId = post.resharePostId;
+                    reshareCount = post.reshareCount + 1;
+
+                    likers = post.likers;
+                };
+
+                posts.put(index, updatedPost);
+            };
+        };
+    };
+
     private func togglePostLiker(postId : Nat, userId : UserId, like : Bool) {
         let index = postById.get(postId);
         switch (index) {
