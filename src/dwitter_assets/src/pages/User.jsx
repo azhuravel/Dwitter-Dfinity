@@ -1,3 +1,5 @@
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import React, {useEffect, useState, useContext} from 'react';
 import { AppContext } from '../context/index.js';
 import PostsList from '../components/UI/PostsList/PostsList.jsx';
@@ -7,6 +9,7 @@ import NftsSlider from '../components/UI/NftsSlider/NftsSlider.jsx';
 import Loader from '../components/UI/Loader/Loader.jsx';
 import { useParams } from "react-router-dom";
 import { Box, Grid } from '@mui/material';
+import LoadingButton from '@mui/lab/LoadingButton';
 import wealthService from '../services/wealthService';
 import nftService from '../services/nftService.js';
 import { makeCancelable, icpAgent, getUserNftAvatars } from '../utils/utils.js';
@@ -24,6 +27,8 @@ const User = () => {
     const [nftWealth, setNftWealth] = useState(null);
     const [nftAvatar, setNftAvatar] = useState(null);
     const [nftsLoading, setNftsLoading] = useState(true); 
+    const [subscriptionsCount, setSubscriptionsCount] = useState(0); 
+    const [subscribersCount, setSubscribersCount] = useState(0); 
     const [nfts, setNfts] = useState([]);
     const {username} = useParams();
     const isCurrentUserProfile = (username === ctx.currentUser.username);
@@ -38,8 +43,10 @@ const User = () => {
                 setUser(user);
                 setNftAvatar(user?.nftAvatar);
                 setIsCurrentUserAlreadySubscribed(user?.subscribers.includes(ctx.currentUser.id));
+                setSubscriptionsCount(user?.subscribedTo.length);
+                setSubscribersCount(user?.subscribers.length);
+                setUserLoading(false);
             })
-            .then(() => setUserLoading(false))
             .catch((err) => {});
 
         return () => cancelable.cancel();
@@ -101,11 +108,13 @@ const User = () => {
     const subscribeToUser = async (username) => {
         await ctx.apiService.subscribeToUser(username);
         setIsCurrentUserAlreadySubscribed(true);
+        setSubscribersCount(subscribersCount + 1);
     }
 
-    const unsubscribeToUser = async (username) => {
-        await ctx.apiService.unsubscribeToUser(username);
+    const unsubscribeFromUser = async (username) => {
+        await ctx.apiService.unsubscribeFromUser(username);
         setIsCurrentUserAlreadySubscribed(false);
+        setSubscribersCount(subscribersCount - 1);
     }
 
     if (!userLoading && user === null) {
@@ -126,15 +135,41 @@ const User = () => {
         <Grid container spacing={3} sx={{mt: 0}}>
             <Grid item lg={2} md={2} sm={0}/>
             <Grid item lg={8} md={8} sm={12}>
-                <UserCard userLoading={userLoading} username={username} user={user} balance={balance} nftWealth={nftWealth} nftAvatar={nftAvatar} />
-                {!isCurrentUserProfile && isCurrentUserAlreadySubscribed
-                    &&
-                    <LoadingButton type="submit" variant="contained" loading={false} onClick={() => unsubscribeToUser(username)}>Unsubscribe</LoadingButton>
-                }
-                {!isCurrentUserProfile && !isCurrentUserAlreadySubscribed
-                    &&
-                    <LoadingButton type="submit" variant="contained" loading={false} onClick={() => subscribeToUser(username)}>Subscribe</LoadingButton>
-                }
+                <UserCard userLoading={userLoading} username={username} user={user} nftAvatar={nftAvatar} />
+
+                <Box sx={{ border: '2px solid #2196f3', borderRadius: '20px', padding: '20px' }}>
+                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', mb: '20px' }}>
+                        <Box sx={{ textAlign: 'center', fontSize: '0.875rem', fontWeight: '700'}}>
+                            <Typography variant="p" component="p">{subscribersCount}</Typography>
+                            <Typography variant="p" component="p" sx={{color: '#aaa'}}>Subscribers</Typography>
+                        </Box>
+                        <Box sx={{ textAlign: 'center', fontSize: '0.875rem', fontWeight: '700'}}>
+                            <Typography variant="p" component="p">{subscriptionsCount}</Typography>
+                            <Typography variant="p" component="p" sx={{color: '#aaa'}}>Subscriptions</Typography>
+                        </Box>
+                        <Box sx={{ textAlign: 'center', fontSize: '0.875rem', fontWeight: '700'}}>
+                            <Typography variant="p" component="p">{balance}</Typography>
+                            <Typography variant="p" component="p" sx={{color: '#aaa'}}>Balance (ICP)</Typography>
+                        </Box>
+                        <Box sx={{ textAlign: 'center', fontSize: '0.875rem', fontWeight: '700'}}>
+                            <Typography variant="p" component="p">{nftWealth}</Typography>
+                            <Typography variant="p" component="p" sx={{color: '#aaa'}}>NFT wealth (ICP)</Typography>
+                        </Box>
+                    </Box>
+
+                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', textAlign: 'center'}}>
+                        <Box>
+                            {isCurrentUserAlreadySubscribed
+                                &&
+                                <LoadingButton type="submit" disabled={!isCurrentUserProfile} variant="contained" loading={false} onClick={() => unsubscribeFromUser(username)}>Unsubscribe</LoadingButton>
+                            }
+                            {!isCurrentUserAlreadySubscribed
+                                &&
+                                <LoadingButton type="submit" disabled={!isCurrentUserProfile} variant="contained" loading={false} onClick={() => subscribeToUser(username)}>Subscribe</LoadingButton>
+                            }
+                        </Box>
+                    </Box>
+                </Box>
             </Grid>
             <Grid item lg={2} md={2} sm={0}/>
 

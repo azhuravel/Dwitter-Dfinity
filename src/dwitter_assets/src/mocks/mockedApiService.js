@@ -7,6 +7,7 @@ class MockedApiService {
         await delay(200);
         return {
             bio: [],
+            id: 'rno2w-sqaaa-aaaaa-aaacq-cai',
             canisterPrincipal: "rno2w-sqaaa-aaaaa-aaacq-cai",
             createdTime: 1654452070892038000n,
             displayname: "qweqwe",
@@ -24,12 +25,12 @@ class MockedApiService {
     }
 
     async getUserByUsername(username) {
-        await delay(2000);
+        await delay(200);
         return {
             bio: [],
-            canisterPrincipal: "rno2w-sqaaa-aaaaa-aaacq-cai",
+            canisterPrincipal: "rno2w-sqaaa-aaaaa-aaacq-cai1",
             createdTime: 1654452070892038000n,
-            displayname: "qweqwe",
+            displayname: "asdasd",
             nftAvatar: [],
             token: {
                 buyPrice: 1_000_000n,
@@ -39,7 +40,7 @@ class MockedApiService {
                 totalCount: 0n,
                 totalLocked: 0n,
             },
-            username: "qweqwe",
+            username: "asdasd",
         };
     }
 
@@ -72,9 +73,22 @@ class MockedApiService {
                 kind: "TEXT",
                 nft: [],
                 nftAvatar: [],
-                text: "greukghrekuhg",
+                text: "greukghrekuhg bkwefwe fwefjwnefkwe f wefkjbwekf wekf kwejfkwhefjwef wejfkwef kwefjkwebfkjwbefjkwb",
+                username: "qweqwe",
+                likers: ['rno2w-sqaaa-aaaaa-aaacq-cai'],
+                reshareCount: 0,
+            },
+            {
+                createdTime: 1654546395725877001n,
+                displayname: "qweqwe",
+                id: 6n,
+                kind: "TEXT",
+                nft: [],
+                nftAvatar: [],
+                text: "greukghrekuhg 2323 4535345",
                 username: "qweqwe",
                 likers: [],
+                reshareCount: 20,
             }
         ];
     }
@@ -94,11 +108,20 @@ class MockedApiService {
     
     async createUser(username, displayname) {
     }
+
+    async sharePost() {
+    }
     
     async likePost(username, postId) {
     }
 
     async dislikePost(username, postId) {
+    }
+
+    async subscribeToUser(username) {
+    }
+
+    async unsubscribeFromUser(username) {
     }
 
     async buyToken(canisterPrincipal, blockIndex) {

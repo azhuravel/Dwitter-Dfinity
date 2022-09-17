@@ -148,6 +148,9 @@ class ApiService {
         logger('END apiService.unsubscribeFromUser()', username, resp);
     }
 
+    async sharePost() {
+    }
+
     async buyToken(canisterPrincipal, blockIndex) {      
         logger('START apiService.buyToken()', blockIndex);
         const userActor = await makeUserActor(canisterPrincipal);

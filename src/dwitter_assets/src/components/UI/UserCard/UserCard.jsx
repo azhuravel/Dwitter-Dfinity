@@ -8,26 +8,24 @@ import Skeleton from '@mui/material/Skeleton';
 
 
 const UserCard = (props) => {
-    const {username, nftAvatar, userLoading} = props;
-    const displayname = props?.user?.displayname;
-    const balance = props?.balance ?? 0;
-    const nftWealth = props?.nftWealth ?? 0;
+    const {username, nftAvatar, userLoading, user} = props;
+    const displayname = user?.displayname;
     const createdTime = (props?.user?.createdTime || 0n ) / 1000000000n;
     const bio = props?.user?.bio?.[0] ?? '';
 
     const getCardTitle = () => {
-        if (userLoading) {
+        if (!user) {
             return <Skeleton animation="wave" />
         } 
         return <span>{displayname}</span>
     }
 
     const getCardSubheader = () => {
-        if (userLoading) {
+        if (!user) {
             return <Skeleton animation="wave" />
         } 
         return (
-            <span>{`@${username} - joined ${moment.unix(Number(createdTime)).fromNow()} - balance ${balance} ICP - NFT wealth ${nftWealth} ICP`}</span>
+            <span>{`@${username} - joined ${moment.unix(Number(createdTime)).fromNow()}`}</span>
         );
     }
     

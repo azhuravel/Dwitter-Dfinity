@@ -16,6 +16,7 @@ import CardActions from '@mui/material/CardActions';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { red } from '@mui/material/colors';
+import ReplyIcon from '@mui/icons-material/Reply';
 
 
 const Post = (props) => {
@@ -24,6 +25,7 @@ const Post = (props) => {
 
     const [isLikedByCurrentUser, setIsLikedByCurrentUser] = useState(item.likers.includes(ctx.currentUser.id)); 
     const [likesCount, setLikesCount] = useState(item?.likers?.length); 
+    const [sharesCount, setSharesCount] = useState(item?.reshareCount ?? 0); 
 
     const linkPrefix = redirectOnWall ? 'wall' : 'user';
 
@@ -37,15 +39,31 @@ const Post = (props) => {
     }
     
     const likePost = async () => {
-        await ctx.apiService.likePost(item.username, item.id);
+        if (item.resharePostId?.[0]) {
+            await ctx.apiService.likePost(item.username, item.resharePostId);
+        } else {
+            await ctx.apiService.likePost(item.username, item.id);
+        }
         setIsLikedByCurrentUser(true);
         setLikesCount(likesCount + 1);
     }
 
     const dislikePost = async () => {
-        await ctx.apiService.dislikePost(item.username, item.id);
+        if (item.resharePostId?.[0]) {
+            await ctx.apiService.dislikePost(item.username, item.resharePostId);
+        } else {
+            await ctx.apiService.dislikePost(item.username, item.id);
+        }
         setIsLikedByCurrentUser(false);
         setLikesCount(likesCount - 1);
+    }
+
+    const sharePost = async () => {
+        if (!confirm('Are you shure?')) {
+            return;
+        }
+        await ctx.apiService.sharePost(item.username, item.id);
+        setSharesCount(sharesCount + 1);
     }
 
     return (
@@ -81,6 +99,11 @@ const Post = (props) => {
                     </IconButton>
                 }
                 <Typography>{likesCount}</Typography>
+
+                <IconButton aria-label="Share" onClick={() => sharePost(item)} sx={{ml: 5}}>
+                    <ReplyIcon />
+                </IconButton>
+                <Typography>{sharesCount}</Typography>
             </CardActions>
         </Card> 
     );
