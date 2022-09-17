@@ -49,9 +49,21 @@ module {
 
                 if (isReshare(post)) {
                     ignore await authorCanister!.incReshareCount(post.resharePostId!);
+                } else {
+                    ignore await sendPostToSubscribers(post, userId, authorCanister);
                 };
 
                 return ?getPostInfo(await authorCanister!.getUser(), post);
+            }
+        };
+
+        private func sendPostToSubscribers(post : Post, userId : UserId, userCanister : ?UserCanister) : async ?() {
+            do ? {
+                let user = await userCanister!.getUserInfo(userId);
+                for (subscriber in user!.subscribers.vals()) {
+                    let subscriberCanister = userCanisterService.getByUserId(Principal.fromText(subscriber));
+                    ignore await subscriberCanister!.addPostToFeed(post, user!.balance);
+                };
             }
         };
 

@@ -1,5 +1,6 @@
 import Types "./types";
 import Buffer "mo:base/Buffer";
+import RBTree "mo:base/RBTree";
 import Map "mo:base/HashMap";
 import Nat "mo:base/Nat";
 import Nat64 "mo:base/Nat64";
@@ -11,6 +12,7 @@ import Stack "mo:base/Stack";
 import Blob "mo:base/Blob";
 import Iter "mo:base/Iter";
 import Array "mo:base/Array";
+import Time "mo:base/Time";
 
 import Cycles "mo:base/ExperimentalCycles";
 import Ledger "ic/ledger";
@@ -73,7 +75,7 @@ shared(msg) actor class UserCanister() = this {
     let posts = Buffer.Buffer<Post>(0);
 
     // extendable list of user posts
-    let feed = Buffer.Buffer<Post>(0);
+    let feed = RBTree.RBTree<Nat64, Post>(Nat64.compare);
 
     // posts indexed by post.id
     let postById = Map.HashMap<Nat, Nat>(1, Nat.equal, Hash.hash);
@@ -108,6 +110,11 @@ shared(msg) actor class UserCanister() = this {
         let isSelfPost = msg.caller == user.id;
         // ensure that have enough tokens to make a post
         storePost(post);
+    };
+
+    public shared(msg) func addPostToFeed(post : Post, balance : Nat64) : async () {
+        let timestamp = Nat64.fromIntWrap(Time.now());
+        feed.put(balance + timestamp, post);
     };
 
     // deprecated
@@ -369,7 +376,8 @@ shared(msg) actor class UserCanister() = this {
     };
 
     public shared(msg) func getFeed() : async [Post] {
-        return [];
+        let feedIter = Iter.map(feed.entries(), func (x : (Nat64, Post)) : Post { x.1 });
+        return Iter.toArray(feedIter);
     };
 
     public shared(msg) func incReshareCount(postId : Nat) : async() {
@@ -401,6 +409,10 @@ shared(msg) actor class UserCanister() = this {
                 posts.put(index, updatedPost);
             };
         };
+    };
+
+    public shared(msg) func setBalance(balance : Nat64) : async() {
+        userBalance := balance;
     };
 
     private func togglePostLiker(postId : Nat, userId : UserId, like : Bool) {
