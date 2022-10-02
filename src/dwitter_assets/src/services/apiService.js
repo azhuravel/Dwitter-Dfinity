@@ -106,6 +106,12 @@ class ApiService {
         return posts;
     }
 
+    async getFeed(username) {
+        logger('START apiService.getUserPosts()', username);
+        logger('END apiService.getUserPosts()');
+        return [];
+    }
+
     async createPost(text, nft, kind) {
         logger('START apiService.createPost()', text, nft, kind);
         if (!this.dwitterActor) {

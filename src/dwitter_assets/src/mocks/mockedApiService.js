@@ -93,6 +93,35 @@ class MockedApiService {
         ];
     }
 
+    async getFeed(username) {
+        return [
+            {
+                createdTime: 1654546395725877000n,
+                displayname: "qweqwe",
+                id: 6n,
+                kind: "TEXT",
+                nft: [],
+                nftAvatar: [],
+                text: "greukghrekuhg bkwefwe fwefjwnefkwe f wefkjbwekf wekf kwejfkwhefjwef wejfkwef kwefjkwebfkjwbefjkwb",
+                username: "qweqwe",
+                likers: ['rno2w-sqaaa-aaaaa-aaacq-cai'],
+                reshareCount: 0,
+            },
+            {
+                createdTime: 1654546395725877001n,
+                displayname: "qweqwe",
+                id: 6n,
+                kind: "TEXT",
+                nft: [],
+                nftAvatar: [],
+                text: "greukghrekuhg 2323 4535345",
+                username: "qweqwe",
+                likers: [],
+                reshareCount: 20,
+            }
+        ];
+    }
+
     async createPost(text, nft, kind) {
         return {
             createdTime: 1654546395725877000n,

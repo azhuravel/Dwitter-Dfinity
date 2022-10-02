@@ -7,6 +7,7 @@ import User from '../pages/User.jsx';
 import Wall from '../pages/Wall.jsx';
 import Registration from '../pages/Registration.jsx';
 import Settings from '../pages/Settings.jsx';
+import Feed from '../pages/Feed.jsx';
 import WipPage from '../pages/WipPage.jsx';
 import {appState_notLoggedIn, appState_loading, appState_registrationPage, appState_loggedIn} from "../constants";
 
@@ -46,6 +47,7 @@ const AppRouter = () => {
                     {/* <Route path="/wall/:username" element={<Wall />} /> */}
                     <Route path="/user/:username" element={<Wall />} />
                     <Route path="/settings" element={<Settings />} />
+                    <Route path="/feed" element={<Feed />} />
                     <Route path="*" element={<Navigate to={currentUserProfilePath} />}/>
                 </Routes>
             );

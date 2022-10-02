@@ -50,6 +50,10 @@ const Navbar = () => {
 
                         {currentUserIsSignedUp && 
                             <React.Fragment>
+                                <MenuItem component={Link} to={`/feed`}>
+                                    <Typography textAlign="center">Feed</Typography>
+                                </MenuItem>
+
                                 <Button
                                     id="basic-button"
                                     color="inherit"
