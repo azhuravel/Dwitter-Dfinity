@@ -56,6 +56,7 @@ shared(msg) actor class UserCanister() = this {
 
     stable var user = EMPTY_USER;
     stable var version = 1;
+    stable var postIdMax = 2;
     stable var userAccountIdentifier = "";
     stable var canisterAccountIdentifier = "";
 
@@ -76,6 +77,9 @@ shared(msg) actor class UserCanister() = this {
 
     // extendable list of user posts
     let feed = RBTree.RBTree<Nat64, Post>(Nat64.compare);
+
+    // storage of feed
+    stable var serializedFeed : [(Nat64, Post)] = [];
 
     // posts indexed by post.id
     let postById = Map.HashMap<Nat, Nat>(1, Nat.equal, Hash.hash);
@@ -107,13 +111,31 @@ shared(msg) actor class UserCanister() = this {
     };
 
     public shared(msg) func savePost(post : Post) : async () {
-        let isSelfPost = msg.caller == user.id;
+        // let isSelfPost = msg.caller == user.id;
         // ensure that have enough tokens to make a post
+        let editedPost : Post = {
+            id = post.id;
+            userId = post.userId;
+            userCanister = post.userCanister;
+            createdTime = post.createdTime;
+            kind = post.kind;
+            nft = post.nft;
+            text = post.text;
+
+            resharePostId = post.resharePostId;
+            reshareUserId = post.reshareUserId;
+            reshareCount = post.reshareCount;
+
+            likers = post.likers;
+        };
+
+        postIdMax := postIdMax + 1;
+
         storePost(post);
     };
 
     public shared(msg) func addPostToFeed(post : Post, balance : Nat64) : async () {
-        let timestamp = Nat64.fromIntWrap(Time.now());
+        let timestamp = Nat64.fromIntWrap(Time.now()) + balance;
         feed.put(balance + timestamp, post);
     };
 
@@ -595,6 +617,7 @@ shared(msg) actor class UserCanister() = this {
         serializedTransactions := Iter.toArray(transactions.entries());
         serializedTokensPrices := tokensPrices.toArray();
         serializedTokensOwners := Iter.toArray(tokensOwners.entries());
+        serializedFeed := Iter.toArray(feed.entries());
     };
 
     system func postupgrade() {
@@ -610,6 +633,7 @@ shared(msg) actor class UserCanister() = this {
         serializedTransactions := [];
         serializedTokensOwners := [];
         serializedTokensPrices := [];
+        serializedFeed := [];
     };
 
     /* Utility func */
