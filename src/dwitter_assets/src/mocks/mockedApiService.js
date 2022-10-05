@@ -4,7 +4,7 @@ class MockedApiService {
     setDwitterActor(dwitterActor) {}
 
     async getCurrentUser() {
-        await delay(200);
+        await delay(20);
         return {
             bio: [],
             id: 'rno2w-sqaaa-aaaaa-aaacq-cai',
@@ -25,7 +25,7 @@ class MockedApiService {
     }
 
     async getUserByUsername(username) {
-        await delay(200);
+        await delay(20);
         return {
             bio: [],
             canisterPrincipal: "rno2w-sqaaa-aaaaa-aaacq-cai1",
@@ -45,7 +45,7 @@ class MockedApiService {
     }
 
     async signUpUser(username, displayname) {
-        await delay(200);
+        await delay(20);
         return {
             bio: [],
             canisterPrincipal: "rno2w-sqaaa-aaaaa-aaacq-cai",
@@ -96,16 +96,59 @@ class MockedApiService {
     async getFeed(username) {
         return [
             {
+                userId: 'rno2w-sqaaa-aaaaa-aaacq-777',
+                createdTime: 1654546395725877001n,
+                reshareDisplayname: ["Alex"],
+                reshareUsername: ["alex"],
+                reshareUserId: ['rno2w-sqaaa-aaaaa-aaacq-cai'],
+                resharePostId: [6n],
+                displayname: "Dmitry",
+                username: "dkostenko",
+                id: 7n,
+                kind: "NFT",
+                nft: [{
+                    canisterId: "sr4qi-vaaaa-aaaah-qcaaq-cai",
+                    index: "4181",
+                    standard: "EXT",
+                }],
+                nftAvatar: [],
+                text: "",
+                likers: [],
+                reshareCount: 20,
+            },
+            {
+                userId: 'rno2w-sqaaa-aaaaa-aaacq-cai',
                 createdTime: 1654546395725877000n,
-                displayname: "qweqwe",
+                displayname: "Alex",
                 id: 6n,
+                kind: "NFT",
+                nft: [{
+                    canisterId: "sr4qi-vaaaa-aaaah-qcaaq-cai",
+                    index: "4181",
+                    standard: "EXT",
+                }],
+                nftAvatar: [],
+                text: "",
+                username: "alex",
+                likers: ['rno2w-sqaaa-aaaaa-aaacq-cai'],
+                reshareCount: 0,
+            },
+            {
+                userId: 'rno2w-sqaaa-aaaaa-aaacq-777',
+                createdTime: 1654546395725877001n,
+                reshareDisplayname: ["Alex"],
+                reshareUsername: ["alex"],
+                reshareUserId: ['rno2w-sqaaa-aaaaa-aaacq-cai'],
+                resharePostId: [6n],
+                displayname: "Dmitry",
+                username: "dkostenko",
+                id: 7n,
                 kind: "TEXT",
                 nft: [],
                 nftAvatar: [],
-                text: "greukghrekuhg bkwefwe fwefjwnefkwe f wefkjbwekf wekf kwejfkwhefjwef wejfkwef kwefjkwebfkjwbefjkwb",
-                username: "qweqwe",
-                likers: ['rno2w-sqaaa-aaaaa-aaacq-cai'],
-                reshareCount: 0,
+                text: "text of original post",
+                likers: [],
+                reshareCount: 20,
             },
             {
                 createdTime: 1654546395725877001n,

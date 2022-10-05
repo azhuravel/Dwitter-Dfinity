@@ -30,7 +30,10 @@ const Settings = () => {
         // const cancelable = makeCancelable(nftService.getDigestedNfts(ctx.accountIdentifier));
         const cancelable = makeCancelable(nftService.getDigestedNfts('a3lk7-mb2cz-b7akx-5ponv-b64xw-dkag4-zrt3g-rml4r-6wr7g-kg5ue-2ae'));
         cancelable.promise
-            .then((nfts) => setNfts(nfts))
+            .then((nfts) => {
+                console.log(nfts);
+                setNfts(nfts);
+            })
             .then(() => setNftsLoading(false))
             .catch((err) => {});
 

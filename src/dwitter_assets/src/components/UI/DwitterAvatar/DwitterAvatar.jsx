@@ -52,7 +52,7 @@ function makeShortName(name) {
 }
 
 const DwitterAvatar = (props) => {
-    const {mr, displayname, nftAvatarId} = props;
+    const {mr, displayname, nftAvatarId, isPostNFT} = props;
     const defaultState = {
         isLoading: true,
         shortName: makeShortName(displayname),
@@ -76,10 +76,18 @@ const DwitterAvatar = (props) => {
     }, [nftAvatarId]);
 
     if (state.isLoading) {
+        if (isPostNFT) {
+            return (
+            <CircularProgress color="inherit" sx={{mr: mr, margin: 25}}/>
+            )
+        }
         return (<CircularProgress color="inherit" sx={{mr: mr}}/>)
     }
 
     if (state.avatarUrl) {
+        if (isPostNFT) {
+            return (<Avatar variant="rounded" sx={{mr: mr, width: 500, height: 500}} src={state.avatarUrl} />)
+        }
         return (<Avatar variant="rounded" sx={{mr: mr}} src={state.avatarUrl} />)
     }
 

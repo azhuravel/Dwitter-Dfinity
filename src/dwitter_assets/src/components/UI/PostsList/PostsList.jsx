@@ -34,13 +34,13 @@ const Post = (props) => {
             case postKind_text:
                 return (<Typography style={{whiteSpace: 'pre-line'}}>{renderPostText(post.text, linkPrefix)}</Typography>);
             case postKind_nft:
-                return (<DwitterAvatar mr={1} displayname={''} nftAvatarId={post?.nft?.[0]}/>);
+                return (<DwitterAvatar mr={1} displayname={''} nftAvatarId={post?.nft} isPostNFT={true} />);
         }
     }
     
-    const likePost = async () => {
+    const likePost = async (item) => {
         if (item.resharePostId?.[0]) {
-            await ctx.apiService.likePost(item.username, item.resharePostId);
+            await ctx.apiService.likePost(item.username[0], item.resharePostId[0]);
         } else {
             await ctx.apiService.likePost(item.username, item.id);
         }
@@ -48,9 +48,9 @@ const Post = (props) => {
         setLikesCount(likesCount + 1);
     }
 
-    const dislikePost = async () => {
+    const dislikePost = async (item) => {
         if (item.resharePostId?.[0]) {
-            await ctx.apiService.dislikePost(item.username, item.resharePostId);
+            await ctx.apiService.dislikePost(item.username[0], item.resharePostId[0]);
         } else {
             await ctx.apiService.dislikePost(item.username, item.id);
         }
@@ -58,12 +58,44 @@ const Post = (props) => {
         setLikesCount(likesCount - 1);
     }
 
-    const sharePost = async () => {
+    const sharePost = async (item) => {
         if (!confirm('Are you shure?')) {
             return;
         }
-        await ctx.apiService.sharePost(item.username, item.id);
+        if (item.resharePostId?.[0]) {
+            await ctx.apiService.sharePost(item.reshareUsername[0], item.resharePostId[0]);
+        } else {
+            await ctx.apiService.sharePost(item.username, item.id);
+        }
         setSharesCount(sharesCount + 1);
+    }
+
+    const buildCardContentSx = (post) => {
+        if (post.resharePostId?.[0]) {
+            return { paddingLeft: 2, paddingRight: 0, borderLeft: '4px solid #000' };
+        }
+        return { paddingLeft: 0, paddingRight: 0 };
+    }
+
+    const buildPostAuthorInfo = (post) => {
+        if (post?.reshareUserId) {
+            return (
+                <React.Fragment>
+                    {item.displayname}
+                    {" "}
+                    <Link component={RouterLink} underline='hover' to={`/${linkPrefix}/${item.username}`}>@{item.username}</Link>
+                    {" shared from "}
+                    <Link component={RouterLink} underline='hover' to={`/${linkPrefix}/${item.reshareUsername}`}>@{item.reshareUsername}</Link>
+                </React.Fragment>
+            );
+        }
+        return (
+            <React.Fragment>
+                {item.displayname}
+                {" "}
+                <Link component={RouterLink} underline='hover' to={`/${linkPrefix}/${item.username}`}>@{item.username}</Link>
+            </React.Fragment>
+        );
     }
 
     return (
@@ -72,17 +104,11 @@ const Post = (props) => {
                 avatar={
                     <DwitterAvatar mr={1} displayname={item.displayname} nftAvatarId={item?.nftAvatar}/>
                 }
-                title={
-                    <React.Fragment>
-                        {item.displayname}
-                        {" "}
-                        <Link component={RouterLink} underline='hover' to={`/${linkPrefix}/${item.username}`}>@{item.username}</Link>
-                    </React.Fragment>
-                }
+                title={buildPostAuthorInfo(item)}
                 subheader={moment.unix(Number(item.createdTime / 1000000000n)).fromNow()}
                 sx={{ paddingLeft: 0, paddingRight: 0 }}
                 />
-            <CardContent sx={{ paddingLeft: 0, paddingRight: 0 }}>
+            <CardContent sx={buildCardContentSx(item)}>
                 {buildPostBody(item)}
             </CardContent>
             <CardActions disableSpacing sx={{ paddingLeft: 0, paddingRight: 0 }}>
