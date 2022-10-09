@@ -20,7 +20,7 @@ import ReplyIcon from '@mui/icons-material/Reply';
 
 
 const Post = (props) => {
-    const {item, redirectOnWall, isCurrentUserProfile} = props;
+    const {item, redirectOnWall} = props;
     const {ctx} = useContext(AppContext); 
 
     const [isLikedByCurrentUser, setIsLikedByCurrentUser] = useState(item.likers.includes(ctx.currentUser.id)); 
@@ -59,7 +59,7 @@ const Post = (props) => {
     }
 
     const sharePost = async (item) => {
-        if (isCurrentUserProfile) {
+        if (item.reshareUsername?.[0] === ctx.username || item.username === ctx.username) {
             alert("You can't share your own posts");
             return;
         }
@@ -100,7 +100,7 @@ const Post = (props) => {
     }
 
     const buildPostAuthorInfo = (item) => {
-        if (item?.reshareUserId?.[0]) {
+        if (!!item?.reshareUserId?.[0]) {
             return (
                 <React.Fragment>
                     {item.displayname}
@@ -155,36 +155,6 @@ const Post = (props) => {
             </CardActions>
         </Card> 
     );
-
-    // return (
-    //     <ListItem disableGutters key={item.id} alignItems="flex-start">
-    //         <ListItemAvatar>
-    //             <DwitterAvatar mr={1} displayname={item.displayname} nftAvatarId={item?.nftAvatar}/>
-    //         </ListItemAvatar>
-    //         <ListItemText
-    //             primary={
-    //                 <React.Fragment>
-    //                     {item.displayname}
-    //                     {" "}
-    //                     <Link component={RouterLink} underline='hover' to={`/${linkPrefix}/${item.username}`}>@{item.username}</Link>
-    //                     {" - "}
-    //                     {moment.unix(Number(item.createdTime / 1000000000n)).fromNow()}
-    //                 </React.Fragment>
-    //             }
-    //             secondary={buildPostBody(item)}
-    //         />
-    //         <div>
-    //             {!isLikedByCurrentUser
-    //                 &&
-    //                 <LoadingButton type="submit" variant="contained" loading={false} onClick={() => likePost(item)}>Like</LoadingButton>
-    //             }
-    //             {isLikedByCurrentUser
-    //                 &&
-    //                 <LoadingButton type="submit" variant="contained" loading={false} onClick={() => dislikePost(item)}>Unlike</LoadingButton>
-    //             }
-    //         </div>
-    //     </ListItem>
-    // );
 };
 
 
@@ -193,7 +163,7 @@ const PostsList = (props) => {
         <List>
             {
                 props.posts.map((item, idx) => 
-                    <Post item={item} redirectOnWall={false} key={idx} isCurrentUserProfile={props?.isCurrentUserProfile} />
+                    <Post item={item} redirectOnWall={false} key={idx} />
                 )
             }
         </List>

@@ -205,7 +205,7 @@ const User = () => {
                 {postsLoading && <Loader/>}
                 {!postsLoading && 
                     <Box sx={{ display: 'flex' }}>
-                        <PostsList posts={posts} isCurrentUserProfile={isCurrentUserProfile} />
+                        <PostsList posts={posts} />
                     </Box>
                 }
             </Grid>
