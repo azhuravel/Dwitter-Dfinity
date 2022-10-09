@@ -27,7 +27,7 @@ export default class AuthService {
         // Ошибка при запуске локально "Fail to verify certificate" решается запросом rootKey().
         // Подробней: https://forum.dfinity.org/t/fail-to-verify-certificate-in-development-update-calls/4078
         if (process.env.NODE_ENV === 'development') {
-            await plug.agent.fetchRootKey();
+            //await plug.agent.fetchRootKey();
         }
 
         const dwitterActor = await plug.createActor({

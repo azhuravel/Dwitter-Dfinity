@@ -1,5 +1,6 @@
 import Types "./types";
 import Buffer "mo:base/Buffer";
+import RBTree "mo:base/RBTree";
 import Map "mo:base/HashMap";
 import Nat "mo:base/Nat";
 import Nat64 "mo:base/Nat64";
@@ -11,6 +12,7 @@ import Stack "mo:base/Stack";
 import Blob "mo:base/Blob";
 import Iter "mo:base/Iter";
 import Array "mo:base/Array";
+import Time "mo:base/Time";
 
 import Cycles "mo:base/ExperimentalCycles";
 import Ledger "ic/ledger";
@@ -25,6 +27,7 @@ shared(msg) actor class UserCanister() = this {
     type UserTokenInfo = Types.UserTokenInfo;
     type CanisterInfo = Types.CanisterInfo;
     type ShortUserInfo = Types.ShortUserInfo;
+    type UserPostId = Types.UserPostId;
 
     type Operation = Ledger.Operation;
     type AccountIdentifier = Ledger.AccountIdentifier;
@@ -54,6 +57,7 @@ shared(msg) actor class UserCanister() = this {
 
     stable var user = EMPTY_USER;
     stable var version = 1;
+    stable var postIdMax = 2;
     stable var userAccountIdentifier = "";
     stable var canisterAccountIdentifier = "";
 
@@ -73,7 +77,10 @@ shared(msg) actor class UserCanister() = this {
     let posts = Buffer.Buffer<Post>(0);
 
     // extendable list of user posts
-    let feed = Buffer.Buffer<Post>(0);
+    let feed = RBTree.RBTree<Nat64, UserPostId>(Nat64.compare);
+
+    // storage of feed
+    stable var serializedFeed : [(Nat64, UserPostId)] = [];
 
     // posts indexed by post.id
     let postById = Map.HashMap<Nat, Nat>(1, Nat.equal, Hash.hash);
@@ -104,10 +111,37 @@ shared(msg) actor class UserCanister() = this {
         return posts.toArray();
     };
 
-    public shared(msg) func savePost(post : Post) : async () {
-        let isSelfPost = msg.caller == user.id;
+    public shared(msg) func savePost(post : Post) : async Post {
+        // let isSelfPost = msg.caller == user.id;
         // ensure that have enough tokens to make a post
+        let editedPost : Post = {
+            id = post.id;
+            userId = post.userId;
+            userCanister = post.userCanister;
+            createdTime = post.createdTime;
+            kind = post.kind;
+            nft = post.nft;
+            text = post.text;
+
+            resharePostId = post.resharePostId;
+            reshareUserId = post.reshareUserId;
+            reshareCount = post.reshareCount;
+            reshareUsername = post.reshareUsername;
+            reshareDisplayname = post.reshareDisplayname;
+
+            likers = post.likers;
+        };
+
+        postIdMax := postIdMax + 1;
+
         storePost(post);
+
+        return editedPost;
+    };
+
+    public shared(msg) func addPostToFeed(post : UserPostId, balance : Nat64) : async () {
+        let timestamp = Nat64.fromIntWrap(Time.now()) + balance;
+        feed.put(balance + timestamp, post);
     };
 
     // deprecated
@@ -299,12 +333,12 @@ shared(msg) actor class UserCanister() = this {
         await _updateBalance();
     };
 
-    public shared (msg) func likePost(id : Nat) : async() {
-        togglePostLiker(id, msg.caller, true);
+    public func likePost(userId : UserId, id : Nat) : async() {
+        togglePostLiker(id, userId, true);
     };
 
-    public shared (msg) func dislikePost(id : Nat) : async() {
-        togglePostLiker(id, msg.caller, false);
+    public func dislikePost(userId : UserId, id : Nat) : async() {
+        togglePostLiker(id, userId, false);
     };
 
     /**
@@ -368,8 +402,46 @@ shared(msg) actor class UserCanister() = this {
         };
     };
 
-    public shared(msg) func getFeed() : async [Post] {
-        return [];
+    public shared(msg) func getFeed() : async [UserPostId] {
+        let feedIter = Iter.map(feed.entries(), func (x : (Nat64, UserPostId)) : UserPostId { x.1 });
+        return Iter.toArray(feedIter);
+    };
+
+    public shared(msg) func incReshareCount(postId : Nat) : async() {
+        let index = postById.get(postId);
+        switch (index) {
+            case (null) { 
+                // nothing
+            };
+
+            case (?index) { 
+                let post = posts.get(index);
+
+                let updatedPost : Post = {
+                    id = post.id;
+                    createdTime = post.createdTime;
+                    userId = post.userId;
+                    kind = post.kind;
+                    text = post.text;
+                    nft = post.nft;
+                    userCanister = post.userCanister;
+
+                    reshareUserId = post.reshareUserId;
+                    resharePostId = post.resharePostId;
+                    reshareCount = post.reshareCount + 1;
+                    reshareUsername = post.reshareUsername;
+                    reshareDisplayname = post.reshareDisplayname;
+
+                    likers = post.likers;
+                };
+
+                posts.put(index, updatedPost);
+            };
+        };
+    };
+
+    public shared(msg) func setBalance(balance : Nat64) : async() {
+        userBalance := balance;
     };
 
     private func togglePostLiker(postId : Nat, userId : UserId, like : Bool) {
@@ -408,9 +480,13 @@ shared(msg) actor class UserCanister() = this {
                     reshareUserId = post.reshareUserId;
                     resharePostId = post.resharePostId;
                     reshareCount = post.reshareCount;
+                    reshareUsername = post.reshareUsername;
+                    reshareDisplayname = post.reshareDisplayname;
 
                     likers = likers;
                 };
+
+                posts.put(index, updatedPost);
             };
         };
     };
@@ -550,6 +626,7 @@ shared(msg) actor class UserCanister() = this {
         serializedTransactions := Iter.toArray(transactions.entries());
         serializedTokensPrices := tokensPrices.toArray();
         serializedTokensOwners := Iter.toArray(tokensOwners.entries());
+        serializedFeed := Iter.toArray(feed.entries());
     };
 
     system func postupgrade() {
@@ -565,6 +642,7 @@ shared(msg) actor class UserCanister() = this {
         serializedTransactions := [];
         serializedTokensOwners := [];
         serializedTokensPrices := [];
+        serializedFeed := [];
     };
 
     /* Utility func */

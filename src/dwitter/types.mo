@@ -36,6 +36,8 @@ module {
 
     resharePostId : ?Nat;
     reshareUserId : ?UserId;
+    reshareUsername: ?Text;
+    reshareDisplayname : ?Text;
     reshareCount : Nat;
 
     likers : [UserId];
@@ -43,6 +45,7 @@ module {
 
   public type PostInfo = {
     id : Nat;
+    userId : Text;
     kind : Text;
     createdTime : Int;
     text : Text;
@@ -50,6 +53,8 @@ module {
 
     resharePostId : ?Nat;
     reshareUserId : ?UserId;
+    reshareUsername: ?Text;
+    reshareDisplayname : ?Text;
     reshareCount : Nat;
 
     // user's info
@@ -67,6 +72,8 @@ module {
 
     reshareUserId : ?Text;
     resharePostId : ?Nat;
+    reshareUsername : ?Text;
+    reshareDisplayname : ?Text;
   };
 
   public type CreatePostAndSpendTokenRequest = {
