@@ -59,7 +59,10 @@ const Post = (props) => {
     }
 
     const sharePost = async (item) => {
-        if (item.reshareUsername?.[0] === ctx.username || item.username === ctx.username) {
+        const currentUsername = ctx?.currentUser?.username;
+        if (currentUsername && (
+            item.reshareUsername?.[0] === currentUsername || item.username === currentUsername
+        )) {
             alert("You can't share your own posts");
             return;
         }
