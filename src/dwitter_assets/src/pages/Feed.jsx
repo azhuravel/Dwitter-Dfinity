@@ -49,8 +49,7 @@ const Feed = () => {
                         {!posts
                             &&
                             <React.Fragment>
-                                <Typography variant="h6" component="div" sx={{flexGrow: 1}}>Your feed is empty</Typography>
-                                <Typography variant="h6" component="div" sx={{flexGrow: 1}}>Try to subscribe to someone to see the posts here</Typography>
+                                <Typography variant="h6">Your feed is empty<br />Try to subscribe to someone to see the posts here</Typography>
                             </React.Fragment>
                         }
                     </Box>
