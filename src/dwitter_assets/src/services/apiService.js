@@ -146,13 +146,13 @@ class ApiService {
 
     async subscribeToUser(username) {
         logger('START apiService.subscribeToUser()', username);
-        const resp = await this.dwitterActor.subscribe({username});
+        const resp = await this.dwitterActor.subscribe(username);
         logger('END apiService.subscribeToUser()', username, resp);
     }
 
     async unsubscribeFromUser(username) {
         logger('START apiService.unsubscribeFromUser()', username);
-        const resp = await this.dwitterActor.unsubscribe({username});
+        const resp = await this.dwitterActor.unsubscribe(username);
         logger('END apiService.unsubscribeFromUser()', username, resp);
     }
 
