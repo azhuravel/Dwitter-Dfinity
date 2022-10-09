@@ -106,13 +106,13 @@ const User = () => {
     }
 
     const subscribeToUser = async (username) => {
-        await ctx.apiService.subscribeToUser(username);
+        ctx.apiService.subscribeToUser(username);
         setIsCurrentUserAlreadySubscribed(true);
         setSubscribersCount(subscribersCount + 1);
     }
 
     const unsubscribeFromUser = async (username) => {
-        await ctx.apiService.unsubscribeFromUser(username);
+        ctx.apiService.unsubscribeFromUser(username);
         setIsCurrentUserAlreadySubscribed(false);
         setSubscribersCount(subscribersCount - 1);
     }
