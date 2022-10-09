@@ -9,6 +9,7 @@ import AuthService from "../../../services/authService.js";
 import {Link} from "react-router-dom";
 import Container from '@mui/material/Container';
 import Menu from '@mui/material/Menu';
+import Box from '@mui/material/Box';
 import MenuItem from '@mui/material/MenuItem';
 import DwitterAvatar from "../DwitterAvatar/DwitterAvatar";
 
@@ -40,7 +41,7 @@ const Navbar = () => {
             <AppBar position="fixed">
                 <Container maxWidth="lg">
                     <Toolbar variant="regular" disableGutters>
-                        <Typography variant="h6" component="div" sx={{flexGrow: 1}}>Dwitter</Typography>
+                        <Typography noWrap variant="h6" component="div" sx={{flexGrow: 0, mr: 4}}>Dwitter</Typography>
 
                         {!currentUserIsSignedUp && 
                             <Button color="inherit" onClick={logout}>
@@ -50,36 +51,40 @@ const Navbar = () => {
 
                         {currentUserIsSignedUp && 
                             <React.Fragment>
-                                <MenuItem component={Link} to={`/feed`}>
-                                    <Typography textAlign="center">Feed</Typography>
-                                </MenuItem>
+                                <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                                    <MenuItem component={Link} to={`/feed`}>
+                                        <Typography textAlign="center">Feed</Typography>
+                                    </MenuItem>
+                                </Box>
 
-                                <Button
-                                    id="basic-button"
-                                    color="inherit"
-                                    aria-controls={open ? 'basic-menu' : undefined}
-                                    aria-haspopup="true"
-                                    aria-expanded={open ? 'true' : undefined}
-                                    onClick={handleClick}
-                                >
-                                    <DwitterAvatar mr={1} displayname={displayname} nftAvatarId={ctx.currentUser?.nftAvatar} />
-                                    {displayname}
-                                </Button>
+                                <Box sx={{ flexGrow: 0 }}>
+                                    <Button
+                                        id="basic-button"
+                                        color="inherit"
+                                        aria-controls={open ? 'basic-menu' : undefined}
+                                        aria-haspopup="true"
+                                        aria-expanded={open ? 'true' : undefined}
+                                        onClick={handleClick}
+                                    >
+                                        <DwitterAvatar mr={1} displayname={displayname} nftAvatarId={ctx.currentUser?.nftAvatar} />
+                                        {displayname}
+                                    </Button>
 
-                                <Menu
-                                    id="basic-menu"
-                                    anchorEl={anchorEl}
-                                    open={open}
-                                    onClose={handleClose}
-                                    MenuListProps={{'aria-labelledby': 'basic-button'}}
-                                    transformOrigin={{horizontal: 'right', vertical: 'top'}}
-                                    anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
-                                >
-                                    {/* <MenuItem component={Link} to={`/wall/${username}`} onClick={handleClose}>Profile</MenuItem> */}
-                                    <MenuItem component={Link} to={`/user/${username}`} onClick={handleClose}>Profile</MenuItem>
-                                    <MenuItem component={Link} to='/settings' onClick={handleClose}>Settings</MenuItem>
-                                    <MenuItem onClick={logout}>Logout</MenuItem>
-                                </Menu>
+                                    <Menu
+                                        id="basic-menu"
+                                        anchorEl={anchorEl}
+                                        open={open}
+                                        onClose={handleClose}
+                                        MenuListProps={{'aria-labelledby': 'basic-button'}}
+                                        transformOrigin={{horizontal: 'right', vertical: 'top'}}
+                                        anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
+                                    >
+                                        {/* <MenuItem component={Link} to={`/wall/${username}`} onClick={handleClose}>Profile</MenuItem> */}
+                                        <MenuItem component={Link} to={`/user/${username}`} onClick={handleClose}>Profile</MenuItem>
+                                        <MenuItem component={Link} to='/settings' onClick={handleClose}>Settings</MenuItem>
+                                        <MenuItem onClick={logout}>Logout</MenuItem>
+                                    </Menu>
+                                </Box>
                             </React.Fragment>
                         }
                     </Toolbar>
