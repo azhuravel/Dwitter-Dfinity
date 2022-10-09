@@ -62,10 +62,27 @@ const Post = (props) => {
         if (!confirm('Are you shure?')) {
             return;
         }
+
         if (item.resharePostId?.[0]) {
-            ctx.apiService.sharePost(item.reshareUsername[0], item.resharePostId[0]);
+            ctx.apiService.sharePost(
+                item.kind, 
+                item.text, 
+                item.nft, 
+                item.reshareUserId, 
+                item.resharePostId, 
+                item.reshareUsername, 
+                item.reshareDisplayname,
+            );
         } else {
-            ctx.apiService.sharePost(item.username, item.id);
+            ctx.apiService.sharePost(
+                item.kind, 
+                item.text, 
+                item.nft, 
+                item.userId, 
+                item.id, 
+                item.username, 
+                item.displayname,
+            );
         }
         setSharesCount(sharesCount + 1);
     }

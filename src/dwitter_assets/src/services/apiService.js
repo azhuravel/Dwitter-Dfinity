@@ -156,7 +156,16 @@ class ApiService {
         logger('END apiService.unsubscribeFromUser()', username, resp);
     }
 
-    async sharePost() {
+    async sharePost(kind, text, nft, reshareUserId, resharePostId, reshareUsername, reshareDisplayname) {
+        logger('START apiService.sharePost()', kind, text, nft, reshareUserId, resharePostId, reshareUsername, reshareDisplayname);
+        if (!this.dwitterActor) {
+            return [];
+        }
+
+        const resp = await this.dwitterActor.createPost({kind, text, nft, reshareUserId, resharePostId, reshareUsername, reshareDisplayname});
+        const post = resp?.[0] ?? null;
+        logger('END apiService.sharePost()', kind, text, nft, reshareUserId, resharePostId, reshareUsername, reshareDisplayname, post);
+        return post;
     }
 
     async buyToken(canisterPrincipal, blockIndex) {      
