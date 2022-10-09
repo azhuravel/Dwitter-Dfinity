@@ -120,7 +120,7 @@ class ApiService {
             return [];
         }
 
-        const resp = await this.dwitterActor.createPost({text, nft, kind});
+        const resp = await this.dwitterActor.createPost({text, nft, kind, reshareUserId: [], resharePostId: [], reshareUsername: [], reshareDisplayname: []});
         const post = resp?.[0] ?? null;
         logger('END apiService.createPost()', text, nft, kind, post);
         return post;
