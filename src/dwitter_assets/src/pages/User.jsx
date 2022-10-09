@@ -161,11 +161,11 @@ const User = () => {
                         <Box>
                             {isCurrentUserAlreadySubscribed
                                 &&
-                                <LoadingButton type="submit" disabled={!isCurrentUserProfile} variant="contained" loading={false} onClick={() => unsubscribeFromUser(username)}>Unsubscribe</LoadingButton>
+                                <LoadingButton type="submit" disabled={isCurrentUserProfile} variant="contained" loading={false} onClick={() => unsubscribeFromUser(username)}>Unsubscribe</LoadingButton>
                             }
                             {!isCurrentUserAlreadySubscribed
                                 &&
-                                <LoadingButton type="submit" disabled={!isCurrentUserProfile} variant="contained" loading={false} onClick={() => subscribeToUser(username)}>Subscribe</LoadingButton>
+                                <LoadingButton type="submit" disabled={isCurrentUserProfile} variant="contained" loading={false} onClick={() => subscribeToUser(username)}>Subscribe</LoadingButton>
                             }
                         </Box>
                     </Box>
