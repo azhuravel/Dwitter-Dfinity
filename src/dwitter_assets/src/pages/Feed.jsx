@@ -14,7 +14,7 @@ import wealthService from '../services/wealthService';
 import nftService from '../services/nftService.js';
 import { makeCancelable, icpAgent, getUserNftAvatars } from '../utils/utils.js';
 import {postKind_text} from '../constants';
-
+import Typography from '@mui/material/Typography';
 
 
 const Feed = () => {
@@ -42,8 +42,18 @@ const Feed = () => {
                 <Grid item lg={2} md={2} sm={0}/>
                 <Grid item lg={8} md={8} sm={12}>
                     <Box sx={{ display: 'flex' }}>
-                        <PostsList posts={posts} />
-                    </Box>                
+                        {posts
+                            &&
+                            <PostsList posts={posts} />
+                        }
+                        {!posts
+                            &&
+                            <React.Fragment>
+                                <Typography variant="h6" component="div" sx={{flexGrow: 1}}>Your feed is empty</Typography>
+                                <Typography variant="h6" component="div" sx={{flexGrow: 1}}>Try to subscribe to someone to see the posts here</Typography>
+                            </React.Fragment>
+                        }
+                    </Box>
                 </Grid>
                 <Grid item lg={2} md={2} sm={0}/>
             </Grid>
