@@ -40,9 +40,9 @@ const Post = (props) => {
     
     const likePost = async (item) => {
         if (item.resharePostId?.[0]) {
-            await ctx.apiService.likePost(item.username[0], item.resharePostId[0]);
+            ctx.apiService.likePost(item.username[0], item.resharePostId[0]);
         } else {
-            await ctx.apiService.likePost(item.username, item.id);
+            ctx.apiService.likePost(item.username, item.id);
         }
         setIsLikedByCurrentUser(true);
         setLikesCount(likesCount + 1);
@@ -50,9 +50,9 @@ const Post = (props) => {
 
     const dislikePost = async (item) => {
         if (item.resharePostId?.[0]) {
-            await ctx.apiService.dislikePost(item.username[0], item.resharePostId[0]);
+            ctx.apiService.dislikePost(item.username[0], item.resharePostId[0]);
         } else {
-            await ctx.apiService.dislikePost(item.username, item.id);
+            ctx.apiService.dislikePost(item.username, item.id);
         }
         setIsLikedByCurrentUser(false);
         setLikesCount(likesCount - 1);
@@ -63,9 +63,9 @@ const Post = (props) => {
             return;
         }
         if (item.resharePostId?.[0]) {
-            await ctx.apiService.sharePost(item.reshareUsername[0], item.resharePostId[0]);
+            ctx.apiService.sharePost(item.reshareUsername[0], item.resharePostId[0]);
         } else {
-            await ctx.apiService.sharePost(item.username, item.id);
+            ctx.apiService.sharePost(item.username, item.id);
         }
         setSharesCount(sharesCount + 1);
     }

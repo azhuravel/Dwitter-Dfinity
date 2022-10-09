@@ -108,8 +108,10 @@ class ApiService {
 
     async getFeed(username) {
         logger('START apiService.getUserPosts()', username);
+        const resp = await this.dwitterActor.getFeed();
+        const posts = resp?.[0] ?? [];
         logger('END apiService.getUserPosts()');
-        return [];
+        return posts;
     }
 
     async createPost(text, nft, kind) {
