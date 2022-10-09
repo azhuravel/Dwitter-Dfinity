@@ -83,10 +83,10 @@ const Post = (props) => {
                 item.kind, 
                 item.text, 
                 item.nft, 
-                item.userId, 
-                item.id, 
-                item.username, 
-                item.displayname,
+                [item.userId], 
+                [item.id], 
+                [item.username], 
+                [item.displayname],
             );
         }
         setSharesCount(sharesCount + 1);
