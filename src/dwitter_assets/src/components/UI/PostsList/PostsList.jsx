@@ -99,8 +99,8 @@ const Post = (props) => {
         return { paddingLeft: 0, paddingRight: 0 };
     }
 
-    const buildPostAuthorInfo = (post) => {
-        if (post?.reshareUserId?.[0]) {
+    const buildPostAuthorInfo = (item) => {
+        if (item?.reshareUserId?.[0]) {
             return (
                 <React.Fragment>
                     {item.displayname}
