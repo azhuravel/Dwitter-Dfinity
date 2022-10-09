@@ -117,6 +117,13 @@ const User = () => {
         setSubscribersCount(subscribersCount - 1);
     }
 
+    const calculateBoxMargingBottom = () => {
+        if (isCurrentUserProfile) {
+            return '0px';
+        }
+        return '20px';
+    }
+
     if (!userLoading && user === null) {
         return (
             <Grid container spacing={2}>
@@ -138,7 +145,7 @@ const User = () => {
                 <UserCard userLoading={userLoading} username={username} user={user} nftAvatar={nftAvatar} />
 
                 <Box sx={{ border: '2px solid #2196f3', borderRadius: '20px', padding: '20px' }}>
-                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', mb: '20px' }}>
+                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', mb: calculateBoxMargingBottom() }}>
                         <Box sx={{ textAlign: 'center', fontSize: '0.875rem', fontWeight: '700'}}>
                             <Typography variant="p" component="p">{subscribersCount}</Typography>
                             <Typography variant="p" component="p" sx={{color: '#aaa'}}>Subscribers</Typography>
@@ -157,18 +164,21 @@ const User = () => {
                         </Box>
                     </Box>
 
-                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', textAlign: 'center'}}>
-                        <Box>
-                            {isCurrentUserAlreadySubscribed
-                                &&
-                                <LoadingButton type="submit" disabled={isCurrentUserProfile} variant="contained" loading={false} onClick={() => unsubscribeFromUser(username)}>Unsubscribe</LoadingButton>
-                            }
-                            {!isCurrentUserAlreadySubscribed
-                                &&
-                                <LoadingButton type="submit" disabled={isCurrentUserProfile} variant="contained" loading={false} onClick={() => subscribeToUser(username)}>Subscribe</LoadingButton>
-                            }
+                    {!isCurrentUserProfile 
+                        &&
+                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', textAlign: 'center'}}>
+                            <Box>
+                                {isCurrentUserAlreadySubscribed
+                                    &&
+                                    <LoadingButton type="submit" variant="contained" loading={false} onClick={() => unsubscribeFromUser(username)}>Unsubscribe</LoadingButton>
+                                }
+                                {!isCurrentUserAlreadySubscribed
+                                    &&
+                                    <LoadingButton type="submit" variant="contained" loading={false} onClick={() => subscribeToUser(username)}>Subscribe</LoadingButton>
+                                }
+                            </Box>
                         </Box>
-                    </Box>
+                    }
                 </Box>
             </Grid>
             <Grid item lg={2} md={2} sm={0}/>
