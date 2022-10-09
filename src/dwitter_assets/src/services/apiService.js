@@ -177,8 +177,11 @@ class ApiService {
 
         const reshareUserId = [];
         const resharePostId = [];
+        const reshareDisplayname = [];
+        const reshareUsername = [];
 
-        const resp = await this.dwitterActor.createPost({text, nft, kind, reshareUserId, resharePostId});
+
+        const resp = await this.dwitterActor.createPost({text, nft, kind, reshareUserId, resharePostId, reshareDisplayname, reshareUsername});
         const post = resp?.[0] ?? null;
         logger('END apiService.createPostOnWall()', text, nft, kind, post);
         return post;

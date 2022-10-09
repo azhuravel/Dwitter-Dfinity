@@ -27,6 +27,7 @@ shared(msg) actor class UserCanister() = this {
     type UserTokenInfo = Types.UserTokenInfo;
     type CanisterInfo = Types.CanisterInfo;
     type ShortUserInfo = Types.ShortUserInfo;
+    type UserPostId = Types.UserPostId;
 
     type Operation = Ledger.Operation;
     type AccountIdentifier = Ledger.AccountIdentifier;
@@ -76,10 +77,10 @@ shared(msg) actor class UserCanister() = this {
     let posts = Buffer.Buffer<Post>(0);
 
     // extendable list of user posts
-    let feed = RBTree.RBTree<Nat64, Post>(Nat64.compare);
+    let feed = RBTree.RBTree<Nat64, UserPostId>(Nat64.compare);
 
     // storage of feed
-    stable var serializedFeed : [(Nat64, Post)] = [];
+    stable var serializedFeed : [(Nat64, UserPostId)] = [];
 
     // posts indexed by post.id
     let postById = Map.HashMap<Nat, Nat>(1, Nat.equal, Hash.hash);
@@ -110,7 +111,7 @@ shared(msg) actor class UserCanister() = this {
         return posts.toArray();
     };
 
-    public shared(msg) func savePost(post : Post) : async () {
+    public shared(msg) func savePost(post : Post) : async Post {
         // let isSelfPost = msg.caller == user.id;
         // ensure that have enough tokens to make a post
         let editedPost : Post = {
@@ -125,6 +126,8 @@ shared(msg) actor class UserCanister() = this {
             resharePostId = post.resharePostId;
             reshareUserId = post.reshareUserId;
             reshareCount = post.reshareCount;
+            reshareUsername = post.reshareUsername;
+            reshareDisplayname = post.reshareDisplayname;
 
             likers = post.likers;
         };
@@ -132,9 +135,11 @@ shared(msg) actor class UserCanister() = this {
         postIdMax := postIdMax + 1;
 
         storePost(post);
+
+        return editedPost;
     };
 
-    public shared(msg) func addPostToFeed(post : Post, balance : Nat64) : async () {
+    public shared(msg) func addPostToFeed(post : UserPostId, balance : Nat64) : async () {
         let timestamp = Nat64.fromIntWrap(Time.now()) + balance;
         feed.put(balance + timestamp, post);
     };
@@ -397,8 +402,8 @@ shared(msg) actor class UserCanister() = this {
         };
     };
 
-    public shared(msg) func getFeed() : async [Post] {
-        let feedIter = Iter.map(feed.entries(), func (x : (Nat64, Post)) : Post { x.1 });
+    public shared(msg) func getFeed() : async [UserPostId] {
+        let feedIter = Iter.map(feed.entries(), func (x : (Nat64, UserPostId)) : UserPostId { x.1 });
         return Iter.toArray(feedIter);
     };
 
@@ -424,6 +429,8 @@ shared(msg) actor class UserCanister() = this {
                     reshareUserId = post.reshareUserId;
                     resharePostId = post.resharePostId;
                     reshareCount = post.reshareCount + 1;
+                    reshareUsername = post.reshareUsername;
+                    reshareDisplayname = post.reshareDisplayname;
 
                     likers = post.likers;
                 };
@@ -473,6 +480,8 @@ shared(msg) actor class UserCanister() = this {
                     reshareUserId = post.reshareUserId;
                     resharePostId = post.resharePostId;
                     reshareCount = post.reshareCount;
+                    reshareUsername = post.reshareUsername;
+                    reshareDisplayname = post.reshareDisplayname;
 
                     likers = likers;
                 };

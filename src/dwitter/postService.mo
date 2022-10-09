@@ -39,21 +39,21 @@ module {
 
         public func createPost(userId : UserId, request : CreatePostRequest) : async ?PostInfo {
             do ? {
-                let post = createRequestToPost(userId, request);
+                let postToSave = createRequestToPost(userId, request);
 
-                let authorId = getAuthorId(post);
-                let authorCanister = userCanisterService.getByUserId(authorId);
-                let wallUserCanister = userCanisterService.getByUserId(userId);
+                let authorId = getAuthorId(postToSave);
+                let authorCanister = userCanisterService.getByUserId(authorId); // original author
+                let wallUserCanister = userCanisterService.getByUserId(userId); // the user wall to post
 
-                await wallUserCanister!.savePost(post);
+                let post = await wallUserCanister!.savePost(postToSave);
 
                 if (isReshare(post)) {
                     ignore await authorCanister!.incReshareCount(post.resharePostId!);
                 } else {
-                    ignore await sendPostToSubscribers(post, userId, authorCanister);
+                    ignore await sendPostToSubscribers(post, userId, wallUserCanister); // send to all subscribers of the wall uesr 
                 };
 
-                return ?getPostInfo(await authorCanister!.getUser(), post);
+                return ?getPostInfo(await wallUserCanister!.getUser(), post); // post info with wall user as creator
             }
         };
 
@@ -62,7 +62,11 @@ module {
                 let user = await userCanister!.getUserInfo(userId);
                 for (subscriber in user!.subscribers.vals()) {
                     let subscriberCanister = userCanisterService.getByUserId(Principal.fromText(subscriber));
-                    ignore await subscriberCanister!.addPostToFeed(post, user!.balance);
+                    let userPostId : UserPostId = {
+                        postId = post.id;
+                        userId = userId;
+                    };
+                    ignore await subscriberCanister!.addPostToFeed(userPostId, user!.balance);
                 };
             }
         };
@@ -98,7 +102,9 @@ module {
         public func getFeed(userId : UserId) : async ?[PostInfo] {
             let userCanister = userCanisterService.getByUserId(userId);
             do ? {
-                let posts = await userCanister!.getFeed();
+                let feed = await userCanister!.getFeed();
+                let posts = await fetchFeedPosts(feed);
+                // fetch posts 
                 await reverseAndFetchPostInfos(posts);
             }
         };
@@ -142,6 +148,31 @@ module {
             }
         };
 
+        private func fetchFeedPosts(feed : [UserPostId]) : async [Post] {
+            let result = Buffer.Buffer<Post>(0);
+
+            for (userPostId in feed.vals()) {
+                let userCanister = userCanisterService.getByUserId(userPostId.userId);
+                switch (userCanister) {
+                    case (null) {
+                        
+                    };
+
+                    case (?userCanister) {
+                        let user = await userCanister.getUser();
+                        let post = await userCanister.getPost(userPostId.postId);
+                        switch(post) {
+                            case (null) { };
+                            case (?post) {
+                                result.add(post);
+                            };
+                        };
+                    };
+                };
+            };
+            return result.toArray(); 
+        };
+
         private func fetchFeed(feed : [UserPostId]) : async [PostInfo] {
             let result = Buffer.Buffer<PostInfo>(0);
 
@@ -175,34 +206,44 @@ module {
             for (post in reversedPosts.vals()) {
                 let authorId = getAuthorId(post);
                 // let isReshare = isPostReshare(post);
-                let canister = userCanisterService.getByUserId(authorId);
-                switch (canister) {
-                    case (null) {
-                        let postInfo = getPostInfo(DELETED_USER, post);
-                        result.add(postInfo);
+                let authorCanister = userCanisterService.getByUserId(authorId);
+                let userCanister = userCanisterService.getByUserId(post.userId);
+                switch (userCanister) {
+                    case(null) {
+                        // 
                     };
 
-                    case (?canister) {
-                        let user = await canister.getUser();
-
-                        switch (post.resharePostId) {
+                    case (?userCanister) {
+                        let user = await userCanister.getUser();
+                        switch (authorCanister) {
                             case (null) {
-                                let postInfo = getPostInfo(user, post);
+                                let postInfo = getPostInfo(DELETED_USER, post);
                                 result.add(postInfo);
                             };
 
-                            case (?resharePostId) {
-                                let resharePost = await canister.getPost(resharePostId);
+                            case (?authorCanister) {
+                                let user = await authorCanister.getUser();
 
-                                switch (resharePost) {
-                                    case (null) { };
-                                    case (?resharePost) {
-                                        let postInfo = getPostInfo(user, resharePost);
+                                switch (post.resharePostId) {
+                                    case (null) {
+                                        let postInfo = getPostInfo(user, post);
                                         result.add(postInfo);
+                                    };
+
+                                    case (?resharePostId) {
+                                        let resharePost = await authorCanister.getPost(resharePostId);
+
+                                        switch (resharePost) {
+                                            case (null) { };
+                                            case (?resharePost) {
+                                                let postInfo = getPostInfo(user, resharePost);
+                                                result.add(postInfo);
+                                            };
+                                        }
                                     };
                                 }
                             };
-                        }
+                        };
                     };
                 };
             };
@@ -213,6 +254,7 @@ module {
         private func getPostInfo(author : User, post : Post) : PostInfo {
             let postInfo : PostInfo = {
                 id = post.id;
+                userId = Principal.toText(author.id);
                 kind = post.kind;
                 createdTime = post.createdTime;
                 text = post.text;
@@ -221,6 +263,8 @@ module {
                 reshareCount = post.reshareCount;
                 resharePostId = post.resharePostId;
                 reshareUserId = post.reshareUserId;
+                reshareUsername = post.reshareUsername;
+                reshareDisplayname = post.reshareDisplayname;
                 
                 username = author.username;
                 displayname = author.displayname;
@@ -253,6 +297,8 @@ module {
 
                 reshareUserId = null;
                 resharePostId = null;
+                reshareUsername = null;
+                reshareDisplayname = null;
                 reshareCount = 0;
 
                 likers = [];
@@ -276,6 +322,8 @@ module {
 
                 reshareUserId = getPrincipalFromText(request.reshareUserId);
                 resharePostId = request.resharePostId;
+                reshareUsername = request.reshareUsername;
+                reshareDisplayname = request.reshareDisplayname;
 
                 reshareCount = 0;
 
