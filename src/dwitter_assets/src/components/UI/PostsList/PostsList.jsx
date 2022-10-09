@@ -25,7 +25,7 @@ const Post = (props) => {
 
     const [isLikedByCurrentUser, setIsLikedByCurrentUser] = useState(item.likers.includes(ctx.currentUser.id)); 
     const [likesCount, setLikesCount] = useState(item?.likers?.length); 
-    const [sharesCount, setSharesCount] = useState(item?.reshareCount ?? 0); 
+    const [sharesCount, setSharesCount] = useState(Number(item?.reshareCount) ?? 0); 
 
     const linkPrefix = redirectOnWall ? 'wall' : 'user';
 
@@ -100,14 +100,14 @@ const Post = (props) => {
     }
 
     const buildPostAuthorInfo = (post) => {
-        if (post?.reshareUserId && !!post.reshareUserId) {
+        if (post?.reshareUserId?.[0]) {
             return (
                 <React.Fragment>
                     {item.displayname}
                     {" "}
                     <Link component={RouterLink} underline='hover' to={`/${linkPrefix}/${item.username}`}>@{item.username}</Link>
                     {" shared from "}
-                    <Link component={RouterLink} underline='hover' to={`/${linkPrefix}/${item.reshareUsername}`}>@{item.reshareUsername}</Link>
+                    <Link component={RouterLink} underline='hover' to={`/${linkPrefix}/${item.reshareUsername?.[0]}`}>@{item.reshareUsername?.[0]}</Link>
                 </React.Fragment>
             );
         }
