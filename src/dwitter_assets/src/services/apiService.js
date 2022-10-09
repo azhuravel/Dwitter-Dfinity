@@ -134,13 +134,13 @@ class ApiService {
 
     async likePost(username, postId) {
         logger('START apiService.likePost()', username, postId);
-        const resp = await this.dwitterActor.likePost({username, postId});
+        const resp = await this.dwitterActor.likePost(username, postId);
         logger('END apiService.likePost()', username, postId, resp);
     }
 
     async dislikePost(username, postId) {
         logger('START apiService.dislikePost()', username, postId);
-        const resp = await this.dwitterActor.dislikePost({username, postId});
+        const resp = await this.dwitterActor.dislikePost(username, postId);
         logger('END apiService.dislikePost()', username, postId, resp);
     }
 
