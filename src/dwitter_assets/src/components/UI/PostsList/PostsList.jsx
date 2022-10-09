@@ -20,7 +20,7 @@ import ReplyIcon from '@mui/icons-material/Reply';
 
 
 const Post = (props) => {
-    const {item, redirectOnWall} = props;
+    const {item, redirectOnWall, isCurrentUserProfile} = props;
     const {ctx} = useContext(AppContext); 
 
     const [isLikedByCurrentUser, setIsLikedByCurrentUser] = useState(item.likers.includes(ctx.currentUser.id)); 
@@ -59,6 +59,11 @@ const Post = (props) => {
     }
 
     const sharePost = async (item) => {
+        if (isCurrentUserProfile) {
+            alert("You can't share your own posts");
+            return;
+        }
+
         if (!confirm('Are you shure?')) {
             return;
         }
@@ -95,7 +100,7 @@ const Post = (props) => {
     }
 
     const buildPostAuthorInfo = (post) => {
-        if (post?.reshareUserId) {
+        if (post?.reshareUserId && !!post.reshareUserId) {
             return (
                 <React.Fragment>
                     {item.displayname}
@@ -188,7 +193,7 @@ const PostsList = (props) => {
         <List>
             {
                 props.posts.map((item, idx) => 
-                    <Post item={item} redirectOnWall={false} key={idx}/>
+                    <Post item={item} redirectOnWall={false} key={idx} isCurrentUserProfile={props?.isCurrentUserProfile} />
                 )
             }
         </List>
