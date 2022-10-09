@@ -24,7 +24,7 @@ const User = () => {
     const [posts, setPosts] = useState([]);
     const [user, setUser] = useState(null);
     const [balance, setBalance] = useState(null);
-    const [nftWealth, setNftWealth] = useState(null);
+    const [nftWealth, setNftWealth] = useState(0);
     const [nftAvatar, setNftAvatar] = useState(null);
     const [nftsLoading, setNftsLoading] = useState(true); 
     const [subscriptionsCount, setSubscriptionsCount] = useState(0); 
@@ -170,11 +170,11 @@ const User = () => {
                             <Box>
                                 {isCurrentUserAlreadySubscribed
                                     &&
-                                    <LoadingButton type="submit" variant="contained" loading={false} onClick={() => unsubscribeFromUser(username)}>Unsubscribe</LoadingButton>
+                                    <LoadingButton type="submit" variant="contained" loading={userLoading} onClick={() => unsubscribeFromUser(username)}>Unsubscribe</LoadingButton>
                                 }
                                 {!isCurrentUserAlreadySubscribed
                                     &&
-                                    <LoadingButton type="submit" variant="contained" loading={false} onClick={() => subscribeToUser(username)}>Subscribe</LoadingButton>
+                                    <LoadingButton type="submit" variant="contained" loading={userLoading} onClick={() => subscribeToUser(username)}>Subscribe</LoadingButton>
                                 }
                             </Box>
                         </Box>
