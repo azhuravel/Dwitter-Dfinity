@@ -100,7 +100,7 @@ const Post = (props) => {
     }
 
     const buildPostAuthorInfo = (item) => {
-        if (!!item?.reshareUserId?.[0]) {
+        if (item?.reshareUserId?.[0]) {
             return (
                 <React.Fragment>
                     {item.displayname}
