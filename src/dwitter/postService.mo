@@ -48,10 +48,10 @@ module {
                 let post = await wallUserCanister!.savePost(postToSave);
 
                 if (isReshare(post)) {
-                    ignore await authorCanister!.incReshareCount(post.resharePostId!);
-                } else {
-                    ignore await sendPostToSubscribers(post, userId, wallUserCanister); // send to all subscribers of the wall uesr 
+                    await authorCanister!.incReshareCount(post.resharePostId!);
                 };
+                
+                ignore await sendPostToSubscribers(post, userId, wallUserCanister); // send to all subscribers of the wall uesr 
 
                 return ?getPostInfo(await wallUserCanister!.getUser(), post); // post info with wall user as creator
             }
