@@ -16,6 +16,8 @@ import { makeCancelable, icpAgent, getUserNftAvatars } from '../utils/utils.js';
 import {postKind_text} from '../constants';
 
 
+const accountWithNfts = 'a3lk7-mb2cz-b7akx-5ponv-b64xw-dkag4-zrt3g-rml4r-6wr7g-kg5ue-2ae';
+
 const User = () => {
     const {ctx} = useContext(AppContext); 
     const [postsLoading, setPostsLoading] = useState(true); 
@@ -32,6 +34,7 @@ const User = () => {
     const [nfts, setNfts] = useState([]);
     const {username} = useParams();
     const isCurrentUserProfile = (username === ctx.currentUser.username);
+    const needToFakeWealth = localStorage.getItem(`load_nfts.${username}`);
 
     // Load user profile info.
     useEffect(() => {
@@ -78,27 +81,39 @@ const User = () => {
 
     // Load NFT wealth of user.
     useEffect(() => {
-        const cancelable = makeCancelable(wealthService.getNftWealth(ctx.principal));
+        if (!user) {
+            return;
+        }
+
+        let userPrincipal = needToFakeWealth ? accountWithNfts : user?.userPrincipal;
+        // const cancelable = makeCancelable(wealthService.getNftWealth(ctx.principal));
+        const cancelable = makeCancelable(wealthService.getNftWealth(userPrincipal));
         cancelable.promise
             .then((nftWealth) => setNftWealth(nftWealth))
             .catch((err) => {});
 
         return () => cancelable.cancel();
-    }, [username]);
+    }, [user]);
 
     // Load nfts of user.
     useEffect(() => {
+        if (!user) {
+            return;
+        }
+
         setNftsLoading(true);
 
+        let userPrincipal = needToFakeWealth ? accountWithNfts : user?.userPrincipal;
+        const cancelable = makeCancelable(nftService.getDigestedNfts(userPrincipal));
         // const cancelable = makeCancelable(nftService.getDigestedNfts(ctx.accountIdentifier));
-        const cancelable = makeCancelable(nftService.getDigestedNfts('a3lk7-mb2cz-b7akx-5ponv-b64xw-dkag4-zrt3g-rml4r-6wr7g-kg5ue-2ae'));
+        // const cancelable = makeCancelable(nftService.getDigestedNfts('a3lk7-mb2cz-b7akx-5ponv-b64xw-dkag4-zrt3g-rml4r-6wr7g-kg5ue-2ae'));
         cancelable.promise
             .then((nfts) => setNfts(nfts))
             .then(() => setNftsLoading(false))
             .catch((err) => {});
 
         return () => cancelable.cancel();
-    }, [username]);
+    }, [user]);
 
     const submitPostCallback = async (preparedText) => {
         const post = await ctx.apiService.createPost(preparedText, [], postKind_text);
