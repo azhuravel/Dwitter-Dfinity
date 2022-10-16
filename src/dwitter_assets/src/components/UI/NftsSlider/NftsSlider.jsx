@@ -13,11 +13,12 @@ const NftsSlider = (props) => {
     const disableButtons = props.disableButtons;
 
     if (isLoading) {
-        if (nftsOfCurrentUser) {
-            return (<p>Your NFTs are loading... It may take a minute</p>)
-        } else {
-            return (<p>User's NFTs are loading... It may take a minute</p>)
-        }
+        // if (nftsOfCurrentUser) {
+        //     return (<p>Your NFTs are loading... It may take a minute</p>)
+        // } else {
+        //     return (<p>User's NFTs are loading... It may take a minute</p>)
+        // }
+        return (<p></p>)
     }
 
     if (nfts.length === 0) {
