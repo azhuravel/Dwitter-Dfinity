@@ -70,8 +70,8 @@ const User = () => {
 
     // Load balance of user.
     useEffect(() => {
-       //const cancelable = makeCancelable(wealthService.getBalance(ctx.principal));
-       const cancelable = makeCancelable(wealthService.getBalance('cuqd4-b54ae-keit4-7qgoa-ro7vy-3vdpi-6ni2h-rckht-atdp2-s3ugp-uae'));
+       const cancelable = makeCancelable(wealthService.getBalance(ctx.principal));
+       //const cancelable = makeCancelable(wealthService.getBalance('cuqd4-b54ae-keit4-7qgoa-ro7vy-3vdpi-6ni2h-rckht-atdp2-s3ugp-uae'));
         cancelable.promise
             .then((balance) => setBalance(balance))
             .catch((err) => {});

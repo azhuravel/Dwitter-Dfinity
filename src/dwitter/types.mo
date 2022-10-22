@@ -52,7 +52,7 @@ module {
     nft : ?NftId;
 
     resharePostId : ?Nat;
-    reshareUserId : ?UserId;
+    reshareUserId : ?Text;
     reshareUsername: ?Text;
     reshareDisplayname : ?Text;
     reshareCount : Nat;

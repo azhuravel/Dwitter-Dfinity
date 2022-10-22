@@ -114,8 +114,10 @@ shared(msg) actor class UserCanister() = this {
     public shared(msg) func savePost(post : Post) : async Post {
         // let isSelfPost = msg.caller == user.id;
         // ensure that have enough tokens to make a post
+        postIdMax := postIdMax + 1;
+
         let editedPost : Post = {
-            id = post.id;
+            id = postIdMax;
             userId = post.userId;
             userCanister = post.userCanister;
             createdTime = post.createdTime;
@@ -132,9 +134,7 @@ shared(msg) actor class UserCanister() = this {
             likers = post.likers;
         };
 
-        postIdMax := postIdMax + 1;
-
-        storePost(post);
+        storePost(editedPost);
 
         return editedPost;
     };
@@ -149,6 +149,10 @@ shared(msg) actor class UserCanister() = this {
         return user;
     };
 
+    // deprecated
+    public shared(msg) func getUserBalance() : async Nat64 {
+        return userBalance;
+    };
 
     public shared(msg) func setUser(_user : User) : async () {
         user := _user;
@@ -444,6 +448,10 @@ shared(msg) actor class UserCanister() = this {
         userBalance := balance;
     };
 
+    public shared(msg) func setPostIdMax(id : Nat) : async() {
+        postIdMax := id;
+    };
+
     private func togglePostLiker(postId : Nat, userId : UserId, like : Bool) {
         let index = postById.get(postId);
         switch (index) {
@@ -494,10 +502,10 @@ shared(msg) actor class UserCanister() = this {
     private func _updateBalance() : async() {
         calcAccountIdentifiers();
 
-        // let balance = await ledger.account_balance_dfx({
-        //     account = userAccountIdentifier;
-        // });
-        // userBalance := balance.e8s;
+        let balance = await ledger.account_balance_dfx({
+             account = userAccountIdentifier;
+        });
+        userBalance := balance.e8s;
     };
 
     private func getAccountIdentifier() : Text {
@@ -636,7 +644,11 @@ shared(msg) actor class UserCanister() = this {
 
         for (price in serializedTokensPrices.vals()) {
             tokensPrices.add(price);
-        }; 
+        };
+
+        for (item in serializedFeed.vals()) {
+            feed.put(item.0, item.1);
+        };
 
         serializedPosts := [];
         serializedTransactions := [];

@@ -66,7 +66,7 @@ module {
                         postId = post.id;
                         userId = userId;
                     };
-                    ignore await subscriberCanister!.addPostToFeed(userPostId, user!.balance);
+                    ignore await subscriberCanister!.addPostToFeed(userPostId, user!.balance * 10000);
                 };
             }
         };
@@ -222,11 +222,11 @@ module {
                             };
 
                             case (?authorCanister) {
-                                let user = await authorCanister.getUser();
+                                let author = await authorCanister.getUser();
 
                                 switch (post.resharePostId) {
                                     case (null) {
-                                        let postInfo = getPostInfo(user, post);
+                                        let postInfo = getPostInfo(author, post);
                                         result.add(postInfo);
                                     };
 
@@ -236,7 +236,8 @@ module {
                                         switch (resharePost) {
                                             case (null) { };
                                             case (?resharePost) {
-                                                let postInfo = getPostInfo(user, resharePost);
+                                                //let postInfo = getPostInfo(user, resharePost);
+                                                let postInfo = getPostInfoReshare(user, post, resharePost);
                                                 result.add(postInfo);
                                             };
                                         }
@@ -251,6 +252,30 @@ module {
             return result.toArray();
         };
 
+        private func getPostInfoReshare(reshareUser : User, reshare : Post, original : Post) : PostInfo {
+            let postInfo : PostInfo = {
+                id = reshare.id;
+                userId = Principal.toText(reshareUser.id);
+                kind = original.kind;
+                createdTime = original.createdTime;
+                text = original.text;
+                nft = original.nft;
+
+                reshareCount = original.reshareCount;
+                resharePostId = reshare.resharePostId;
+                reshareUserId = getTextFromPrincipal(reshare.reshareUserId);
+                reshareUsername = reshare.reshareUsername;
+                reshareDisplayname = reshare.reshareDisplayname;
+                
+                username = reshareUser.username;
+                displayname = reshareUser.displayname;
+                nftAvatar = reshareUser.nftAvatar;
+
+                likers = toTextArray(reshare.likers);
+            };
+            return postInfo;
+        };
+
         private func getPostInfo(author : User, post : Post) : PostInfo {
             let postInfo : PostInfo = {
                 id = post.id;
@@ -262,7 +287,7 @@ module {
 
                 reshareCount = post.reshareCount;
                 resharePostId = post.resharePostId;
-                reshareUserId = post.reshareUserId;
+                reshareUserId = getTextFromPrincipal(post.reshareUserId);
                 reshareUsername = post.reshareUsername;
                 reshareDisplayname = post.reshareDisplayname;
                 
@@ -345,6 +370,17 @@ module {
             };
         };
 
+        private func getTextFromPrincipal(principal : ?Principal) : ?Text {
+            switch (principal) {
+                case (null) {
+                    return null;
+                };
+
+                case (?principal) {
+                    return ?Principal.toText(principal);
+                };
+            };
+        };
 
         private func getAuthorId(post : Post) : UserId {
             switch (post.reshareUserId) {
