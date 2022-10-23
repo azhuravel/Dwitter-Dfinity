@@ -25,7 +25,7 @@ const User = () => {
     const [isCurrentUserAlreadySubscribed, setIsCurrentUserAlreadySubscribed] = useState(false); 
     const [posts, setPosts] = useState([]);
     const [user, setUser] = useState(null);
-    const [balance, setBalance] = useState(null);
+    const [balance, setBalance] = useState(0);
     const [nftWealth, setNftWealth] = useState(0);
     const [nftAvatar, setNftAvatar] = useState(null);
     const [nftsLoading, setNftsLoading] = useState(true); 
@@ -45,6 +45,7 @@ const User = () => {
             .then((user) => {
                 setUser(user);
                 setNftAvatar(user?.nftAvatar);
+                setBalance(user ? (Number(user.balance) / 100000000).toFixed(2) : null);
                 setIsCurrentUserAlreadySubscribed(user?.subscribers.includes(ctx.currentUser.id));
                 setSubscriptionsCount(user?.subscribedTo.length);
                 setSubscribersCount(user?.subscribers.length);
@@ -67,21 +68,6 @@ const User = () => {
 
         return () => cancelable.cancel();
     }, [username]);
-
-    // Load balance of user.
-    useEffect(() => {
-        if (!user) {
-            return;
-        }
-
-        const cancelable = makeCancelable(wealthService.getBalance(user?.userPrincipal));
-        //const cancelable = makeCancelable(wealthService.getBalance('cuqd4-b54ae-keit4-7qgoa-ro7vy-3vdpi-6ni2h-rckht-atdp2-s3ugp-uae'));
-        cancelable.promise
-            .then((balance) => setBalance(balance))
-            .catch((err) => {});
-
-        return () => cancelable.cancel();
-    }, [user]);
 
     // Load NFT wealth of user.
     useEffect(() => {
