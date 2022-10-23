@@ -70,14 +70,18 @@ const User = () => {
 
     // Load balance of user.
     useEffect(() => {
-       const cancelable = makeCancelable(wealthService.getBalance(ctx.principal));
-       //const cancelable = makeCancelable(wealthService.getBalance('cuqd4-b54ae-keit4-7qgoa-ro7vy-3vdpi-6ni2h-rckht-atdp2-s3ugp-uae'));
+        if (!user) {
+            return;
+        }
+
+        const cancelable = makeCancelable(wealthService.getBalance(user?.userPrincipal));
+        //const cancelable = makeCancelable(wealthService.getBalance('cuqd4-b54ae-keit4-7qgoa-ro7vy-3vdpi-6ni2h-rckht-atdp2-s3ugp-uae'));
         cancelable.promise
             .then((balance) => setBalance(balance))
             .catch((err) => {});
 
         return () => cancelable.cancel();
-    }, [username]);
+    }, [user]);
 
     // Load NFT wealth of user.
     useEffect(() => {
@@ -85,9 +89,8 @@ const User = () => {
             return;
         }
 
-        let userPrincipal = needToFakeWealth ? accountWithNfts : user?.userPrincipal;
         // const cancelable = makeCancelable(wealthService.getNftWealth(ctx.principal));
-        const cancelable = makeCancelable(wealthService.getNftWealth(userPrincipal));
+        const cancelable = makeCancelable(wealthService.getNftWealth(user?.userPrincipal));
         cancelable.promise
             .then((nftWealth) => setNftWealth(nftWealth))
             .catch((err) => {});
