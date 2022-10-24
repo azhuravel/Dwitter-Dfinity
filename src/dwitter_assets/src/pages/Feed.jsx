@@ -42,7 +42,7 @@ const Feed = () => {
             <Grid container spacing={2}>
                 <Grid item lg={3} md={3} sm={0}/>
                 <Grid item lg={6} md={6} sm={12}>
-                    <Box sx={{ display: 'flex' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <CircularProgress color="inherit" sx={{mr: 1}}/>
                     </Box>
                 </Grid>
