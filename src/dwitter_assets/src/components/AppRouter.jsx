@@ -16,7 +16,6 @@ const AppRouter = () => {
     const {ctx} = useContext(AppContext);
 
     console.log(ctx);
-    ctx.appState = appState_registrationPage;
     
     switch (ctx.appState) {
         case appState_notLoggedIn:
