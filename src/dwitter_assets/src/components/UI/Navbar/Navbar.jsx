@@ -41,7 +41,9 @@ const Navbar = () => {
             <AppBar position="fixed">
                 <Container maxWidth="lg">
                     <Toolbar variant="regular" disableGutters>
-                    <Typography noWrap variant="h6" component={Link} to={`/feed`} sx={{flexGrow: 0, mr: 4, color: '#fff', textDecoration: 'none'}}>Dwitter</Typography>
+                        <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
+                            <Link to="/feed" style={{color: '#fff', textDecoration: 'none'}}>Dwitter</Link>
+                        </Typography>
 
                         {!currentUserIsSignedUp && 
                             <Button color="inherit" onClick={logout}>
