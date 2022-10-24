@@ -4,6 +4,7 @@ import React, {useEffect, useState, useContext} from 'react';
 import { AppContext } from '../context/index.js';
 import PostsList from '../components/UI/PostsList/PostsList.jsx';
 import PostForm from '../components/UI/PostForm/PostForm.jsx';
+import CircularProgress from '@mui/material/CircularProgress';
 import UserCard from '../components/UI/UserCard/UserCard.jsx';
 import NftsSlider from '../components/UI/NftsSlider/NftsSlider.jsx';
 import Loader from '../components/UI/Loader/Loader.jsx';
@@ -35,6 +36,20 @@ const Feed = () => {
 
         return () => cancelable.cancel();
     }, [username]);
+
+    if (postsLoading) {
+        return (
+            <Grid container spacing={2}>
+                <Grid item lg={3} md={3} sm={0}/>
+                <Grid item lg={6} md={6} sm={12}>
+                    <Box sx={{ display: 'flex' }}>
+                        <CircularProgress color="inherit" sx={{mr: 1}}/>
+                    </Box>
+                </Grid>
+                <Grid item lg={3} md={3} sm={0}/>
+            </Grid>
+        )
+    }
 
     return (
         <React.Fragment>
