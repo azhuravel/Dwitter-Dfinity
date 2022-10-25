@@ -1,7 +1,8 @@
-# Twitter on the Internet Computer
-Dwitter is a platform for an interaction between users and celebrities with opportunity for celebrities to monetize their attention via tokens.
+# Dwitter
+Dwitter is a microblogging service based on Dfinity where users’ influence is measured by their proven crypto assets’ wealth
+It’s like Twitter on Dfinity
 
-Dfinity mainnet: https://oqjv5-vqaaa-aaaai-ack5a-cai.ic0.app/
+Dfinity mainnet: https://7m5wq-kqaaa-aaaam-aaura-cai.ic0.app/
 
 ## Running the project locally
 If you want to test your project locally, you can use the following commands:
